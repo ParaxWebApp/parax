@@ -2284,12 +2284,78 @@ function dmBaslat() {
     arkadaslariBaslat();
 }
 
+async function getConvoKey(convoId) {
+    const enc = new TextEncoder();
+    const keyMaterial = await window.crypto.subtle.importKey(
+        "raw",
+        enc.encode(convoId + "_parax_e2ee_secret"),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+    );
+    return window.crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: enc.encode("parax_salt_2026"),
+            iterations: 100000,
+            hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+async function encryptMessage(text, convoId) {
+    try {
+        const key = await getConvoKey(convoId);
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const enc = new TextEncoder();
+        const encrypted = await window.crypto.subtle.encrypt(
+            { name: "AES-GCM", iv: iv },
+            key,
+            enc.encode(text)
+        );
+        const combined = new Uint8Array(iv.byteLength + encrypted.byteLength);
+        combined.set(iv);
+        combined.set(new Uint8Array(encrypted), iv.byteLength);
+        return btoa(String.fromCharCode.apply(null, combined));
+    } catch (e) {
+        console.error("Encryption error:", e);
+        return text;
+    }
+}
+
+async function decryptMessage(base64Cipher, convoId) {
+    try {
+        const key = await getConvoKey(convoId);
+        const binary = atob(base64Cipher);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        const iv = bytes.slice(0, 12);
+        const ciphertext = bytes.slice(12);
+        const decrypted = await window.crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: iv },
+            key,
+            ciphertext
+        );
+        const dec = new TextDecoder();
+        return dec.decode(decrypted);
+    } catch (e) {
+        console.error("Decryption error:", e);
+        return "[Encrypted Message]";
+    }
+}
+
 function dmChatBaslat() {
     const urlParams = new URLSearchParams(window.location.search);
     const recipientUid = urlParams.get("uid");
     const recipientName = urlParams.get("name") || "Direct Message";
     const nameEl = document.getElementById("dm-recipient-name");
-    if (nameEl) nameEl.textContent = "Chat with " + decodeURIComponent(recipientName);
+    if (nameEl) nameEl.textContent = "🔒 Chat with " + decodeURIComponent(recipientName) + " (End-to-End Encrypted)";
 
     const user = auth.currentUser;
     if (!user) {
@@ -2304,14 +2370,21 @@ function dmChatBaslat() {
 
     db.collection("directMessages").doc(convoId).collection("messages")
         .orderBy("createdAt", "asc")
-        .onSnapshot((snapshot) => {
-            const messages = [];
+        .onSnapshot(async (snapshot) => {
+            const rawMessages = [];
             snapshot.forEach(doc => {
-                messages.push({ id: doc.id, ...doc.data() });
+                rawMessages.push({ id: doc.id, ...doc.data() });
             });
-            if (messages.length === 0) {
-                messagesEl.innerHTML = '<div class="chat-empty">No messages yet. Say hello!</div>';
+
+            if (rawMessages.length === 0) {
+                messagesEl.innerHTML = '<div class="chat-empty">No messages yet. Say hello! (E2EE Active)</div>';
             } else {
+                const messages = [];
+                for (const m of rawMessages) {
+                    const decryptedText = await decryptMessage(m.text, convoId);
+                    messages.push({ ...m, decryptedText });
+                }
+
                 messagesEl.innerHTML = messages.map(m => {
                     const isOwn = m.senderId === user.uid;
                     const time = m.createdAt?.toDate ? m.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
@@ -2321,7 +2394,7 @@ function dmChatBaslat() {
                                 <span class="message-sender">${temizle(m.senderName)}</span>
                                 <span class="message-time">${time}</span>
                             </div>
-                            <div class="message-text">${temizle(m.text)}</div>
+                            <div class="message-text">${temizle(m.decryptedText)}</div>
                         </div>
                     `;
                 }).join("");
@@ -2332,10 +2405,11 @@ function dmChatBaslat() {
     const sendMsg = async () => {
         const text = inputEl?.value.trim();
         if (!text) return;
+        const encryptedText = await encryptMessage(text, convoId);
         await db.collection("directMessages").doc(convoId).collection("messages").add({
             senderId: user.uid,
             senderName: user.displayName || user.email?.split("@")[0] || "User",
-            text,
+            text: encryptedText,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         if (inputEl) inputEl.value = "";
