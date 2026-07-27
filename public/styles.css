@@ -932,6 +932,32 @@ input {
   word-wrap: break-word;
 }
 
+.message-text code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.message-text pre {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 6px 0;
+}
+
+.message-text pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.message-text a {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
 .chat-input-bar {
   display: flex;
   gap: 12px;

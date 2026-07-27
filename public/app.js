@@ -553,6 +553,17 @@ async function kanalMesajGonder(channelId, text) {
         });
     }
 }
+function parseMarkdown(text) {
+    if (!text) return "";
+    let escaped = temizle(text);
+    escaped = escaped.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+    escaped = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+    escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    escaped = escaped.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    escaped = escaped.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+    return escaped;
+}
+
 function kanalMesajlariYukle(channelId, callback) {
     // 1. Instantly try loading from Fly.io 24h cache for zero-latency render
     if (typeof ParaxFly !== "undefined") {
@@ -1485,7 +1496,7 @@ function kanalSec(channelId, channelName, serverCode) {
                  <span class="message-sender">${temizle(m.senderName)}</span>
                  <span class="message-time">${time}</span>
                </div>
-               <div class="message-text">${temizle(m.text)}</div>
+               <div class="message-text">${parseMarkdown(m.text)}</div>
                ${isOwn ? `
                  <div class="message-actions">
                    <button class="msg-btn edit" onclick="startEdit('${m.id}')">Edit</button>
@@ -1625,7 +1636,7 @@ function sohbetiBaslat() {
                  <span class="message-sender">${temizle(m.senderName)}</span>
                  <span class="message-time">${time}</span>
                </div>
-               <div class="message-text">${temizle(m.text)}</div>
+               <div class="message-text">${parseMarkdown(m.text)}</div>
                ${isOwn ? `
                  <div class="message-actions">
                    <button class="msg-btn edit" onclick="startEdit('${m.id}')">Edit</button>
@@ -2394,7 +2405,7 @@ function dmChatBaslat() {
                                 <span class="message-sender">${temizle(m.senderName)}</span>
                                 <span class="message-time">${time}</span>
                             </div>
-                            <div class="message-text">${temizle(m.decryptedText)}</div>
+                            <div class="message-text">${parseMarkdown(m.decryptedText)}</div>
                         </div>
                     `;
                 }).join("");
