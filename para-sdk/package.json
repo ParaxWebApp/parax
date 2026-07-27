@@ -1,0 +1,19 @@
+{
+  "name": "para-error-logger",
+  "version": "1.0.0",
+  "description": "Lightweight error tracking and performance monitoring SDK for web applications",
+  "main": "para.js",
+  "files": [
+    "para.js",
+    "para-addon.js"
+  ],
+  "keywords": [
+    "error-tracking",
+    "monitoring",
+    "logger",
+    "firebase",
+    "firestore"
+  ],
+  "author": "ParaxWebApp",
+  "license": "MIT"
+}
