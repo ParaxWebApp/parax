@@ -42,6 +42,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (page === "settings.html") {
         ayarlarBaslat();
     }
+    if (page === "friends.html") {
+        arkadaslariBaslat();
+    }
+    if (page === "dm-list.html") {
+        dmBaslat();
+    }
+    if (page === "dm-chat.html") {
+        dmChatBaslat();
+    }
 });
 function kalicilikAyarla(remember) {
     if (remember) {
@@ -845,6 +854,12 @@ function panoyuBaslat() {
     });
     settingsBtn?.addEventListener("click", () => {
         window.location.href = "/settings.html";
+    });
+    document.getElementById("friends-btn")?.addEventListener("click", () => {
+        window.location.href = "/friends.html";
+    });
+    document.getElementById("dms-btn")?.addEventListener("click", () => {
+        window.location.href = "/dm-list.html";
     });
     const sidebarToggleBtn = document.getElementById("sidebar-toggle-btn");
     sidebarToggleBtn?.addEventListener("click", () => {
@@ -2148,6 +2163,189 @@ document.getElementById("ctx-leave")?.addEventListener("click", async () => {
         }
     }
 });
+
+function arkadaslariBaslat() {
+    const user = auth.currentUser;
+    if (!user) {
+        setTimeout(arkadaslariBaslat, 1000);
+        return;
+    }
+    const addBtn = document.getElementById("add-friend-btn");
+    const input = document.getElementById("friend-username");
+
+    addBtn?.addEventListener("click", async () => {
+        const username = input?.value.trim();
+        if (!username) return alert("Enter a username");
+        try {
+            const querySnapshot = await db.collection("users").where("username", "==", username).get();
+            if (querySnapshot.empty) {
+                return hataGoster("User not found");
+            }
+            const targetUserDoc = querySnapshot.docs[0];
+            const targetUserId = targetUserDoc.id;
+            if (targetUserId === user.uid) {
+                return hataGoster("You cannot add yourself");
+            }
+            const existing = await db.collection("friendRequests")
+                .where("senderId", "==", user.uid)
+                .where("receiverId", "==", targetUserId)
+                .get();
+            if (!existing.empty) {
+                return hataGoster("Friend request already sent");
+            }
+
+            await db.collection("friendRequests").add({
+                senderId: user.uid,
+                senderName: user.displayName || user.email?.split("@")[0] || "User",
+                receiverId: targetUserId,
+                status: "pending",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            input.value = "";
+            alert("Friend request sent!");
+        } catch (err) {
+            hataGoster("Failed to send request: " + err.message);
+        }
+    });
+
+    db.collection("friendRequests").where("receiverId", "==", user.uid).onSnapshot((snapshot) => {
+        const pendingList = document.getElementById("pending-list");
+        if (!pendingList) return;
+        const requests = [];
+        snapshot.forEach((doc) => {
+            if (doc.data().status === "pending") {
+                requests.push({ id: doc.id, ...doc.data() });
+            }
+        });
+        if (requests.length === 0) {
+            pendingList.innerHTML = '<div class="channel-empty">No pending requests</div>';
+        } else {
+            pendingList.innerHTML = requests.map(req => `
+                <div class="friend-request-item" style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:var(--background-secondary); margin-bottom:6px; border-radius:4px;">
+                    <span>${temizle(req.senderName)}</span>
+                    <div>
+                        <button class="btn btn-primary btn-sm accept-req" data-id="${req.id}">Accept</button>
+                    </div>
+                </div>
+            `).join("");
+
+            pendingList.querySelectorAll(".accept-req").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const reqId = btn.dataset.id;
+                    await db.collection("friendRequests").doc(reqId).update({ status: "accepted" });
+                });
+            });
+        }
+    });
+
+    db.collection("friendRequests")
+        .where("status", "==", "accepted")
+        .onSnapshot(async (snapshot) => {
+            const friendList = document.getElementById("friend-list");
+            if (!friendList) return;
+            const friendIds = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.senderId === user.uid) friendIds.push(data.receiverId);
+                if (data.receiverId === user.uid) friendIds.push(data.senderId);
+            });
+
+            if (friendIds.length === 0) {
+                friendList.innerHTML = '<div class="channel-empty">No friends yet. Add someone above!</div>';
+                return;
+            }
+
+            const friends = [];
+            for (const fId of friendIds) {
+                const fDoc = await db.collection("users").doc(fId).get();
+                if (fDoc.exists) {
+                    friends.push({ id: fId, ...fDoc.data() });
+                }
+            }
+
+            friendList.innerHTML = friends.map(f => `
+                <div class="friend-item" style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--background-secondary); margin-bottom:8px; border-radius:6px;">
+                    <span>👤 ${temizle(f.username)}</span>
+                    <button class="btn btn-secondary btn-sm start-dm" data-uid="${f.id}" data-uname="${temizle(f.username)}">Message</button>
+                </div>
+            `).join("");
+
+            friendList.querySelectorAll(".start-dm").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const friendUid = btn.dataset.uid;
+                    const friendName = btn.dataset.uname;
+                    window.location.href = `/dm-chat.html?uid=${friendUid}&name=${encodeURIComponent(friendName)}`;
+                });
+            });
+        });
+}
+
+function dmBaslat() {
+    arkadaslariBaslat();
+}
+
+function dmChatBaslat() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const recipientUid = urlParams.get("uid");
+    const recipientName = urlParams.get("name") || "Direct Message";
+    const nameEl = document.getElementById("dm-recipient-name");
+    if (nameEl) nameEl.textContent = "Chat with " + decodeURIComponent(recipientName);
+
+    const user = auth.currentUser;
+    if (!user) {
+        setTimeout(dmChatBaslat, 1000);
+        return;
+    }
+
+    const convoId = [user.uid, recipientUid].sort().join("_");
+    const messagesEl = document.getElementById("dm-messages");
+    const inputEl = document.getElementById("dm-message-input");
+    const sendBtn = document.getElementById("dm-send-btn");
+
+    db.collection("directMessages").doc(convoId).collection("messages")
+        .orderBy("createdAt", "asc")
+        .onSnapshot((snapshot) => {
+            const messages = [];
+            snapshot.forEach(doc => {
+                messages.push({ id: doc.id, ...doc.data() });
+            });
+            if (messages.length === 0) {
+                messagesEl.innerHTML = '<div class="chat-empty">No messages yet. Say hello!</div>';
+            } else {
+                messagesEl.innerHTML = messages.map(m => {
+                    const isOwn = m.senderId === user.uid;
+                    const time = m.createdAt?.toDate ? m.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+                    return `
+                        <div class="message ${isOwn ? "message-own" : ""}">
+                            <div class="message-header">
+                                <span class="message-sender">${temizle(m.senderName)}</span>
+                                <span class="message-time">${time}</span>
+                            </div>
+                            <div class="message-text">${temizle(m.text)}</div>
+                        </div>
+                    `;
+                }).join("");
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }
+        });
+
+    const sendMsg = async () => {
+        const text = inputEl?.value.trim();
+        if (!text) return;
+        await db.collection("directMessages").doc(convoId).collection("messages").add({
+            senderId: user.uid,
+            senderName: user.displayName || user.email?.split("@")[0] || "User",
+            text,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        if (inputEl) inputEl.value = "";
+    };
+
+    sendBtn?.addEventListener("click", sendMsg);
+    inputEl?.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMsg();
+    });
+}
 
  f i r e b a s e . a u t h ( ) . o n A u t h S t a t e C h a n g e d ( ( u s e r )   = >   { 
          i f   ( u s e r )   { 
