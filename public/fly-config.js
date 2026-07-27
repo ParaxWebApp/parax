@@ -7,7 +7,7 @@ window.FLY_SERVICES = {
   // 24-Hour Message Cache Microservice
   MESSAGE_CACHE: window.location.hostname === "localhost" 
     ? "http://localhost:8080" 
-    : "https://parax-message-cache.fly.dev",
+    : "https://parax-message-cache.onrender.com",
 
   // Camera & Screen Sharing Signaling Microservice
   MEDIA_SERVER: window.location.hostname === "localhost"
