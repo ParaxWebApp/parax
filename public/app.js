@@ -2104,6 +2104,51 @@ window.confirmDelete = (id) => {
     }
 };
 
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        setInterval(async () => {
+            await db.collection("users").doc(user.uid).update({
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(() => {});
+        }, 30000);
+    }
+});
+
+document.addEventListener("contextmenu", (e) => {
+    const serverItem = e.target.closest(".server-item");
+    if (serverItem && serverItem.dataset.code) {
+        e.preventDefault();
+        const menu = document.getElementById("server-context-menu");
+        menu.style.display = "block";
+        menu.style.left = e.pageX + "px";
+        menu.style.top = e.pageY + "px";
+        window.contextServerCode = serverItem.dataset.code;
+    }
+});
+
+document.addEventListener("click", () => {
+    const menu = document.getElementById("server-context-menu");
+    if (menu) menu.style.display = "none";
+});
+
+document.getElementById("ctx-leave")?.addEventListener("click", async () => {
+    const code = window.contextServerCode;
+    if (!code) return;
+    if (code === PARAX_OFFICIAL_CODE) {
+        hataGoster("Cannot leave the official server");
+        return;
+    }
+    if (confirm("Leave this server?")) {
+        try {
+            const user = auth.currentUser;
+            await db.collection("serverMembers").doc(uyeDokumanId(user.uid, code)).delete();
+            sunucuSec(null);
+        } catch (err) {
+            hataGoster("Failed to leave: " + err.message);
+        }
+    }
+});
+
  f i r e b a s e . a u t h ( ) . o n A u t h S t a t e C h a n g e d ( ( u s e r )   = >   { 
          i f   ( u s e r )   { 
                  s e t I n t e r v a l ( a s y n c   ( )   = >   { 
