@@ -5,7 +5,8 @@
   "main": "para.js",
   "files": [
     "para.js",
-    "para-addon.js"
+    "para-addon.js",
+    "para-dashboard.js"
   ],
   "keywords": [
     "error-tracking",

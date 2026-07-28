@@ -1,6 +1,4 @@
-// Para — error handler for Parax
-// Auto-initializes once Firebase compat SDK is available
-
+// Para — Error and Performance Monitoring SDK for Web Apps
 ;(function () {
   "use strict";
 
