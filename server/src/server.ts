@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth";
 import voiceRoutes from "./routes/voice";
 import logRoutes from "./routes/log";
 import monitoringRoutes from "./routes/monitoring";
+import botsRoutes from "./routes/bots";
 import { errorHandler } from "./middleware/errorHandler";
 import { trackLatency } from "./utils/metrics";
 import { ipBlocker } from "./middleware/ipBlocker";
@@ -70,6 +71,19 @@ app.use("/api/auth", authRoutes);
 app.use("/api/voice", voiceRoutes);
 app.use("/api/log", logRoutes);
 app.use("/api/monitoring", monitoringRoutes);
+app.use("/api/bots", botsRoutes);
+
+// DevPortal static & routes
+app.use("/devportal", express.static(path.join(__dirname, "../../DevPortal")));
+app.get("/devportal/bots", (_req, res) => {
+  res.sendFile(path.join(__dirname, "../../DevPortal/bots.html"));
+});
+app.get("/devportal/create", (_req, res) => {
+  res.sendFile(path.join(__dirname, "../../DevPortal/bot-create.html"));
+});
+app.get("/devportal/details", (_req, res) => {
+  res.sendFile(path.join(__dirname, "../../DevPortal/bot-details.html"));
+});
 
 // sayfa route'ları
 app.get("/", (_req, res) => {
