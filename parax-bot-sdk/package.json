@@ -1,0 +1,20 @@
+{
+  "name": "parax-bot-sdk",
+  "version": "1.0.0",
+  "description": "Official Bot SDK for Parax chat platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "node example.js"
+  },
+  "keywords": [
+    "parax",
+    "bot",
+    "sdk",
+    "chat"
+  ],
+  "author": "Parax Team",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^11.0.1"
+  }
+}
