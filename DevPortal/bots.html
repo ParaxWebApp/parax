@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bot Dashboard — Parax</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .bots-container { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .bot-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px; }
+    .stat-card { background: var(--bg-secondary); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border); }
+    .stat-label { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+    
+    .bot-table { width: 100%; border-collapse: collapse; background: var(--bg-secondary); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+    .bot-table th, .bot-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .bot-table th { background: var(--bg-tertiary); color: var(--text-muted); }
+    
+    .status-online { color: var(--success); font-weight: 600; }
+    .status-offline { color: var(--error); font-weight: 600; }
+    .btn-action { padding: 6px 10px; font-size: 0.75rem; margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">Parax</div>
+  </nav>
+
+  <div class="bots-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h1>Bot Dashboard / Bot Paneli</h1>
+        <button class="btn btn-primary" onclick="window.location.href='bot-create.html'">+ New Bot / Yeni Bot Oluştur</button>
+    </div>
+
+    <div class="bot-stats">
+        <div class="stat-card">
+            <div class="stat-label">Total Bots / Toplam Bot</div>
+            <div class="stat-value">12</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Active Bots / Aktif Bot</div>
+            <div class="stat-value">8</div>
+        </div>
+    </div>
+
+    <table class="bot-table">
+        <thead>
+            <tr>
+                <th>Bot Name / Bot Adı</th>
+                <th>Status / Durum</th>
+                <th>Client ID / İstemci Kimliği</th>
+                <th>Actions / Eylemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ModeratorBot</td>
+                <td><span class="status-online">● Online</span></td>
+                <td><code>98273465192837465</code></td>
+                <td>
+                    <a href="bot-details.html" class="btn btn-secondary btn-action">Edit / Düzenle</a>
+                    <button class="btn btn-secondary btn-action" style="color:var(--error)">Delete / Sil</button>
+                    <button class="btn btn-secondary btn-action" style="color:var(--accent)">Regenerate / Yenile</button>
+                </td>
+            </tr>
+            <tr>
+                <td>MusicPlayer</td>
+                <td><span class="status-offline">● Offline</span></td>
+                <td><code>12345678901234567</code></td>
+                <td>
+                    <a href="bot-details.html" class="btn btn-secondary btn-action">Edit / Düzenle</a>
+                    <button class="btn btn-secondary btn-action" style="color:var(--error)">Delete / Sil</button>
+                    <button class="btn btn-secondary btn-action" style="color:var(--accent)">Regenerate / Yenile</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+</body>
+</html>

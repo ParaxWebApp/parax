@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register New Bot — Parax</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .bot-create-container { padding: 40px 24px; max-width: 800px; margin: 0 auto; }
+    .card { background: var(--bg-secondary); padding: 32px; border-radius: var(--radius-lg); border: 1px solid var(--border); }
+    .form-group { margin-bottom: 24px; }
+    .perm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+    .perm-item { background: var(--bg-tertiary); padding: 10px; border-radius: var(--radius); display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+    .perm-item input { accent-color: var(--brand); cursor: pointer; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">Parax</div>
+  </nav>
+
+  <div class="bot-create-container">
+    <div class="card">
+        <h1>Register New Bot / Yeni Bot Kaydet</h1>
+        <p class="subtitle" style="margin-bottom: 32px;">Configure your bot's identity and capabilities.</p>
+
+        <form id="bot-create-form">
+            <div class="form-group">
+                <label for="bot-name">Bot Name / Bot Adı</label>
+                <input type="text" id="bot-name" placeholder="My Awesome Bot" required />
+            </div>
+
+            <div class="form-group">
+                <label for="bot-desc">Description / Açıklama</label>
+                <textarea id="bot-desc" rows="3" placeholder="Explain what your bot does..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Scopes & Permissions / Kapsam ve İzinler</label>
+                <div class="perm-grid">
+                    <label class="perm-item"><input type="checkbox" name="perm" value="read"> Read Messages / Mesajları Oku</label>
+                    <label class="perm-item"><input type="checkbox" name="perm" value="send"> Send Messages / Mesaj Gönder</label>
+                    <label class="perm-item"><input type="checkbox" name="perm" value="kick"> Kick Members / Üyeleri At</label>
+                    <label class="perm-item"><input type="checkbox" name="perm" value="ban"> Ban Members / Üyeleri Yasakla</label>
+                    <label class="perm-item"><input type="checkbox" name="perm" value="connect"> Connect Voice / Sesli Bağlan</label>
+                    <label class="perm-item"><input type="checkbox" name="perm" value="speak"> Speak / Konuş</label>
+                    <label class="perm-item"><input type="checkbox" name="perm" value="manage_roles"> Manage Roles / Rolleri Yönet</label>
+                    <label class="perm-item"><input type="checkbox" name="perm" value="manage_channels"> Manage Channels / Kanalları Yönet</label>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 32px;">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancel / İptal</button>
+                <button type="submit" class="btn btn-primary">Register Bot / Botu Kaydet</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</body>
+</html>
