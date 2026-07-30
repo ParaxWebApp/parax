@@ -395,6 +395,22 @@ input {
   font-size: 0.82rem;
 }
 
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.social-links a {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.social-links a:hover {
+    color: var(--brand);
+}
+
 /* giriş/kayıt sayfaları */
 
 .auth-wrapper {
