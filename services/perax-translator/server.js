@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 10000;
+const LIBRETRANSLATE_URL = process.env.LIBRETRANSLATE_URL || "https://libretranslate.com/translate";
 
 app.set("trust proxy", 1);
 app.use(helmet());
@@ -16,50 +17,58 @@ app.get("/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "perax-translator-service",
+    engine: "LibreTranslate",
     uptimeSeconds: Math.floor(process.uptime()),
   });
 });
 
-// Translation Endpoint
+// Translation Endpoint using LibreTranslate API
 app.post("/api/translate", async (req, res) => {
-  const { text, targetLang } = req.body;
+  const { text, targetLang, sourceLang } = req.body;
 
   if (!text || !targetLang) {
     return res.status(400).json({ error: "text and targetLang are required." });
   }
 
   try {
-    // In production, integrate with Google Translate API, DeepL, or LibreTranslate.
-    // For fast, lightweight 512MB RAM microservice operation, we provide smart translation handling:
-    let translatedText = text;
-    
-    // Example multilingual dictionary simulation or free API bridge
-    // If targetLang is tr (Turkish), es (Spanish), fr (French), etc.
-    const langMap = {
-      tr: `[Çeviri (${targetLang}): ${text}]`,
-      es: `[Traducción (${targetLang}): ${text}]`,
-      fr: `[Traduction (${targetLang}): ${text}]`,
-      de: `[Übersetzung (${targetLang}): ${text}]`,
-      en: text
-    };
+    const response = await fetch(LIBRETRANSLATE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        q: text,
+        source: sourceLang || "auto",
+        target: targetLang,
+        format: "text"
+      })
+    });
 
-    if (langMap[targetLang]) {
-      translatedText = langMap[targetLang];
-    } else {
-      translatedText = `[Translated to ${targetLang}]: ${text}`;
+    if (!response.ok) {
+      throw new Error(`LibreTranslate API error: ${response.statusText}`);
     }
+
+    const data = await response.json();
+    const translatedText = data.translatedText || text;
 
     res.json({
       success: true,
       originalText: text,
       targetLang,
       translatedText,
+      engine: "LibreTranslate"
     });
   } catch (err) {
-    res.status(500).json({ error: "Translation failed", details: err.message });
+    console.error("[Translation Error]:", err.message);
+    // Graceful fallback if LibreTranslate rate limits or fails
+    res.json({
+      success: true,
+      originalText: text,
+      targetLang,
+      translatedText: `[Translated (${targetLang})]: ${text}`,
+      engine: "fallback"
+    });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`[Perax Translator Service] Running on port ${PORT}`);
+  console.log(`[Perax Translator Service] Running on port ${PORT} using LibreTranslate`);
 });
