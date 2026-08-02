@@ -564,6 +564,61 @@ function parseMarkdown(text) {
     return escaped;
 }
 
+async function translateMessage(text, targetLang = "tr") {
+    try {
+        const res = await fetch("https://perax-translator-service.onrender.com/api/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, targetLang })
+        });
+        const data = await res.json();
+        return data.translatedText || text;
+    } catch (err) {
+        console.error("[Translation Error]:", err);
+        return text;
+    }
+}
+
+let currentUserProfile = null;
+async function loadCurrentUserProfile() {
+    const user = auth.currentUser;
+    if (!user) return;
+    const profile = await profilGetir(user.uid);
+    currentUserProfile = profile;
+}
+
+async function translateThisMessage(messageId, targetLang) {
+    const messageEl = document.querySelector(`.message[data-message-id="${messageId}"]`);
+    if (!messageEl) return;
+    
+    const originalText = messageEl.getAttribute("data-original-text");
+    if (!originalText) return;
+    
+    const textEl = messageEl.querySelector(".message-text");
+    const btn = messageEl.querySelector(".msg-btn.translate");
+    
+    if (btn && btn.textContent === "Original") {
+        textEl.innerHTML = parseMarkdown(originalText);
+        btn.textContent = "Translate";
+        return;
+    }
+    
+    if (btn) {
+        btn.textContent = "Translating...";
+        btn.disabled = true;
+    }
+    
+    const translated = await translateMessage(originalText, targetLang);
+    
+    if (textEl) {
+        textEl.innerHTML = parseMarkdown(translated) + ' <span class="translated-badge">(translated)</span>';
+    }
+    if (btn) {
+        btn.textContent = "Original";
+        btn.disabled = false;
+    }
+}
+
 function kanalMesajlariYukle(channelId, callback) {
     // 1. Instantly try loading from Fly.io 24h cache for zero-latency render
     if (typeof ParaxFly !== "undefined") {
@@ -739,6 +794,9 @@ function ayarlarBaslat() {
             usernameInput.value = profile.username || user.displayName || "";
         if (bioInput)
             bioInput.value = profile.bio || "";
+        const langSelect = document.getElementById("settings-target-lang");
+        if (langSelect)
+            langSelect.value = profile.targetLanguage || "tr";
         if (profile.photoURL) {
             if (avatarImg) {
                 avatarImg.src = profile.photoURL;
@@ -797,6 +855,7 @@ function ayarlarBaslat() {
     saveBtn?.addEventListener("click", async () => {
         const username = usernameInput?.value.trim() || user.displayName || "";
         const bio = bioInput?.value.trim() || "";
+        const targetLang = document.getElementById("settings-target-lang")?.value || "tr";
         if (username.length < 3 || username.length > 32) {
             hataGoster("Display name must be 3-32 characters");
             return;
@@ -805,7 +864,7 @@ function ayarlarBaslat() {
         saveBtn.disabled = true;
         try {
             await user.updateProfile({ displayName: username });
-            await profilKaydet(user.uid, { username, bio });
+            await profilKaydet(user.uid, { username, bio, targetLanguage: targetLang });
             hataGoster("Profile saved!");
         }
         catch (error) {
@@ -1490,13 +1549,17 @@ function kanalSec(channelId, channelName, serverCode) {
                 messagesEl.innerHTML = messages.map((m) => {
                     const time = m.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) || "";
                     const isOwn = m.senderId === auth.currentUser?.uid;
+                    const userLang = (typeof currentUserProfile !== "undefined" && currentUserProfile.targetLanguage) || "tr";
                     return `
-             <div class="message ${isOwn ? "message-own" : ""}" data-message-id="${m.id}">
+             <div class="message ${isOwn ? "message-own" : ""}" data-message-id="${m.id}" data-original-text="${temizle(m.text)}">
                <div class="message-header">
                  <span class="message-sender">${temizle(m.senderName)}</span>
                  <span class="message-time">${time}</span>
                </div>
                <div class="message-text">${parseMarkdown(m.text)}</div>
+               ${!isOwn ? `
+                 <button class="msg-btn translate" onclick="translateThisMessage('${m.id}', \`${userLang}\`)" title="Translate to ${userLang}">Translate</button>
+               ` : ''}
                ${isOwn ? `
                  <div class="message-actions">
                    <button class="msg-btn edit" onclick="startEdit('${m.id}')">Edit</button>
@@ -1684,6 +1747,9 @@ function oturumDinle(currentPage) {
         if (user && (currentPage === "" || currentPage === "index.html")) {
             window.location.href = "/dashboard.html";
             return;
+        }
+        if (user) {
+            loadCurrentUserProfile();
         }
         navBarGuncelle(user);
     });
