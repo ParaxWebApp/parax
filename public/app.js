@@ -382,40 +382,46 @@ async function sunucuVarMi(code) {
     const doc = await db.collection("servers").doc(code).get();
     return doc.exists;
 }
-async function sunucuyaKatil(code, inviteCode) {
+async function sunucuyaKatil(codeOrInvite, inviteCode) {
     const user = auth.currentUser;
+    if (!user) return null;
+    let code = codeOrInvite;
+    let invCode = inviteCode;
+
     let exists = await sunucuVarMi(code);
     if (!exists) {
         if (code === PARAX_OFFICIAL_CODE) {
             const ok = await paraxResmiKontrol();
-            if (!ok)
-                return false;
-        }
-        else {
-            return false;
+            if (!ok) return null;
+        } else {
+            const serversSnap = await db.collection("servers").get();
+            let foundServerCode = null;
+            for (const doc of serversSnap.docs) {
+                const invDoc = await db.collection("servers").doc(doc.id).collection("serverInvites").doc(codeOrInvite).get();
+                if (invDoc.exists) {
+                    foundServerCode = doc.id;
+                    invCode = codeOrInvite;
+                    break;
+                }
+            }
+            if (foundServerCode) {
+                code = foundServerCode;
+            } else {
+                return null;
+            }
         }
     }
     const docId = uyeDokumanId(user.uid, code);
     const existing = await db.collection("serverMembers").doc(docId).get();
-    if (existing.exists)
-        return true;
-    const serverDoc = await db.collection("servers").doc(code).get();
-    const serverData = serverDoc.data();
-    const joinType = serverData?.joinType || "open";
-    if (joinType === "invite") {
-        if (!inviteCode)
-            return false;
-        const inviteDoc = await db.collection("servers").doc(code).collection("serverInvites").doc(inviteCode).get();
-        if (!inviteDoc.exists)
-            return false;
-    }
+    if (existing.exists) return code;
+
     await db.collection("serverMembers").doc(docId).set({
         userId: user.uid,
         serverCode: code,
         joinedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        ...(inviteCode ? { inviteCode } : {}),
+        ...(invCode ? { inviteCode: invCode } : {}),
     });
-    return true;
+    return code;
 }
 async function davetKoduOlustur(serverCode) {
     const arr = new Uint8Array(6);
@@ -910,6 +916,9 @@ function panoyuBaslat() {
                 profileAvatar.innerHTML = `<img src="${p.photoURL}" alt="" />`;
             }
         });
+        paraxResmiKontrol().then(() => {
+            sunucuyaKatil(PARAX_OFFICIAL_CODE).catch(() => {});
+        });
         if (user.email === "meric.yesiltas2014@gmail.com") {
             db.collection("servers").doc(PARAX_OFFICIAL_CODE).update({
                 ownerId: user.uid,
@@ -999,16 +1008,16 @@ function panoyuBaslat() {
     });
     document.getElementById("join-server-confirm")?.addEventListener("click", async () => {
         const input = document.getElementById("join-server-input");
-        const code = input?.value.trim();
-        if (!code || code.length !== 11 || !/^\d{11}$/.test(code)) {
-            hataGoster("Enter a valid 11-digit server code");
+        const val = input?.value.trim();
+        if (!val) {
+            hataGoster("Enter a valid server code or invite code");
             return;
         }
         const inviteInput = document.getElementById("join-invite-input");
         const inviteCode = inviteInput?.value.trim() || undefined;
         try {
-            const joined = await sunucuyaKatil(code, inviteCode);
-            if (!joined) {
+            const targetServerCode = await sunucuyaKatil(val, inviteCode);
+            if (!targetServerCode) {
                 hataGoster("Server not found or invalid invite code");
                 return;
             }
@@ -1017,7 +1026,7 @@ function panoyuBaslat() {
             input.value = "";
             if (inviteInput)
                 inviteInput.value = "";
-            sunucuSec(code);
+            sunucuSec(targetServerCode);
         }
         catch (err) {
             hataGoster("Failed to join: " + err.message);
