@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para.js Nedir? — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .doc-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 90px; }
+    .doc-hero { text-align: center; margin-bottom: 12px; }
+    .doc-hero .back { display: inline-block; margin-bottom: 18px; color: var(--brand); text-decoration: none; font-size: 0.88rem; }
+    .doc-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 10px; }
+    .doc-hero p { color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 24px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .toc { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 20px 24px; margin: 24px 0 12px; }
+    .toc h3 { margin: 0 0 10px; font-size: 1rem; }
+    .toc ol { margin: 0; padding-left: 22px; color: var(--text-secondary); font-size: 0.9rem; }
+    .toc a { color: var(--brand); text-decoration: none; }
+    .doc-sec { margin: 34px 0; }
+    .doc-sec h2 { font-size: 1.45rem; margin-bottom: 10px; }
+    .doc-sec h2 .n { color: var(--brand); margin-right: 8px; }
+    .doc-sec p, .doc-sec li { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+    .doc-sec ol, .doc-sec ul { padding-left: 24px; }
+    .doc-sec li { margin-bottom: 8px; }
+    .flow { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 18px 22px; margin-top: 12px; }
+    .flow ol { margin: 0; padding-left: 22px; }
+    .flow li { margin-bottom: 10px; }
+    .flow code, p code, li code, pre code { background: var(--bg-tertiary); border-radius: 6px; padding: 1px 7px; font-size: 0.85em; }
+    pre.codeblock { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; overflow-x: auto; font-size: 0.85rem; margin-top: 12px; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 12px; }
+    .mini-table th, .mini-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .mini-table th { color: var(--text-muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .tip { border-left: 3px solid #22c55e; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    .warn { border-left: 3px solid #f0b232; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    [data-lang][hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="documentation.html">Belgeler</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <div class="doc-wrap">
+    <div class="doc-hero">
+      <a class="back" href="documentation.html">← <span data-lang="tr">Tüm belgeler</span><span data-lang="en" hidden>All docs</span></a>
+      <h1 data-lang="tr">Para.js Nedir?</h1>
+      <h1 data-lang="en" hidden>What Is Para.js?</h1>
+      <p data-lang="tr">Arka planda sessizce çalışan hata günlüğü: nedir, neden var, ne toplar, Oddiss ile farkı ne?</p>
+      <p data-lang="en" hidden>The error logger working silently in the background: what it is, why it exists, what it collects, and how it differs from Oddiss.</p>
+    </div>
+
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
+    </div>
+
+    <div class="toc" data-lang="tr">
+      <h3>İçindekiler</h3>
+      <ol>
+        <li><a href="#t1">Para.js nedir?</a></li>
+        <li><a href="#t2">Neden yapıldı?</a></li>
+        <li><a href="#t3">Nasıl çalışır?</a></li>
+        <li><a href="#t4">Ekmek kırıntıları (breadcrumbs) nedir?</a></li>
+        <li><a href="#t5">Ne toplar, ne toplamaz?</a></li>
+        <li><a href="#t6">Geliştiriciler için: elle kayıt</a></li>
+        <li><a href="#t7">Sık sorulan sorular</a></li>
+      </ol>
+    </div>
+    <div class="toc" data-lang="en" hidden>
+      <h3>Contents</h3>
+      <ol>
+        <li><a href="#e1">What is para.js?</a></li>
+        <li><a href="#e2">Why was it built?</a></li>
+        <li><a href="#e3">How does it work?</a></li>
+        <li><a href="#e4">What are breadcrumbs?</a></li>
+        <li><a href="#e5">What does it collect — and not?</a></li>
+        <li><a href="#e6">For developers: manual capture</a></li>
+        <li><a href="#e7">FAQ</a></li>
+      </ol>
+    </div>
+
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="doc-sec" id="t1"><h2><span class="n">1</span>Para.js nedir?</h2>
+        <p>Para.js, Parax'ın <b>arka plan hata günlüğüdür</b>: uygulamada bir hata olduğunda onu sessizce yakalayıp ekibe ileten görünmez katmandır. Sen hiçbir şey görmezsin; ama o an, hatanın fotoğrafı çoktan çekilmiştir.</p>
+        <p>Teknik olarak sıfır ayarlı bir gözetmendir: sayfa açılır açılmaz <code>Para.init()</code> ile başlar, tarayıcının üç hata kanalını dinler — yakalanmamış hatalar (<code>onerror</code>), tutulmamış söz (promise) reddedilmeleri (<code>unhandledrejection</code>) ve konsol hata çıktıları (<code>console.error</code>). Hiçbiri kullanıcıyı rahatsız etmez.</p>
+        <div class="tip">Günlük hayattan benzetme: Oddiss sana "ne oldu, ne yap" diyen resepsiyonistse, para.js arka odada kayıt tutan memurdur.</div>
+      </div>
+      <div class="doc-sec" id="t2"><h2><span class="n">2</span>Neden yapıldı?</h2>
+        <ul><li><b>Sessiz ölümler:</b> Birçok hata kullanıcının ekranında iz bırakmaz; sayfa donar, mesaj gitmez, kimse nedenini bilmez. Yakalanmayan hata, düzeltilmeyen hatadır.</li><li><b>"Bende çalışıyor" sorunu:</b> Geliştiricinin cihazında görünmeyen hata, binlerce farklı tarayıcıda patlar. Gerçek cihazlardan gelen gerçek kayıtlar olmadan hata avı kör dövüşüdür.</li><li><b>Oddiss'in diğer yarısı:</b> Oddiss kullanıcıya kodu gösterir; para.js aynı olayın teknik kaydını ekibe ulaştırır. Destek "91 aldım" dediğinde ekip kaydı bulur — eşleşme bu sayede olur.</li></ul>
+      </div>
+      <div class="doc-sec" id="t3"><h2><span class="n">3</span>Nasıl çalışır?</h2>
+        <div class="flow"><ol>
+          <li><b>Yakala:</b> Hata üç kanaldan birine düşer; para.js anında yakalar.</li>
+          <li><b>Paketle:</b> Hata mesajı, yığın izi (stack), sayfa adresi, tarayıcı bilgisi, kullanıcı kimliği ve bir parmak izi (aynı hataları gruplamak için) tek kayda konur.</li>
+          <li><b>Kuyrukla:</b> Firebase henüz hazır değilse kayıt bekletilir; hazır olunca topluca gönderilir. Hiçbir hata "erken oldu" diye kaybolmaz.</li>
+          <li><b>Çift yaz:</b> Kayıt hem Firestore <code>errors</code> koleksiyonuna hem de <code>/api/log</code> hattına yazılır; biri aksasa diğeri taşır.</li>
+          <li><b>Ekip görür:</b> Kayıtlar hata panelinde toplanır; aynı parmak izli hatalar tek grupta birleşir.</li>
+        </ol></div>
+        <p>Kullanıcı giriş yaptığında kayıtlar o kullanıcıya bağlanır; çıkışıkken gelen hatalar anonim sayılır. Her iki durumda da içerik aynıdır, yalnızca kimlik alanı değişir.</p>
+      </div>
+      <div class="doc-sec" id="t4"><h2><span class="n">4</span>Ekmek kırıntıları (breadcrumbs) nedir?</h2>
+        <p>Hata tek başına "ne oldu?" der ama "oraya nasıl gelindi?" demez. <b>para-addon</b> bu boşluğu doldurur: hatadan önceki son <b>20 olayı</b> (tıklamalar, sayfa geçişleri, başarısız ağ istekleri) ekmek kırıntısı gibi toplar ve hata kaydına ekler.</p>
+        <p>Örnek: "mesaj gönderilemedi" hatasının kırıntıları "kanal seçildi → yazıldı → gönder basıldı → ağ isteği başarısız" diyorsa, ekip sorunun düğmede değil ağ katmanında olduğunu anında bilir. Kırıntılar 20'yi aşınca en eskisi silinir; liste hep taze kalır.</p>
+      </div>
+      <div class="doc-sec" id="t5"><h2><span class="n">5</span>Ne toplar, ne toplamaz?</h2>
+        <table class="mini-table"><thead><tr><th></th><th>Durum</th></tr></thead><tbody>
+          <tr><td class="code">Hata mesajı + yığın izi</td><td>Toplanır (teknik teşhis için)</td></tr>
+          <tr><td class="code">Sayfa adresi, tarayıcı bilgisi</td><td>Toplanır (hangi ortamda olduğunu bulmak için)</td></tr>
+          <tr><td class="code">Kullanıcı kimliği</td><td>Girişliyse toplanır (kaydı hesaba bağlamak için)</td></tr>
+          <tr><td class="code">Tıklama/geçiş kırıntıları (son 20)</td><td>Toplanır (olay öncesi bağlam için)</td></tr>
+          <tr><td class="code">Şifreler, mesaj içerikleri</td><td>Asla toplanmaz</td></tr>
+          <tr><td class="code">Kamera, mikrofon, konum</td><td>Erişilmez, toplanmaz</td></tr>
+        </tbody></table>
+        <p>Kayıtları yalnızca sahibi okuyabilir (Firestore kuralı); güncelleme ve silme tamamen kapalıdır — kayıtlar delil gibi korunur.</p>
+        <div class="warn">Şifreni bir hata mesajının içine yazdıysan (örn. konsola yapıştırdıysan) o metin kayda girebilir. Şifrelerini asla hata kutularına, konsola veya sohbete yazma.</div>
+      </div>
+      <div class="doc-sec" id="t6"><h2><span class="n">6</span>Geliştiriciler için: elle kayıt</h2>
+        <p>Otomatik yakalamanın görmediği yerlerde (örn. yakalanan ama önemli bir hata) kayıt elle bırakılır:</p>
+        <pre class="codeblock"><code>Para.capture(new Error("Oda kodu üretilemedi"), {
+  type: "custom",
+  context: "odaAc"
+});</code></pre>
+        <p><code>type</code> hatanın türünü, <code>context</code> hangi işte olduğunu söyler; kırıntılar otomatik eklenir. Bot ve eklenti geliştiricileri aynı deseni kullanabilir.</p>
+      </div>
+      <div class="doc-sec" id="t7"><h2><span class="n">7</span>Sık sorulan sorular</h2>
+        <ul><li><b>Beni izliyor mu?</b> Hayır. Davranışını değil, uygulamanın hatalarını kaydeder. Ne tıkladığının listesi tutulmaz; yalnızca hata öncesi son 20 teknik olay.</li><li><b>İnternetimi yavaşlatır mı?</b> Hayır. Kayıtlar küçük ve arka planda gönderilir; sohbet akışını etkilemez.</li><li><b>Kapatabilir miyim?</b> Parçası olduğu uygulamadan ayrı bir düğmesi yoktur; kişisel veri toplamadığı için kapatmaya gerek de yoktur.</li><li><b>Kayıtlarım silinir mi?</b> Hata kayıtları teşhis amaçlı saklanır; hesabını silmen durumunda kimlik bağın kopar.</li><li><b>Oddiss kodumla bağlantısı ne?</b> Gördüğün kodun teknik karşılığı para.js kaydında durur. Destek ekibi kodunla kaydı eşleştirir.</li></ul>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="doc-sec" id="e1"><h2><span class="n">1</span>What is para.js?</h2>
+        <p>Para.js is Parax's <b>background error logger</b>: the invisible layer that silently catches an error in the app and reports it to the team. You see nothing; but by then, the error's photograph is already taken.</p>
+        <p>Technically it is a zero-config watcher: it starts with <code>Para.init()</code> the moment the page opens and listens to the browser's three error channels — uncaught errors (<code>onerror</code>), unhandled promise rejections (<code>unhandledrejection</code>), and console error output (<code>console.error</code>). None of them disturb the user.</p>
+        <div class="tip">An everyday analogy: if Oddiss is the receptionist telling you "what happened, what to do", para.js is the clerk filing records in the back room.</div>
+      </div>
+      <div class="doc-sec" id="e2"><h2><span class="n">2</span>Why was it built?</h2>
+        <ul><li><b>Silent deaths:</b> Many errors leave no trace on the user's screen; the page freezes, the message never sends, nobody knows why. An uncaught error is an unfixed error.</li><li><b>The "works on my machine" problem:</b> A bug invisible on the developer's device explodes across thousands of different browsers. Hunting bugs without real records from real devices is a blind fight.</li><li><b>Oddiss's other half:</b> Oddiss shows the user the code; para.js delivers the technical record of the same event to the team. When support hears "I got 91", the team finds the record — the match happens this way.</li></ul>
+      </div>
+      <div class="doc-sec" id="e3"><h2><span class="n">3</span>How does it work?</h2>
+        <div class="flow"><ol>
+          <li><b>Capture:</b> The error lands in one of the three channels; para.js catches it instantly.</li>
+          <li><b>Package:</b> Error message, stack trace, page URL, browser info, user identity, and a fingerprint (to group identical errors) go into one record.</li>
+          <li><b>Queue:</b> If Firebase isn't ready yet, records wait; once ready, they're flushed together. No error is ever lost for being "too early".</li>
+          <li><b>Dual write:</b> The record goes both to the Firestore <code>errors</code> collection and the <code>/api/log</code> pipeline; if one fails, the other carries it.</li>
+          <li><b>Team sees:</b> Records gather in the error panel; errors with the same fingerprint merge into one group.</li>
+        </ol></div>
+        <p>When you're logged in, records attach to your user; errors while logged out count as anonymous. The content is identical either way — only the identity field changes.</p>
+      </div>
+      <div class="doc-sec" id="e4"><h2><span class="n">4</span>What are breadcrumbs?</h2>
+        <p>An error alone says "what happened" but not "how did we get here". <b>para-addon</b> fills that gap: it collects the last <b>20 events</b> before the error (clicks, page navigations, failed network requests) like breadcrumbs and attaches them to the record.</p>
+        <p>Example: if the breadcrumbs of a "message failed to send" error read "channel selected → typed → send pressed → network request failed", the team instantly knows the problem is in the network layer, not the button. Past 20, the oldest crumb is dropped; the list stays fresh.</p>
+      </div>
+      <div class="doc-sec" id="e5"><h2><span class="n">5</span>What does it collect — and not?</h2>
+        <table class="mini-table"><thead><tr><th></th><th>Status</th></tr></thead><tbody>
+          <tr><td class="code">Error message + stack trace</td><td>Collected (for technical diagnosis)</td></tr>
+          <tr><td class="code">Page URL, browser info</td><td>Collected (to find the environment)</td></tr>
+          <tr><td class="code">User identity</td><td>Collected if logged in (to attach the record)</td></tr>
+          <tr><td class="code">Click/navigation crumbs (last 20)</td><td>Collected (for pre-event context)</td></tr>
+          <tr><td class="code">Passwords, message contents</td><td>Never collected</td></tr>
+          <tr><td class="code">Camera, microphone, location</td><td>Never accessed or collected</td></tr>
+        </tbody></table>
+        <p>Records are readable only by their owner (Firestore rule); update and delete are fully closed — records are preserved like evidence.</p>
+        <div class="warn">If you typed your password into an error message (e.g. pasted it into the console), that text can end up in a record. Never type passwords into error boxes, the console, or chat.</div>
+      </div>
+      <div class="doc-sec" id="e6"><h2><span class="n">6</span>For developers: manual capture</h2>
+        <p>Where automatic capture can't see (e.g. a caught but important error), a record is left manually:</p>
+        <pre class="codeblock"><code>Para.capture(new Error("Room code could not be generated"), {
+  type: "custom",
+  context: "odaAc"
+});</code></pre>
+        <p><code>type</code> says the kind of error, <code>context</code> says which job it happened in; breadcrumbs attach automatically. Bot and extension developers can use the same pattern.</p>
+      </div>
+      <div class="doc-sec" id="e7"><h2><span class="n">7</span>FAQ</h2>
+        <ul><li><b>Is it watching me?</b> No. It records the app's errors, not your behavior. No list of what you clicked is kept; only the last 20 technical events before an error.</li><li><b>Does it slow my internet?</b> No. Records are tiny and sent in the background; chat flow is unaffected.</li><li><b>Can I turn it off?</b> It has no separate switch from the app it belongs to; since it collects no personal data, there is no need to.</li><li><b>Are my records deleted?</b> Error records are kept for diagnosis; if you delete your account, the identity link is cut.</li><li><b>How does it relate to my Oddiss code?</b> The technical counterpart of the code you see sits in the para.js record. Support matches your code to the record.</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang") !== lang;
+        });
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+    })();
+  </script>
+</body>
+</html>

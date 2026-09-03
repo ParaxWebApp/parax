@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSS — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .doc-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 90px; }
+    .doc-hero { text-align: center; margin-bottom: 12px; }
+    .doc-hero .back { display: inline-block; margin-bottom: 18px; color: var(--brand); text-decoration: none; font-size: 0.88rem; }
+    .doc-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 10px; }
+    .doc-hero p { color: var(--text-secondary); max-width: 620px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 24px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .faq-search { width: 100%; padding: 12px 16px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); font-size: 0.95rem; margin: 20px 0 6px; }
+    .faq-group { margin: 30px 0 8px; font-size: 1.05rem; color: var(--brand); font-weight: 800; letter-spacing: 0.02em; }
+    details.faq { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); margin-bottom: 10px; }
+    details.faq summary { cursor: pointer; padding: 15px 18px; font-weight: 700; font-size: 0.95rem; list-style: none; }
+    details.faq summary::-webkit-details-marker { display: none; }
+    details.faq summary::before { content: "+ "; color: var(--brand); font-weight: 800; }
+    details.faq[open] summary::before { content: "– "; }
+    details.faq .a { padding: 0 18px 16px; color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7; }
+    details.faq .a a { color: var(--brand); }
+    details.faq .a ol, details.faq .a ul { padding-left: 22px; margin: 8px 0 0; }
+    details.faq .a li { margin-bottom: 6px; }
+    [data-lang][hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="documentation.html">Belgeler</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <div class="doc-wrap">
+    <div class="doc-hero">
+      <a class="back" href="documentation.html">← <span data-lang="tr">Tüm belgeler</span><span data-lang="en" hidden>All docs</span></a>
+      <h1 data-lang="tr">SSS</h1>
+      <h1 data-lang="en" hidden>FAQ</h1>
+      <p data-lang="tr">En sık sorulan sorular ve hızlı cevapları. Aradığını bulamazsan <a href="doc1.html" style="color:var(--brand)">Başlangıç</a> veya <a href="errors.html" style="color:var(--brand)">Oddiss</a> kataloğuna bak.</p>
+      <p data-lang="en" hidden>Frequently asked questions with quick answers. If yours isn't here, check <a href="doc1.html" style="color:var(--brand)">Getting Started</a> or the <a href="errors.html" style="color:var(--brand)">Oddiss</a> catalog.</p>
+    </div>
+
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
+    </div>
+
+    <input id="faq-search" class="faq-search" data-lang="tr" placeholder="Sorunda ara... (ör. şifre, ses, davet)" autocomplete="off" />
+    <input id="faq-search-en" class="faq-search" data-lang="en" hidden placeholder="Search questions... (e.g. password, voice, invite)" autocomplete="off" />
+
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="faq-group">Hesap ve giriş</div>
+      <details class="faq"><summary>Şifremi unuttum, ne yapmalıyım?</summary><div class="a">Giriş sayfasındaki "Forgot password?" bağlantısına bas, e-postanı yaz. Sıfırlama bağlantısı e-postana gelir (gönderen: Parax adına Firebase altyapısı). Bağlantı 1 saat geçerlidir. Spam klasörünü de kontrol et.</div></details>
+      <details class="faq"><summary>Kullanıcı adımı değiştirebilir miyim?</summary><div class="a">Evet. Sol alttaki profil kartındaki dişli simgesine bas, yeni adını yaz. Değişiklik anında kaydedilir ve tüm sunucularda görünür.</div></details>
+      <details class="faq"><summary>Google ile mi, e-posta ile mi girmeliyim?</summary><div class="a">İkisi de aynı hesaba bağlanır (e-posta adresin aynıysa). Google daha hızlıdır ve şifre hatırlaman gerekmez. Hangisini seçersen seç sonradan diğerini de ekleyebilirsin.</div></details>
+      <details class="faq"><summary>Hesabım çalındı, ne yapmalıyım?</summary><div class="a"><ol><li>Hemen şifreni sıfırla.</li><li>Tanımadığın oturumlar için tüm cihazlardan çıkış yap (şifre değişimi bunu tetikler).</li><li>Şifreni isteyen ekranlara bir daha bilgi girme ve durumu destek ekibine bildir.</li></ol></div></details>
+
+      <div class="faq-group">Güvenlik ekranı (Perax)</div>
+      <details class="faq"><summary>Bu güvenlik ekranı da ne? Virüs mü?</summary><div class="a">Hayır, virüs değil. Parax'ın bot koruması (Perax): "Ben bir insanım" kutusunu işaretleyip Devam Et'e basman yeterli. 3 saat geçerlidir. Detaylı anlatım: <a href="doc2.html">Perax Kalkanı</a>.</div></details>
+      <details class="faq"><summary>Neden her girişte çıkıyor?</summary><div class="a">Tarayıcın doğrulama jetonunu saklayamıyor demektir. Gizli sekme kullanıyorsan kapat, çerez ve site verilerine Parax için izin ver.</div></details>
+      <details class="faq"><summary>91 hatası aldım, ne demek?</summary><div class="a">Kalkan seni riskli buldu ve durdurdu. Kutuyu işaretleyip normal tarayıcıyla, VPN'siz dene. Detaylı adımlar: <a href="errors.html#kod-91">Oddiss 91</a>.</div></details>
+
+      <div class="faq-group">Sunucular ve davetler</div>
+      <details class="faq"><summary>Sunucu kodumu nerede bulurum?</summary><div class="a">Sunucu adına tıkla (kanal başlığı üstü): 11 haneli kod ve davet yönetimi oradadır. Kodu kopyalayıp arkadaşlarınla paylaş.</div></details>
+      <details class="faq"><summary>Davet koduyla sunucu kodu farklı mı?</summary><div class="a">Evet. Sunucu kodu sunucunun sabit adresidir (11 hane). Davet kodu, davetli sunuculara giriş bileti gibidir ve yenilenebilir. İkisi de istenirse ikisini de girmen gerekir.</div></details>
+      <details class="faq"><summary>Bir sunucudan nasıl ayrılırım?</summary><div class="a">Sohbet başlığındaki "Leave" düğmesine bas. Ayrılınca üyeliğin silinir; dönmek için koda tekrar ihtiyacın olur.</div></details>
+
+      <div class="faq-group">Mesajlar ve ses</div>
+      <details class="faq"><summary>Mesajlarım gitmiyor, ne yapayım?</summary><div class="a"><ol><li>İnternetini kontrol et, sayfayı yenile.</li><li>Hâlâ gitmiyorsa 1-2 dakika bekle (hız sınırı, kod 111 olabilir).</li><li>Sürerse <a href="errors.html">Oddiss'te</a> gördüğün kodu ara.</li></ol></div></details>
+      <details class="faq"><summary>Avatarlardaki renkli noktalar ne?</summary><div class="a">Çevrimiçi durumu: yeşil çevrimiçi, sarı boşta (3 dakikadır hareketsiz), gri çevrimdışı. Yaklaşık 1,5 dakika gecikmeli güncellenir.</div></details>
+      <details class="faq"><summary>"… yazıyor" ne demek?</summary><div class="a">Aynı kanaldaki biri şu an mesaj yazıyor. 6 saniye içinde bitirmezse gösterge kaybolur.</div></details>
+      <details class="faq"><summary>Ses kanalına girdim ama kimse duymuyor beni</summary><div class="a"><ol><li>Adres çubuğundaki kilit simgesinden mikrofon iznini aç.</li><li>Alttaki yeşil barda mikrofonunun kapalı olmadığını kontrol et.</li><li>Başka sekmede mikrofonu kullanan uygulamayı kapat.</li><li>Sistem genelinde mikrofon çalışıyorsa <a href="errors.html#kod-t111">Oddiss ses kodlarına</a> bak.</li></ol></div></details>
+
+      <div class="faq-group">Hatalar</div>
+      <details class="faq"><summary>77, 91, 111 ne demek?</summary><div class="a">En sık görülen üç kod: 77 bağlantı reddedildi, 91 Perax engeli, 111 çok fazla istek. Üçünün de kartı ve çözümü <a href="errors.html">Oddiss'te</a> en üstte.</div></details>
+      <details class="faq"><summary>Kodumu listede bulamadım</summary><div class="a">Kodun aralığına bak: 1–140 Perax, 141–240 uygulama, 241–280 ağ. Aralığın genel çözümünü uygula; düzelmezse kodu, saati ve ne yaparken aldığını destekle paylaş.</div></details>
+    </div>
+
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="faq-group">Account and login</div>
+      <details class="faq"><summary>I forgot my password, what now?</summary><div class="a">Press "Forgot password?" on the login page and enter your email. The reset link arrives by email (sent via Firebase infrastructure on Parax's behalf). Links last 1 hour. Check spam too.</div></details>
+      <details class="faq"><summary>Can I change my username?</summary><div class="a">Yes. Press the gear on your profile card (bottom left) and type the new name. It saves instantly and shows on all servers.</div></details>
+      <details class="faq"><summary>Google or email login — which one?</summary><div class="a">Both land on the same account (as long as the email matches). Google is faster and needs no password. You can add the other later either way.</div></details>
+      <details class="faq"><summary>My account was stolen, what do I do?</summary><div class="a"><ol><li>Reset your password immediately.</li><li>This signs out unknown sessions on all devices.</li><li>Never enter credentials into password-asking screens again, and tell support.</li></ol></div></details>
+
+      <div class="faq-group">Security screen (Perax)</div>
+      <details class="faq"><summary>What is this security screen? A virus?</summary><div class="a">No virus — it's Parax's bot protection (Perax): tick "I am human" and press Continue. Valid for 3 hours. Full story: <a href="doc2.html">The Perax Shield</a>.</div></details>
+      <details class="faq"><summary>Why does it appear every time?</summary><div class="a">Your browser can't store the verification token. Close incognito mode and allow cookies and site data for Parax.</div></details>
+      <details class="faq"><summary>I got error 91, what does it mean?</summary><div class="a">The shield found you risky and stopped you. Tick the box, use a normal VPN-free browser. Full steps: <a href="errors.html#kod-91">Oddiss 91</a>.</div></details>
+
+      <div class="faq-group">Servers and invites</div>
+      <details class="faq"><summary>Where is my server code?</summary><div class="a">Click the server name (above the channel header): the 11-digit code and invite management live there. Copy and share it.</div></details>
+      <details class="faq"><summary>Are invite codes and server codes different?</summary><div class="a">Yes. The server code is the fixed address (11 digits). The invite code is like an entry ticket for invite-only servers and can be regenerated. If both are asked, enter both.</div></details>
+      <details class="faq"><summary>How do I leave a server?</summary><div class="a">Press "Leave" in the chat header. Leaving deletes your membership; you'll need the code again to return.</div></details>
+
+      <div class="faq-group">Messages and voice</div>
+      <details class="faq"><summary>My messages won't send, what now?</summary><div class="a"><ol><li>Check your internet, refresh the page.</li><li>If it persists, wait a minute or two (rate limit, code 111).</li><li>Still stuck? Look up any code you see in <a href="errors.html">Oddiss</a>.</li></ol></div></details>
+      <details class="faq"><summary>What are the colored dots on avatars?</summary><div class="a">Online status: green online, yellow idle (3 min inactive), gray offline. Updates with about 1.5 min delay.</div></details>
+      <details class="faq"><summary>What does "… is typing" mean?</summary><div class="a">Someone in the same channel is typing right now. It fades if they don't finish within 6 seconds.</div></details>
+      <details class="faq"><summary>I joined voice but nobody hears me</summary><div class="a"><ol><li>Enable microphone permission via the lock icon in the address bar.</li><li>Check your mic isn't muted in the green bar below.</li><li>Close other apps using the mic in another tab.</li><li>If the mic works system-wide, see the <a href="errors.html#kod-t111">Oddiss voice codes</a>.</li></ol></div></details>
+
+      <div class="faq-group">Errors</div>
+      <details class="faq"><summary>What do 77, 91, 111 mean?</summary><div class="a">The three most common codes: 77 connection refused, 91 Perax block, 111 too many requests. All three cards with fixes sit at the top of <a href="errors.html">Oddiss</a>.</div></details>
+      <details class="faq"><summary>My code isn't listed</summary><div class="a">Check its range: 1–140 Perax, 141–240 app, 241–280 network. Apply the range's general fix; if it persists, share the code, time, and what you were doing with support.</div></details>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          if (el.id === "faq-search" || el.id === "faq-search-en") {
+            el.hidden = (lang === "tr" && el.id !== "faq-search") || (lang === "en" && el.id !== "faq-search-en");
+            el.value = "";
+            return;
+          }
+          el.hidden = el.getAttribute("data-lang") !== lang;
+        });
+        document.querySelectorAll("details.faq").forEach(function (d) { d.style.display = ""; d.open = false; });
+        document.querySelectorAll(".faq-group").forEach(function (g) { g.style.display = ""; });
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+      function bindSearch(id, lang) {
+        var input = document.getElementById(id);
+        if (!input) return;
+        var container = document.querySelector('.doc-wrap > div[data-lang="' + lang + '"]:not(.toc)');
+        if (!container) return;
+        input.addEventListener("input", function () {
+          var q = input.value.toLocaleLowerCase(lang);
+          container.querySelectorAll("details.faq").forEach(function (d) {
+            var vis = !q || d.textContent.toLocaleLowerCase(lang).indexOf(q) !== -1;
+            d.style.display = vis ? "" : "none";
+            if (q && vis) d.open = true;
+          });
+          container.querySelectorAll(".faq-group").forEach(function (g) { g.style.display = q ? "none" : ""; });
+        });
+      }
+      bindSearch("faq-search", "tr");
+      bindSearch("faq-search-en", "en");
+    })();
+  </script>
+</body>
+</html>

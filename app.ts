@@ -866,6 +866,7 @@ function panoyuBaslat(): void {
   }
 
   logoutBtn?.addEventListener("click", async () => {
+    presenceDurdur();
     abonelikleriTemizle();
     await auth.signOut();
     window.location.href = "/";
@@ -1308,8 +1309,8 @@ function uyeListesiGoster(members: any[], serverCode: string): void {
       ? `<span class="member-role-dot" style="background:${m.roleColor}"></span>`
       : "";
     return `
-      <div class="member-item" title="${temizle(m.username)}">
-        <div class="member-avatar">${avatarHtml}</div>
+      <div class="member-item" data-uid="${m.userId || ""}" title="${temizle(m.username)}">
+        <div class="member-avatar">${avatarHtml}<span class="presence-dot presence-offline"></span></div>
         <div class="member-info">
           <span class="member-name">${temizle(m.username)}</span>
           <div class="member-role-row">${roleDot}${m.roleName ? `<span class="member-role-label">${temizle(m.roleName)}</span>` : ""}</div>
@@ -1317,6 +1318,7 @@ function uyeListesiGoster(members: any[], serverCode: string): void {
       </div>
     `;
   }).join("");
+  presenceAboneOl(members);
 }
 
 async function kanalButonGuncelle(serverCode: string): Promise<void> {
@@ -1576,12 +1578,150 @@ function gizleModal(id: string): void {
 
 // abonelikleri temizle
 
+// ---- Presence (built-in): online/idle/offline + typing ----
+// Writes live in presence/{uid}. Readers treat lastSeen older than
+// ~90s as offline, so crashes/closed tabs go offline on their own.
+const PRESENCE_CEVRIMICI_MS = 60 * 1000;
+const PRESENCE_IDLE_MS = 3 * 60 * 1000;
+const PRESENCE_NABIZ_MS = 20 * 1000;
+const PRESENCE_YAZIYOR_MS = 6 * 1000;
+
+let presenceUid: string | null = null;
+let presenceNabizTimer: any = null;
+let presenceYaziyorTimer: any = null;
+let presenceSonHareket = 0;
+let presenceAboneKey = "";
+let presenceAboneCikislar: (() => void)[] = [];
+let presenceOnbellek: Record<string, { status?: string; lastSeen?: any; typingIn?: string | null; typingAt?: any }> = {};
+let presenceSonUyeler: any[] = [];
+let presenceHareketDinleyiciler: [keyof WindowEventMap, () => void][] = [];
+
+function presenceBaslat(uid: string): void {
+  if (presenceUid === uid && presenceNabizTimer) return;
+  presenceDurdur();
+  presenceUid = uid;
+  presenceSonHareket = Date.now();
+  const hareket = () => { presenceSonHareket = Date.now(); };
+  presenceHareketDinleyiciler = [["pointerdown", hareket], ["keydown", hareket]];
+  presenceHareketDinleyiciler.forEach(([ev, fn]) => window.addEventListener(ev, fn, { passive: true }));
+  window.addEventListener("beforeunload", presenceCevrimdisiBirak);
+  presenceNabizGonder();
+  presenceNabizTimer = setInterval(presenceNabizGonder, PRESENCE_NABIZ_MS);
+  presenceYaziyorTimer = setInterval(presenceYaziyorGonder, 3000);
+}
+
+function presenceDurdur(): void {
+  if (presenceNabizTimer) { clearInterval(presenceNabizTimer); presenceNabizTimer = null; }
+  if (presenceYaziyorTimer) { clearInterval(presenceYaziyorTimer); presenceYaziyorTimer = null; }
+  presenceHareketDinleyiciler.forEach(([ev, fn]) => window.removeEventListener(ev, fn));
+  presenceHareketDinleyiciler = [];
+  window.removeEventListener("beforeunload", presenceCevrimdisiBirak);
+  presenceUid = null;
+}
+
+function presenceCevrimdisiBirak(): void {
+  if (!presenceUid) return;
+  db.collection("presence").doc(presenceUid).set({ status: "offline", lastSeen: (firebase as any).firestore.FieldValue.serverTimestamp() }, { merge: true }).catch(() => {});
+}
+
+function presenceNabizGonder(): void {
+  if (!presenceUid) return;
+  const idle = Date.now() - presenceSonHareket > PRESENCE_IDLE_MS;
+  db.collection("presence").doc(presenceUid).set({
+    status: idle ? "idle" : "online",
+    lastSeen: (firebase as any).firestore.FieldValue.serverTimestamp(),
+  }, { merge: true }).catch(() => {});
+}
+
+function presenceYaziyorGonder(): void {
+  if (!presenceUid) return;
+  const input = document.getElementById("server-message-input") as HTMLInputElement | null;
+  const yaziyor = !!(input && document.activeElement === input && input.value.trim() && currentChannelId);
+  if (!yaziyor) return;
+  db.collection("presence").doc(presenceUid).set({
+    typingIn: currentChannelId,
+    typingAt: (firebase as any).firestore.FieldValue.serverTimestamp(),
+  }, { merge: true }).catch(() => {});
+}
+
+function presenceAboneOl(members: any[]): void {
+  presenceSonUyeler = members;
+  const uids = [...new Set(members.map((m: any) => m.userId).filter(Boolean))].sort();
+  const key = uids.join(",");
+  if (key !== presenceAboneKey) {
+    presenceAboneCikislar.forEach((u) => { try { u(); } catch {} });
+    presenceAboneCikislar = [];
+    presenceAboneKey = key;
+    uids.forEach((uid: string) => {
+      try {
+        const unsub = db.collection("presence").doc(uid).onSnapshot((snap: any) => {
+          presenceOnbellek[uid] = snap.exists ? snap.data() : {};
+          presenceNoktalariBoyala();
+          presenceYaziyorGoster();
+        }, () => {});
+        presenceAboneCikislar.push(unsub);
+      } catch {}
+    });
+  }
+  presenceNoktalariBoyala();
+  presenceYaziyorGoster();
+}
+
+function presenceYasHesapla(uid: string): number {
+  const ts = presenceOnbellek[uid]?.lastSeen;
+  if (!ts || typeof ts.toMillis !== "function") return Infinity;
+  return Date.now() - ts.toMillis();
+}
+
+function presenceDurum(uid: string): string {
+  if (presenceYasHesapla(uid) > PRESENCE_CEVRIMICI_MS + 30 * 1000) return "offline";
+  return presenceOnbellek[uid]?.status === "idle" ? "idle" : "online";
+}
+
+function presenceNoktalariBoyala(): void {
+  document.querySelectorAll(".member-item[data-uid]").forEach((el) => {
+    const uid = (el as HTMLElement).dataset.uid || "";
+    const dot = el.querySelector(".presence-dot");
+    if (dot) dot.className = "presence-dot presence-" + presenceDurum(uid);
+  });
+}
+
+function presenceYaziyorGoster(): void {
+  let bar = document.getElementById("typing-indicator");
+  if (!bar) {
+    const inputBar = document.querySelector(".chat-input-bar");
+    if (!inputBar || !inputBar.parentElement) return;
+    bar = document.createElement("div");
+    bar.id = "typing-indicator";
+    bar.className = "typing-indicator hidden";
+    inputBar.parentElement.insertBefore(bar, inputBar);
+  }
+  const isimler = presenceSonUyeler
+    .filter((m: any) => m.userId && m.userId !== presenceUid && presenceOnbellek[m.userId])
+    .filter((m: any) => {
+      const e = presenceOnbellek[m.userId];
+      if (!e || e.typingIn !== currentChannelId || e.typingIn == null) return false;
+      const ta = e.typingAt;
+      if (!ta || typeof ta.toMillis !== "function") return false;
+      return Date.now() - ta.toMillis() < PRESENCE_YAZIYOR_MS;
+    })
+    .map((m: any) => m.username || "Biri");
+  if (!isimler.length) { bar.textContent = ""; bar.classList.add("hidden"); return; }
+  bar.classList.remove("hidden");
+  bar.textContent = isimler.length === 1
+    ? `${isimler[0]} yazıyor...`
+    : `${isimler.slice(0, 2).join(", ")}${isimler.length > 2 ? ` ve ${isimler.length - 2} kişi` : ""} yazıyor...`;
+}
+
 function abonelikleriTemizle(): void {
   if (dashboardUnsub) { dashboardUnsub(); dashboardUnsub = null; }
   if (serverChannelsUnsub) { serverChannelsUnsub(); serverChannelsUnsub = null; }
   if (channelMessagesUnsub) { channelMessagesUnsub(); channelMessagesUnsub = null; }
   if (homeRoomsUnsub) { homeRoomsUnsub(); homeRoomsUnsub = null; }
   if (memberListUnsub) { memberListUnsub(); memberListUnsub = null; }
+  presenceAboneCikislar.forEach((u) => { try { u(); } catch {} });
+  presenceAboneCikislar = [];
+  presenceAboneKey = "";
 }
 
 function odaSifreSor(code: string, correctPassword: string): void {}
@@ -1713,6 +1853,7 @@ function oturumDinle(currentPage: string): void {
     }
 
     navBarGuncelle(user);
+    if (user && currentPage === "dashboard.html") presenceBaslat(user.uid);
   });
 }
 

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perax Kalkanı — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .doc-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 90px; }
+    .doc-hero { text-align: center; margin-bottom: 12px; }
+    .doc-hero .back { display: inline-block; margin-bottom: 18px; color: var(--brand); text-decoration: none; font-size: 0.88rem; }
+    .doc-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 10px; }
+    .doc-hero p { color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 24px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .toc { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 20px 24px; margin: 24px 0 12px; }
+    .toc h3 { margin: 0 0 10px; font-size: 1rem; }
+    .toc ol { margin: 0; padding-left: 22px; color: var(--text-secondary); font-size: 0.9rem; }
+    .toc a { color: var(--brand); text-decoration: none; }
+    .doc-sec { margin: 34px 0; }
+    .doc-sec h2 { font-size: 1.45rem; margin-bottom: 10px; }
+    .doc-sec h2 .n { color: var(--brand); margin-right: 8px; }
+    .doc-sec p, .doc-sec li { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+    .doc-sec ol, .doc-sec ul { padding-left: 24px; }
+    .doc-sec li { margin-bottom: 8px; }
+    .flow { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 18px 22px; margin-top: 12px; }
+    .flow ol { margin: 0; padding-left: 22px; }
+    .flow li { margin-bottom: 10px; }
+    .flow code, p code, li code { background: var(--bg-tertiary); border-radius: 6px; padding: 1px 7px; font-size: 0.85em; }
+    .tip { border-left: 3px solid #22c55e; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    .warn { border-left: 3px solid #f0b232; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 12px; }
+    .mini-table th, .mini-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .mini-table th { color: var(--text-muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .mini-table td.code { font-weight: 800; color: var(--brand); white-space: nowrap; }
+    [data-lang][hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="documentation.html">Belgeler</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <div class="doc-wrap">
+    <div class="doc-hero">
+      <a class="back" href="documentation.html">← <span data-lang="tr">Tüm belgeler</span><span data-lang="en" hidden>All docs</span></a>
+      <h1 data-lang="tr">Perax Kalkanı</h1>
+      <h1 data-lang="en" hidden>The Perax Shield</h1>
+      <p data-lang="tr">Parax'ı botlardan ve saldırılardan koruyan güvenlik katmanı: nedir, neden var, 91 koduyla bağı ne ve nasıl kapatılır.</p>
+      <p data-lang="en" hidden>The security layer protecting Parax from bots and attacks: what it is, why it exists, how it relates to code 91, and how to turn it off.</p>
+    </div>
+
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
+    </div>
+
+    <div class="toc" data-lang="tr">
+      <h3>İçindekiler</h3>
+      <ol>
+        <li><a href="#t1">Perax nedir?</a></li>
+        <li><a href="#t2">Neden yapıldı?</a></li>
+        <li><a href="#t3">Nasıl çalışır?</a></li>
+        <li><a href="#t4">91 koduyla bağlantısı</a></li>
+        <li><a href="#t5">Nasıl kapatılır?</a></li>
+        <li><a href="#t6">Sık sorulan sorular</a></li>
+      </ol>
+    </div>
+    <div class="toc" data-lang="en" hidden>
+      <h3>Contents</h3>
+      <ol>
+        <li><a href="#e1">What is Perax?</a></li>
+        <li><a href="#e2">Why was it built?</a></li>
+        <li><a href="#e3">How does it work?</a></li>
+        <li><a href="#e4">Its connection to code 91</a></li>
+        <li><a href="#e5">How to turn it off?</a></li>
+        <li><a href="#e6">FAQ</a></li>
+      </ol>
+    </div>
+
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="doc-sec" id="t1"><h2><span class="n">1</span>Perax nedir?</h2>
+        <p>Perax, Parax'ın girişinde duran güvenlik görevlisidir. Teknik adıyla bir <b>uygulama katmanı kalkanıdır</b> (anti-DDoS, WAF ve insan doğrulama bir arada, şu an v1.2). Cloudflare gibi büyük güvenlik servislerinden ilham alır ama Parax'a özel yazılmıştır: Parax'ın mimarisini, kullanıcılarını ve saldırı yüzeyini tanır.</p>
+        <p>Üç işi vardır:</p>
+        <ul><li><b>İnsan doğrulama:</b> Gerçek ziyaretçiyi botlardan ayırır. Gördüğün "Ben bir insanım" ekranı budur.</li><li><b>Hız sınırlama:</b> Tek bir kaynaktan gelen anormal istek selini keser.</li><li><b>Engelleme listesi:</b> Saldırgan olduğu kanıtlanan adresleri kapıdan çevirir.</li></ul>
+        <div class="tip">Perax şifreni, mesajlarını veya kişisel verilerini görmez; sadece "bu ziyaretçi insan mı, makine mi?" sorusuna cevap verir.</div>
+      </div>
+      <div class="doc-sec" id="t2"><h2><span class="n">2</span>Neden yapıldı?</h2>
+        <p>Parax büyüdükçe üç sorun üst üste geldi:</p>
+        <ul><li><b>Bot akınları:</b> Otomatik hesaplar toplu kayıt açıp sunucuları spam ile dolduruyordu.</li><li><b>Kazıyıcılar:</b> Otomatik programlar herkese açık içerikleri toplayıp sunucuyu yoruyordu.</li><li><b>İstek selleri:</b> Kısa sürede binlerce istek, ücretsiz barındırma katmanının limitlerini zorluyordu; bu hem yavaşlık hem de kapanma riski demekti.</li></ul>
+        <p>Hazır bir güvenlik servisi kiralamak yerine ekip, Parax'a gömülü kendi kalkanını yazdı: küçük, hızlı ve Parax'ın ihtiyaçlarına göre ayarlanabilir. Perax bu yüzden var — kapıda bekleyen fedai, partiyi bölen değil.</p>
+      </div>
+      <div class="doc-sec" id="t3"><h2><span class="n">3</span>Nasıl çalışır?</h2>
+        <p>İlk ziyaretinde şu akış işler:</p>
+        <div class="flow"><ol>
+          <li><b>Kontrol:</b> Tarayıcın ve bağlantın sessizce incelenir (otomatik tarayıcı izleri aranır).</li>
+          <li><b>Onay:</b> "Ben bir insanım" kutusunu işaretleyip Devam Et'e basarsın.</li>
+          <li><b>Jeton:</b> Sunucu sana 3 saat geçerli bir kalkan jetonu verir, tarayıcın saklar.</li>
+          <li><b>Serbest geçiş:</b> 3 saat boyunca kontrol ekranını bir daha görmezsin; her ziyarette jetonun sessizce doğrulanır.</li>
+        </ol></div>
+        <p>Perde arkasında ayrıca dakikada 150 isteği aşan kaynaklar otomatik engellenir ve kanıtlanmış saldırgan adresleri kara listeye alınır. Normal bir kullanıcı bunların hiçbirini fark etmez; sistem yalnızca anormal davranışta devreye girer.</p>
+      </div>
+      <div class="doc-sec" id="t4"><h2><span class="n">4</span>91 koduyla bağlantısı</h2>
+        <p><b>91, Perax'ın "dur" dediği andır.</b> Kalkan, isteğini veya adresini riskli bulduğunda isteği durdurur ve 91 kodunu üretir. Yani 91 bir arıza değil, kalkanın çalıştığının kanıtıdır — ama bazen dürüst kullanıcıları da yakalar.</p>
+        <p>91'i tetikleyen yaygın nedenler:</p>
+        <ul><li>Doğrulama ekranı atlanmaya çalışıldı veya kutu işaretlenmedi.</li><li>Adresin daha önceki bir saldırıdan kara listede kaldı (özellikle ortak/VPN adreslerinde).</li><li>Otomatik yenileme eklentisi, bot veya headless tarayıcı kullanımı.</li><li>Kısa sürede çok fazla istek (bu durumda 111 de eşlik edebilir).</li></ul>
+        <p>Akraba kodlar:</p>
+        <table class="mini-table"><thead><tr><th>Kod</th><th>Anlamı</th></tr></thead><tbody>
+          <tr><td class="code">73</td><td>Kara liste engeli — adresin güvenlik duvarında kayıtlı.</td></tr>
+          <tr><td class="code">111</td><td>Hız sınırı — yavaşla, 1-2 dakika bekle.</td></tr>
+          <tr><td class="code">2</td><td>Kalkan jetonun geçersiz — yeniden doğrula.</td></tr>
+        </tbody></table>
+        <p>91 alırsan yapılacaklar: kutuyu işaretleyip Devam Et'e bas, eklentisiz normal tarayıcı kullan, VPN'i kapatıp dene. Düzelmezse <a href="errors.html#kod-91">Oddiss 91 kartındaki</a> adımları izle ve destekle iletişime geç.</p>
+      </div>
+      <div class="doc-sec" id="t5"><h2><span class="n">5</span>Nasıl kapatılır?</h2>
+        <p>Dürüst cevap: <b>şu an kullanıcıya açık bir kapatma düğmesi yok.</b> Kalkan, herkesi korumak için varsayılan olarak açıktır ve ekip kapatma seçeneği üzerinde çalışıyor. Planlanan davranış şudur: güvenilir cihazların bir kez doğrulanıp uzun süre hatırlanması ve sunucu sahiplerine toplulukları için ayar sunulması.</p>
+        <p>O gün gelene kadar pratikte "kapalı gibi" yaşamanın yolları:</p>
+        <ul><li><b>Bir kez doğrulan:</b> 3 saat boyunca ekranı bir daha görmezsin; düzenli kullanıcılar için bu, kapalıdan farksızdır.</li><li><b>Tarayıcı verilerini koru:</b> Çerez ve site verilerini silmek jetonu da siler, kontrol baştan sorulur. Parax'a izin ver, gizli sekme kullanma.</li><li><b>API kullanıyorsan:</b> <code>/api/</code> yolları kontrol ekranından muaftır; bot ve entegrasyonlar etkilenmez.</li></ul>
+        <div class="warn">İnternette "Perax kapatma" iddiasıyla dolaşan eklenti ve betikler tuzaktır: hesabını çalmak için tasarlanmış olabilir. Kalkanı yalnızca Parax'ın kendi ekranından geç, üçüncü parti araç kurma.</div>
+      </div>
+      <div class="doc-sec" id="t6"><h2><span class="n">6</span>Sık sorulan sorular</h2>
+        <ul><li><b>Bu bir oltalama mı?</b> Hayır — ekran Parax'ın kendi alan adında açılır ve asla şifreni istemez. Şifre isteyen ekran görürsen kapat ve bildir.</li><li><b>Neden her seferinde çıkıyor?</b> Tarayıcın jetonu saklayamıyordur: gizli sekme, çerez engeli veya her kapanışta veri silme ayarı. Ayarları gevşet.</li><li><b>VPN ile girince neden takılıyorum?</b> VPN adresleri yüzlerce kişiyle paylaşılır; biri saldırdıysa adres kirlenir. VPN'siz dene.</li><li><b>Mobilde de var mı?</b> Evet, aynı 3 saatlik kural mobil tarayıcıda da geçerlidir.</li><li><b>3 saat sonra ne olur?</b> Jeton sessizce yenilenir; genelde hiçbir şey fark etmezsin.</li></ul>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="doc-sec" id="e1"><h2><span class="n">1</span>What is Perax?</h2>
+        <p>Perax is the security guard at Parax's door. Technically it is an <b>application-layer shield</b> (anti-DDoS, WAF, and human verification in one, currently v1.2). It takes inspiration from services like Cloudflare but is written specifically for Parax: it knows Parax's architecture, its users, and its attack surface.</p>
+        <p>It has three jobs:</p>
+        <ul><li><b>Human verification:</b> Tells real visitors apart from bots. The "I am human" screen is this.</li><li><b>Rate limiting:</b> Cuts off abnormal floods of requests from a single source.</li><li><b>Blocklist:</b> Turns away addresses proven to be attackers.</li></ul>
+        <div class="tip">Perax never sees your password, messages, or personal data; it only answers "is this visitor human or machine?"</div>
+      </div>
+      <div class="doc-sec" id="e2"><h2><span class="n">2</span>Why was it built?</h2>
+        <p>As Parax grew, three problems piled up:</p>
+        <ul><li><b>Bot raids:</b> Automated accounts mass-registered and flooded servers with spam.</li><li><b>Scrapers:</b> Automated programs harvested public content and exhausted the server.</li><li><b>Request floods:</b> Thousands of requests in seconds strained free-tier hosting limits — meaning slowdowns and outage risk.</li></ul>
+        <p>Instead of renting an off-the-shelf security service, the team wrote its own shield embedded in Parax: small, fast, and tunable to Parax's needs. That is why Perax exists — a bouncer at the door, not a party pooper.</p>
+      </div>
+      <div class="doc-sec" id="e3"><h2><span class="n">3</span>How does it work?</h2>
+        <p>On your first visit, this flow runs:</p>
+        <div class="flow"><ol>
+          <li><b>Check:</b> Your browser and connection are quietly inspected (looking for automation traces).</li>
+          <li><b>Confirm:</b> You tick "I am human" and press Continue.</li>
+          <li><b>Token:</b> The server gives you a shield token valid for 3 hours, stored by your browser.</li>
+          <li><b>Free pass:</b> You won't see the check screen again for 3 hours; each visit silently validates the token.</li>
+        </ol></div>
+        <p>Behind the curtain, sources exceeding 150 requests per minute are auto-blocked and proven attacker addresses join the blocklist. A normal user never notices any of this; the system only steps in on abnormal behavior.</p>
+      </div>
+      <div class="doc-sec" id="e4"><h2><span class="n">4</span>Its connection to code 91</h2>
+        <p><b>91 is the moment Perax says "stop."</b> When the shield finds your request or address risky, it stops the request and produces code 91. So 91 is not a malfunction — it is proof the shield is working — but it sometimes catches honest users too.</p>
+        <p>Common triggers for 91:</p>
+        <ul><li>The verification screen was skipped or the box left unticked.</li><li>Your address stayed on the blocklist from an earlier attack (common on shared/VPN addresses).</li><li>Auto-refresh extensions, bots, or headless browsers.</li><li>Too many requests in a short time (code 111 may accompany it).</li></ul>
+        <p>Related codes:</p>
+        <table class="mini-table"><thead><tr><th>Code</th><th>Meaning</th></tr></thead><tbody>
+          <tr><td class="code">73</td><td>Blocklist hit — your address is on the firewall.</td></tr>
+          <tr><td class="code">111</td><td>Rate limit — slow down, wait a minute or two.</td></tr>
+          <tr><td class="code">2</td><td>Shield token invalid — verify again.</td></tr>
+        </tbody></table>
+        <p>If you get 91: tick the box and press Continue, use a normal extension-free browser, try with VPN off. If it persists, follow the <a href="errors.html#kod-91">Oddiss card for 91</a> and contact support.</p>
+      </div>
+      <div class="doc-sec" id="e5"><h2><span class="n">5</span>How to turn it off?</h2>
+        <p>The honest answer: <b>there is currently no user-facing off switch.</b> The shield is on by default to protect everyone, and the team is working on a disable option. The planned behavior: trusted devices verified once and remembered long-term, plus settings for server owners for their communities.</p>
+        <p>Until then, ways to live as if it were off:</p>
+        <ul><li><b>Verify once:</b> You won't see the screen again for 3 hours; for regular users this is indistinguishable from off.</li><li><b>Keep browser data:</b> Clearing cookies and site data also deletes the token, so the check returns. Allow Parax, avoid incognito.</li><li><b>Using the API?</b> <code>/api/</code> paths are exempt from the check screen; bots and integrations are unaffected.</li></ul>
+        <div class="warn">Extensions and scripts claiming to "disable Perax" are traps: they may be designed to steal your account. Only ever pass the shield on Parax's own screen; never install third-party tools.</div>
+      </div>
+      <div class="doc-sec" id="e6"><h2><span class="n">6</span>FAQ</h2>
+        <ul><li><b>Is this phishing?</b> No — the screen opens on Parax's own domain and never asks for your password. If you ever see a screen asking for it, close it and report it.</li><li><b>Why does it appear every time?</b> Your browser can't store the token: incognito mode, cookie blocking, or wipe-on-close settings. Loosen the settings.</li><li><b>Why do I get stuck on VPN?</b> VPN addresses are shared by hundreds of people; if one attacked, the address is tainted. Try without VPN.</li><li><b>Is it on mobile too?</b> Yes, the same 3-hour rule applies in mobile browsers.</li><li><b>What happens after 3 hours?</b> The token renews silently; you usually notice nothing.</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang") !== lang;
+        });
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+    })();
+  </script>
+</body>
+</html>

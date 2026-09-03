@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oddiss Belgeleme — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .docs-hero { text-align: center; padding: 72px 20px 48px; background: linear-gradient(180deg, rgba(88,101,242,0.16), transparent); border-bottom: 1px solid var(--border); }
+    .docs-hero .kicker { display: inline-block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand); border: 1px solid var(--brand); border-radius: 999px; padding: 6px 18px; margin-bottom: 20px; }
+    .docs-hero h1 { font-size: clamp(2.6rem, 7vw, 4.6rem); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 16px; }
+    .docs-hero p { color: var(--text-secondary); max-width: 620px; margin: 0 auto; font-size: 1.02rem; }
+    .docs-wrap { max-width: 1020px; margin: 0 auto; padding: 44px 20px 80px; }
+    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+    .doc-card { display: block; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 26px; text-decoration: none; color: inherit; transition: transform 0.15s ease, border-color 0.15s ease; }
+    .doc-card:hover { transform: translateY(-3px); border-color: var(--brand); }
+    .doc-card .num { font-size: 0.78rem; font-weight: 700; color: var(--brand); letter-spacing: 0.1em; }
+    .doc-card h2 { margin: 8px 0; font-size: 1.35rem; }
+    .doc-card p { color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 12px; }
+    .doc-card .meta { font-size: 0.78rem; color: var(--text-muted); }
+    .doc-card .go { color: var(--brand); font-weight: 700; font-size: 0.9rem; }
+    .soon-title { margin: 48px 0 16px; font-size: 1.15rem; }
+    .soon-sub { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px; }
+    .doc-card.disabled { opacity: 0.55; cursor: default; }
+    .doc-card.disabled:hover { transform: none; border-color: var(--border); }
+    .soon-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; background: var(--bg-tertiary); border-radius: 999px; padding: 3px 12px; color: var(--text-muted); margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="signup.html">Sign Up</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <header class="docs-hero">
+    <span class="kicker">Parax Belgeleri</span>
+    <h1>Oddiss Belgeleme</h1>
+    <p>Parax'ı öğrenmek için ihtiyacın olan her şey tek çatı altında: hata kodlarından ilk adımlara, kullanma kılavuzlarından güvenlik notlarına.</p>
+  </header>
+
+  <div class="docs-wrap">
+    <div class="docs-grid">
+      <a class="doc-card" href="errors.html">
+        <div class="num">BELGE 01</div>
+        <h2>Oddiss Hata Kodları</h2>
+        <p>77, 91, 111 dahil tüm hata kodları: ne anlama geliyor, ne yapmalısın. Perax, uygulama ve ağ aralıklarıyla tam katalog.</p>
+        <div class="meta">Türkçe · Katalog</div>
+        <div class="go">Oku →</div>
+      </a>
+      <a class="doc-card" href="doc1.html">
+        <div class="num">BELGE 02</div>
+        <h2>Başlangıç</h2>
+        <p>Hesap açmaktan ilk sunucuna, davet kodlarından sesli sohbete: Parax'a başlamak için uzun ve eksiksiz kılavuz.</p>
+        <div class="meta">Türkçe + English · Kılavuz</div>
+        <div class="go">Oku →</div>
+      </a>
+      <a class="doc-card" href="doc2.html">
+        <div class="num">BELGE 03</div>
+        <h2>Perax Kalkanı</h2>
+        <p>Perax nedir, neden yapıldı, 91 koduyla bağı ne ve nasıl kapatılır: güvenlik katmanının uzun anlatımı.</p>
+        <div class="meta">Türkçe + English · Kılavuz</div>
+        <div class="go">Oku →</div>
+      </a>
+      <a class="doc-card" href="doc3.html">
+        <div class="num">BELGE 04</div>
+        <h2>SSS</h2>
+        <p>En sık sorulan sorular ve hızlı cevapları: hesap, güvenlik ekranı, sunucular, ses ve hatalar.</p>
+        <div class="meta">Türkçe + English · SSS</div>
+        <div class="go">Oku →</div>
+      </a>
+      <a class="doc-card" href="doc4.html">
+        <div class="num">BELGE 05</div>
+        <h2>Oddiss Nedir?</h2>
+        <p>Önyüz hata yöneticisi Oddiss'in uzun anlatımı: para.js ile farkı, gizlilik, kod aralıkları ve ne yapman gerektiği.</p>
+        <div class="meta">Türkçe + English · Kılavuz</div>
+        <div class="go">Oku →</div>
+      </a>
+      <a class="doc-card" href="doc5.html">
+        <div class="num">BELGE 06</div>
+        <h2>Perax Translator</h2>
+        <p>Sohbette tek tıkla çeviri: nasıl kullanılır, gizlilik, sınırlar ve yedek mod.</p>
+        <div class="meta">Türkçe + English · Kılavuz</div>
+        <div class="go">Oku →</div>
+      </a>
+      <a class="doc-card" href="doc6.html">
+        <div class="num">BELGE 07</div>
+        <h2>Para.js Nedir?</h2>
+        <p>Arka plan hata günlüğünün uzun anlatımı: ne toplar, Oddiss ile farkı, gizlilik.</p>
+        <div class="meta">Türkçe + English · Kılavuz</div>
+        <div class="go">Oku →</div>
+      </a>
+    </div>
+
+    <h3 class="soon-title">Yakında</h3>
+    <p class="soon-sub">Sıradaki belgeler hazırlanıyor:</p>
+    <div class="docs-grid">
+      <div class="doc-card disabled">
+        <span class="soon-badge">YAKINDA</span>
+        <h2>Sunucu Yönetimi</h2>
+        <p>Roller, davetler, kanallar ve moderasyon: topluluğunu büyütme rehberi.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

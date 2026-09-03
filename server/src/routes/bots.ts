@@ -12,7 +12,7 @@ router.post("/register", verifyToken, async (req: AuthenticatedRequest, res: Res
     const ownerId = req.user?.uid;
 
     if (!name) {
-      res.status(400).json({ error: "Bot name is required" });
+      res.status(400).json({ error: "Bot name is required", code: 211 });
       return;
     }
 
@@ -85,12 +85,12 @@ router.post("/:id/regenerate", verifyToken, async (req: AuthenticatedRequest, re
     const botDoc = await botRef.get();
 
     if (!botDoc.exists) {
-      res.status(404).json({ error: "Bot not found" });
+      res.status(404).json({ error: "Bot not found", code: 212 });
       return;
     }
 
     if (botDoc.data()?.ownerId !== ownerId) {
-      res.status(403).json({ error: "Forbidden: You do not own this bot" });
+      res.status(403).json({ error: "Forbidden: You do not own this bot", code: 213 });
       return;
     }
 
@@ -119,12 +119,12 @@ router.delete("/:id", verifyToken, async (req: AuthenticatedRequest, res: Respon
     const botDoc = await botRef.get();
 
     if (!botDoc.exists) {
-      res.status(404).json({ error: "Bot not found" });
+      res.status(404).json({ error: "Bot not found", code: 212 });
       return;
     }
 
     if (botDoc.data()?.ownerId !== ownerId) {
-      res.status(403).json({ error: "Forbidden: You do not own this bot" });
+      res.status(403).json({ error: "Forbidden: You do not own this bot", code: 213 });
       return;
     }
 

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Başlangıç — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .doc-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 90px; }
+    .doc-hero { text-align: center; margin-bottom: 12px; }
+    .doc-hero .back { display: inline-block; margin-bottom: 18px; color: var(--brand); text-decoration: none; font-size: 0.88rem; }
+    .doc-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 10px; }
+    .doc-hero p { color: var(--text-secondary); max-width: 620px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 24px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .toc { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 20px 24px; margin: 24px 0 12px; }
+    .toc h3 { margin: 0 0 10px; font-size: 1rem; }
+    .toc ol { margin: 0; padding-left: 22px; color: var(--text-secondary); font-size: 0.9rem; }
+    .toc a { color: var(--brand); text-decoration: none; }
+    .doc-sec { margin: 34px 0; }
+    .doc-sec h2 { font-size: 1.45rem; margin-bottom: 10px; }
+    .doc-sec h2 .n { color: var(--brand); margin-right: 8px; }
+    .doc-sec p, .doc-sec li { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+    .doc-sec ol, .doc-sec ul { padding-left: 24px; }
+    .doc-sec li { margin-bottom: 8px; }
+    .tip { border-left: 3px solid #22c55e; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    .warn { border-left: 3px solid #f0b232; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    [data-lang][hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="documentation.html">Belgeler</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <div class="doc-wrap">
+    <div class="doc-hero">
+      <a class="back" href="documentation.html">← <span data-lang="tr">Tüm belgeler</span><span data-lang="en" hidden>All docs</span></a>
+      <h1 data-lang="tr">Başlangıç</h1>
+      <h1 data-lang="en" hidden>Getting Started</h1>
+      <p data-lang="tr">Hesap açmaktan ilk sunucuna: Parax'a başlamak için eksiksiz kılavuz.</p>
+      <p data-lang="en" hidden>From signing up to your first server: the complete guide to getting started with Parax.</p>
+    </div>
+
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
+    </div>
+
+    <div class="toc" data-lang="tr">
+      <h3>İçindekiler</h3>
+      <ol>
+        <li><a href="#t1">Hesap oluştur</a></li>
+        <li><a href="#t2">Giriş yap</a></li>
+        <li><a href="#t3">Panel turu</a></li>
+        <li><a href="#t4">İlk sunucunu kur</a></li>
+        <li><a href="#t5">Davet koduyla katıl</a></li>
+        <li><a href="#t6">Kanal aç</a></li>
+        <li><a href="#t7">Mesajlaş</a></li>
+        <li><a href="#t8">DM ve arkadaşlar</a></li>
+        <li><a href="#t9">Sesli sohbet</a></li>
+        <li><a href="#t10">Profil ve ayarlar</a></li>
+        <li><a href="#t11">Güvenlik kontrolü</a></li>
+        <li><a href="#t12">Sorun giderme</a></li>
+      </ol>
+    </div>
+    <div class="toc" data-lang="en" hidden>
+      <h3>Contents</h3>
+      <ol>
+        <li><a href="#e1">Create an account</a></li>
+        <li><a href="#e2">Log in</a></li>
+        <li><a href="#e3">Dashboard tour</a></li>
+        <li><a href="#e4">Create your first server</a></li>
+        <li><a href="#e5">Join with an invite code</a></li>
+        <li><a href="#e6">Create a channel</a></li>
+        <li><a href="#e7">Chat</a></li>
+        <li><a href="#e8">DMs and friends</a></li>
+        <li><a href="#e9">Voice chat</a></li>
+        <li><a href="#e10">Profile and settings</a></li>
+        <li><a href="#e11">Security check</a></li>
+        <li><a href="#e12">Troubleshooting</a></li>
+      </ol>
+    </div>
+
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="doc-sec" id="t1"><h2><span class="n">1</span>Hesap oluştur</h2>
+        <ol><li><b>Sign Up</b> sayfasına git.</li><li>Kullanıcı adı, e-posta ve en az 6 karakterli bir şifre seç.</li><li>İstersen Google ile tek tıkla kaydol.</li><li>Hesabın anında açılır, panele yönlendirilirsin.</li></ol>
+        <div class="tip">Kullanıcı adını sonra ayarlardan değiştirebilirsin, acele etme.</div>
+      </div>
+      <div class="doc-sec" id="t2"><h2><span class="n">2</span>Giriş yap</h2>
+        <ol><li><b>Log In</b> sayfasına git.</li><li>E-postanı ve şifreni yaz veya Google ile devam et.</li><li>"Remember me" kutusu bu cihazda oturumu açık tutar.</li><li>Şifreni unuttuysan "Forgot password?" bağlantısını kullan.</li></ol>
+      </div>
+      <div class="doc-sec" id="t3"><h2><span class="n">3</span>Panel turu</h2>
+        <ul><li><b>Sol şerit:</b> sunucuların. + ile yeni sunucu kurar, kod simgesiyle katılırsın.</li><li><b>Yan panel:</b> seçili sunucunun metin ve ses kanalları.</li><li><b>Orta alan:</b> sohbet. Üstte kanal adı, altta mesaj kutusu.</li><li><b>Sağ panel:</b> üye listesi; renkli nokta çevrimiçi durumunu gösterir (yeşil çevrimiçi, sarı boşta, gri çevrimdışı).</li></ul>
+      </div>
+      <div class="doc-sec" id="t4"><h2><span class="n">4</span>İlk sunucunu kur</h2>
+        <ol><li>Sol şeritteki <b>+</b> düğmesine bas.</li><li>Sunucuna bir ad ver (örn. "Sınıf 9-A").</li><li>Oluştur'a bas: sunucun 11 haneli bir kod alır.</li><li>Bu kodu arkadaşlarınla paylaş, sana katılsınlar.</li></ol>
+        <div class="tip">Kurduğun sunucunun sahibi sensin: kanal açabilir, rol verebilir, üye çıkarabilirsin.</div>
+      </div>
+      <div class="doc-sec" id="t5"><h2><span class="n">5</span>Davet koduyla katıl</h2>
+        <ol><li>Katıl düğmesine bas.</li><li>11 haneli sunucu kodunu yaz.</li><li>Sunucu davetliyse ayrıca davet kodunu gir.</li><li>Katıl'a bas, kanallar açılır.</li></ol>
+      </div>
+      <div class="doc-sec" id="t6"><h2><span class="n">6</span>Kanal aç</h2>
+        <ol><li>Sohbet başlığındaki <b>+ Channel</b> düğmesine bas.</li><li>Ad yaz (örn. "genel", "ödevler").</li><li><b>Metin</b> veya <b>Ses</b> tipini seç.</li><li>Oluştur: kanal listede belirir.</li></ol>
+      </div>
+      <div class="doc-sec" id="t7"><h2><span class="n">7</span>Mesajlaş</h2>
+        <ul><li>Alttaki kutuya yaz, <b>Send</b> veya Enter ile gönder.</li><li>Mesajlar anında herkese ulaşır, yenilemene gerek yok.</li><li>Kendi mesajını düzenleyip silebilirsin.</li><li>Biri yazarken kanalın üstünde "… yazıyor" görünür.</li></ul>
+      </div>
+      <div class="doc-sec" id="t8"><h2><span class="n">8</span>DM ve arkadaşlar</h2>
+        <ol><li>Üstteki <b>Friends</b> simgesine bas.</li><li>Arkadaşını kullanıcı adıyla bulup ekle.</li><li><b>DM</b> simgesiyle özel sohbet başlat.</li></ol>
+      </div>
+      <div class="doc-sec" id="t9"><h2><span class="n">9</span>Sesli sohbet</h2>
+        <ol><li>Kenar çubuğunda hoparlör simgeli bir <b>ses kanalına</b> tıkla.</li><li>Mikrofon izni isteyince <b>İzin Ver</b>'e bas.</li><li>Alttaki yeşil barda sesini kapatıp açabilir, ayrılabilirsin.</li></ol>
+        <div class="warn">Mikrofon çalışmazsa: tarayıcı adres çubuğundaki kilit simgesinden mikrofon iznini kontrol et. Hata sürerse <a href="errors.html#kod-t111">Oddiss kodlarına</a> bak.</div>
+      </div>
+      <div class="doc-sec" id="t10"><h2><span class="n">10</span>Profil ve ayarlar</h2>
+        <ol><li>Sol alttaki profil kartındaki dişli simgesine bas.</li><li>Kullanıcı adını ve profil fotoğrafını güncelle.</li><li>Değişiklikler anında kaydedilir.</li></ol>
+      </div>
+      <div class="doc-sec" id="t11"><h2><span class="n">11</span>Güvenlik kontrolü</h2>
+        <p>İlk ziyaretinde <b>Parax Güvenlik</b> ekranı çıkar: "Ben bir insanım" kutusunu işaretleyip Devam Et'e bas. Bu, botlara karşı koruma içindir ve 3 saat geçerlidir. Bu ekran Parax'ın kendisindendir; şifreni asla istemez.</p>
+      </div>
+      <div class="doc-sec" id="t12"><h2><span class="n">12</span>Sorun giderme</h2>
+        <ul><li>Mesajlar gelmiyor mu? Sayfayı yenile, internetini kontrol et.</li><li>Giriş yapamıyor musun? Şifreni sıfırla, gizli sekmede dene.</li><li>Bir hata kodu gördün mü? <a href="errors.html">Oddiss kataloğunda</a> ara (77, 91, 111 en sık görülenlerdir).</li></ul>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="doc-sec" id="e1"><h2><span class="n">1</span>Create an account</h2>
+        <ol><li>Go to the <b>Sign Up</b> page.</li><li>Pick a username, email, and a password of at least 6 characters.</li><li>Or sign up in one click with Google.</li><li>Your account opens instantly and you land on the dashboard.</li></ol>
+        <div class="tip">You can change your username later in settings, no rush.</div>
+      </div>
+      <div class="doc-sec" id="e2"><h2><span class="n">2</span>Log in</h2>
+        <ol><li>Go to the <b>Log In</b> page.</li><li>Enter your email and password, or continue with Google.</li><li>"Remember me" keeps you signed in on this device.</li><li>Forgot your password? Use the "Forgot password?" link.</li></ol>
+      </div>
+      <div class="doc-sec" id="e3"><h2><span class="n">3</span>Dashboard tour</h2>
+        <ul><li><b>Left rail:</b> your servers. + creates, the code icon joins.</li><li><b>Side panel:</b> the selected server's text and voice channels.</li><li><b>Center:</b> chat. Channel name on top, message box below.</li><li><b>Right panel:</b> member list; the colored dot shows status (green online, yellow idle, gray offline).</li></ul>
+      </div>
+      <div class="doc-sec" id="e4"><h2><span class="n">4</span>Create your first server</h2>
+        <ol><li>Press <b>+</b> in the left rail.</li><li>Name it (e.g. "Class 9-A").</li><li>Hit Create: your server gets an 11-digit code.</li><li>Share the code so friends can join.</li></ol>
+        <div class="tip">You own servers you create: open channels, assign roles, remove members.</div>
+      </div>
+      <div class="doc-sec" id="e5"><h2><span class="n">5</span>Join with an invite code</h2>
+        <ol><li>Press the join button.</li><li>Type the 11-digit server code.</li><li>If the server is invite-only, enter the invite code too.</li><li>Hit Join and the channels open up.</li></ol>
+      </div>
+      <div class="doc-sec" id="e6"><h2><span class="n">6</span>Create a channel</h2>
+        <ol><li>Press <b>+ Channel</b> in the chat header.</li><li>Name it (e.g. "general", "homework").</li><li>Pick <b>Text</b> or <b>Voice</b>.</li><li>Create: the channel appears in the list.</li></ol>
+      </div>
+      <div class="doc-sec" id="e7"><h2><span class="n">7</span>Chat</h2>
+        <ul><li>Type in the box below, send with <b>Send</b> or Enter.</li><li>Messages arrive instantly, no refresh needed.</li><li>You can edit and delete your own messages.</li><li>While someone types, you'll see "… is typing" above.</li></ul>
+      </div>
+      <div class="doc-sec" id="e8"><h2><span class="n">8</span>DMs and friends</h2>
+        <ol><li>Press the <b>Friends</b> icon up top.</li><li>Find your friend by username and add them.</li><li>Start a private chat with the <b>DM</b> icon.</li></ol>
+      </div>
+      <div class="doc-sec" id="e9"><h2><span class="n">9</span>Voice chat</h2>
+        <ol><li>Click a <b>voice channel</b> (speaker icon) in the sidebar.</li><li>When asked, press <b>Allow</b> for the microphone.</li><li>Use the green bar below to mute or leave.</li></ol>
+        <div class="warn">Mic not working? Check microphone permission via the lock icon in the address bar. Still stuck? See the <a href="errors.html#kod-t111">Oddiss codes</a>.</div>
+      </div>
+      <div class="doc-sec" id="e10"><h2><span class="n">10</span>Profile and settings</h2>
+        <ol><li>Press the gear on your profile card (bottom left).</li><li>Update your username and photo.</li><li>Changes save instantly.</li></ol>
+      </div>
+      <div class="doc-sec" id="e11"><h2><span class="n">11</span>Security check</h2>
+        <p>On your first visit you'll see the <b>Parax Security</b> screen: tick "I am human" and press Continue. It keeps bots out and lasts 3 hours. The screen is part of Parax itself; it never asks for your password.</p>
+      </div>
+      <div class="doc-sec" id="e12"><h2><span class="n">12</span>Troubleshooting</h2>
+        <ul><li>No messages arriving? Refresh, check your internet.</li><li>Can't log in? Reset your password, try an incognito window.</li><li>See an error code? Look it up in the <a href="errors.html">Oddiss catalog</a> (77, 91, 111 are the most common).</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang") !== lang;
+        });
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+    })();
+  </script>
+</body>
+</html>

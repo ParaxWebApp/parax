@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oddiss Nedir? — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .doc-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 90px; }
+    .doc-hero { text-align: center; margin-bottom: 12px; }
+    .doc-hero .back { display: inline-block; margin-bottom: 18px; color: var(--brand); text-decoration: none; font-size: 0.88rem; }
+    .doc-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 10px; }
+    .doc-hero p { color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 24px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .toc { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 20px 24px; margin: 24px 0 12px; }
+    .toc h3 { margin: 0 0 10px; font-size: 1rem; }
+    .toc ol { margin: 0; padding-left: 22px; color: var(--text-secondary); font-size: 0.9rem; }
+    .toc a { color: var(--brand); text-decoration: none; }
+    .doc-sec { margin: 34px 0; }
+    .doc-sec h2 { font-size: 1.45rem; margin-bottom: 10px; }
+    .doc-sec h2 .n { color: var(--brand); margin-right: 8px; }
+    .doc-sec p, .doc-sec li { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+    .doc-sec ol, .doc-sec ul { padding-left: 24px; }
+    .doc-sec li { margin-bottom: 8px; }
+    .flow { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 18px 22px; margin-top: 12px; }
+    .flow ol { margin: 0; padding-left: 22px; }
+    .flow li { margin-bottom: 10px; }
+    .flow code, p code, li code { background: var(--bg-tertiary); border-radius: 6px; padding: 1px 7px; font-size: 0.85em; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 12px; }
+    .mini-table th, .mini-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .mini-table th { color: var(--text-muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .mini-table td.code { font-weight: 800; color: var(--brand); white-space: nowrap; }
+    .tip { border-left: 3px solid #22c55e; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    .warn { border-left: 3px solid #f0b232; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    [data-lang][hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="documentation.html">Belgeler</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <div class="doc-wrap">
+    <div class="doc-hero">
+      <a class="back" href="documentation.html">← <span data-lang="tr">Tüm belgeler</span><span data-lang="en" hidden>All docs</span></a>
+      <h1 data-lang="tr">Oddiss Nedir?</h1>
+      <h1 data-lang="en" hidden>What Is Oddiss?</h1>
+      <p data-lang="tr">Parax'ın önyüz hata yöneticisi: nedir, neden yapıldı, internetine ve verilerine dokunur mu, para.js ile farkı ne?</p>
+      <p data-lang="en" hidden>Parax's frontend error handler: what it is, why it was built, whether it touches your internet or data, and how it differs from para.js.</p>
+    </div>
+
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
+    </div>
+
+    <div class="toc" data-lang="tr">
+      <h3>İçindekiler</h3>
+      <ol>
+        <li><a href="#t1">Oddiss nedir?</a></li>
+        <li><a href="#t2">Oddiss ve para.js farkı</a></li>
+        <li><a href="#t3">Neden yapıldı?</a></li>
+        <li><a href="#t4">Nasıl çalışır?</a></li>
+        <li><a href="#t5">İnternetime veya verilerime dokunur mu?</a></li>
+        <li><a href="#t6">Kod aralıkları ne anlama gelir?</a></li>
+        <li><a href="#t7">Hata alınca ne yapmalıyım?</a></li>
+        <li><a href="#t8">Sık sorulan sorular</a></li>
+      </ol>
+    </div>
+    <div class="toc" data-lang="en" hidden>
+      <h3>Contents</h3>
+      <ol>
+        <li><a href="#e1">What is Oddiss?</a></li>
+        <li><a href="#e2">Oddiss vs para.js</a></li>
+        <li><a href="#e3">Why was it built?</a></li>
+        <li><a href="#e4">How does it work?</a></li>
+        <li><a href="#e5">Does it touch my internet or data?</a></li>
+        <li><a href="#e6">What do the code ranges mean?</a></li>
+        <li><a href="#e7">What should I do when I get an error?</a></li>
+        <li><a href="#e8">FAQ</a></li>
+      </ol>
+    </div>
+
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="doc-sec" id="t1"><h2><span class="n">1</span>Oddiss nedir?</h2>
+        <p>Oddiss, Parax'ın <b>önyüz hata yöneticisidir</b>: bir şeyler ters gittiğinde sana ne olduğunu insan dilinde söyleyen katmandır. Her hataya bir <b>kod</b> verir (77, 91, 111 gibi), her kodun anlamını ve çözümünü <a href="errors.html">Oddiss kataloğunda</a> açıklar.</p>
+        <p>Şöyle düşün: uygulamada bir sorun çıktığında eskiden ekranda ya hiçbir şey yazmazdı ya da "Internal Server Error" gibi kimseye bir şey ifade etmeyen bir yazı çıkardı. Oddiss bunun yerine "91 — Perax engeli, şunu yap" der. Yani Oddiss, hatayla senin aranda tercümanlık yapar.</p>
+        <div class="tip">Oddiss bir antivirüs, VPN veya hızlandırıcı değildir. İnternetini değiştirmez, hızlandırmaz, yavaşlatmaz; sadece hataları anlamlandırır.</div>
+      </div>
+      <div class="doc-sec" id="t2"><h2><span class="n">2</span>Oddiss ve para.js farkı</h2>
+        <p>Parax'ta iki ayrı hata sistemi vardır ve rolleri terstir:</p>
+        <table class="mini-table"><thead><tr><th></th><th>Oddiss</th><th>para.js</th></tr></thead><tbody>
+          <tr><td class="code">Rol</td><td>Önyüz: kullanıcıya gösterir</td><td>Arka plan: ekibe kaydeder</td></tr>
+          <tr><td class="code">Görünürlük</td><td>Görünür: kodlar, kartlar, katalog</td><td>Görünmez: sessizce çalışır</td></tr>
+          <tr><td class="code">Kime yarar</td><td>Sana: ne yapacağını bilirsin</td><td>Ekibe: hatayı bulup düzeltir</td></tr>
+          <tr><td class="code">Örnek</td><td>"91 — Perax engeli, kutuyu işaretle"</td><td>Hata kaydı Firestore <code>errors</code> koleksiyonuna düşer</td></tr>
+        </tbody></table>
+        <p>İkisi birlikte çalışır: para.js hatayı arka planda günlüğe yazar (ekip görür), Oddiss aynı hatayı sana anlaşılır şekilde gösterir (sen çözersin). Biri diğerinin yerine geçmez.</p>
+      </div>
+      <div class="doc-sec" id="t3"><h2><span class="n">3</span>Neden yapıldı?</h2>
+        <ul><li><b>Anlaşılmaz hatalar:</b> Kullanıcılar "bir şey oldu" ekranıyla baş başa kalıyordu; destek kutusu aynı sorunun on farklı anlatımıyla doluyordu.</li><li><b>Tekrar eden üç soru:</b> 77 (bağlanamıyorum), 91 (engellendim), 111 (çok hızlı tıkladım?) sürekli soruluyordu. Kod + katalog, bu üç cevabı tek linke indirdi.</li><li><b>Şeffaflık:</b> Hata kodu veren uygulama, hatasını sahiplenen uygulamadır. Oddiss, "bizde de logu var, sende de kodu var" diyen bir sözleşmedir: aynı kodla destek ekibiyle aynı dili konuşursun.</li><li><b>Hız:</b> Kodunu bilen kullanıcı çözümü kendi bulur; destek beklemez.</li></ul>
+      </div>
+      <div class="doc-sec" id="t4"><h2><span class="n">4</span>Nasıl çalışır?</h2>
+        <div class="flow"><ol>
+          <li><b>Bir şey olur:</b> Sunucu isteğini reddeder, hız sınırı devreye girer veya bağlantı kopar.</li>
+          <li><b>Kod üretilir:</b> Sunucu yanıtına <code>code</code> alanını ekler (örn. <code>{"error": "...", "code": 91}</code>) ya da istemci durumu kendisi tespit eder (77, 244 gibi).</li>
+          <li><b>Sen görürsün:</b> Uygulama kodu ve kısa açıklamayı gösterir.</li>
+          <li><b>Katalog anlatır:</b> <a href="errors.html">Oddiss kataloğunda</a> kodunu aratır, nedenini ve adım adım çözümü okursun.</li>
+        </ol></div>
+        <p>Kodlar rastgele değildir; aralıklar anlam taşır (bkz. 6. bölüm). Sunucu döndüremediği kodları (77 gibi) istemci kendisi belgeler — katalog her iki dünyayı da kapsar.</p>
+      </div>
+      <div class="doc-sec" id="t5"><h2><span class="n">5</span>İnternetime veya verilerime dokunur mu?</h2>
+        <p>Kısa cevap: <b>hayır.</b> Uzun cevap, madde madde:</p>
+        <ul><li><b>İnternetini değiştirmez:</b> Oddiss bir ağ aracı değildir. Bağlantını hızlandırmaz, yavaşlatmaz, yönlendirmez, VPN gibi davranmaz. Katalog sayfasını açmak dışında ekstra ağ isteği yapmaz.</li><li><b>Tarayıcı verilerini okumaz:</b> Çerezlerine, geçmişine, sekmelerine, kayıtlı şifrelerine erişmez ve erişemez; böyle bir kod içermez.</li><li><b>Bir şey yüklemez:</b> Oddiss sana dosya indirmez, arka planda program çalıştırmaz, ayar değiştirmez.</li><li><b>Sakladığı tek şey:</b> Belge sayfalarındaki dil tercihin (Türkçe/English), sadece kendi cihazında, tarayıcının yerel deposunda tutulur. İstersen site verilerini temizleyerek silebilirsin; hiçbir yere gönderilmez.</li></ul>
+        <div class="warn">Karıştırma: <b>Perax</b> kalkanı doğrulama için tarayıcında 3 saatlik bir jeton saklar — bu, Oddiss değil Perax'ın işidir ve <a href="doc2.html">Perax belgesinde</a> anlatılır. Oddiss'in kendisi iz bırakmaz.</div>
+      </div>
+      <div class="doc-sec" id="t6"><h2><span class="n">6</span>Kod aralıkları ne anlama gelir?</h2>
+        <table class="mini-table"><thead><tr><th>Aralık</th><th>Sahibi</th><th>Örnek</th></tr></thead><tbody>
+          <tr><td class="code">1–140</td><td>Perax kalkanı: doğrulama, jeton, hız sınırı, engeller</td><td>2 (jeton geçersiz), 91 (engellendin), 111 (yavaşla)</td></tr>
+          <tr><td class="code">141–240</td><td>Uygulama sunucusu: giriş, ses, botlar, kayıtlar</td><td>141 (giriş geçersiz), 191 (ses jetonu yok), 212 (bot yok)</td></tr>
+          <tr><td class="code">241–280</td><td>Ağ ve bağlantı: cihazınla sunucu arası</td><td>244 (çevrimdışısın), 77 (bağlantı reddedildi)</td></tr>
+        </tbody></table>
+        <p>Kodunu listede bulamazsan aralığın genel çözümünü uygula; düzelmezse kodu, saati ve ne yaparken aldığını destekle paylaş.</p>
+      </div>
+      <div class="doc-sec" id="t7"><h2><span class="n">7</span>Hata alınca ne yapmalıyım?</h2>
+        <ol><li><b>Kodu not et:</b> Ekran görüntüsü al veya numarayı yaz (örn. 91).</li><li><b>Katalogda ara:</b> <a href="errors.html">Oddiss kataloğunda</a> kodu bul, çözüm adımlarını sırayla uygula.</li><li><b>Bir kez tekrar dene:</b> Çoğu hata (111, 244) bekleyip yenileyince geçer.</li><li><b>Bildir:</b> Düzelmezse kodu + saati + ne yaparken aldığını destekle paylaş. para.js günlüğü sayesinde ekip kaydını zaten görebilir.</li></ol>
+      </div>
+      <div class="doc-sec" id="t8"><h2><span class="n">8</span>Sık sorulan sorular</h2>
+        <ul><li><b>Oddiss virüs mü?</b> Hayır. Ne kurulum ister, ne arka planda çalışır, ne veri toplar. Bir belgelendirme ve kod sistemidir.</li><li><b>Kodumu herkes görebilir mi?</b> Kodu yalnızca sen görürsün; başkasıyla paylaşmadıkça kimse bilmez.</li><li><b>Kodlar değişir mi?</b> Tanımlı kodlar sabittir; 112–114 gibi rezerve kodlar ileride tanımlanabilir, katalog güncellenir.</li><li><b>para.js'yi kapatabilir miyim?</b> Arka plan günlüğü uygulamanın parçasıdır ve kişisel veri toplamaz; kapatma düğmesi yoktur.</li><li><b>Destek neden kod soruyor?</b> Çünkü kod, sorunun tam adresidir: aynı kod, ekibin kaydıyla birebir eşleşir ve çözüm dakikalar içinde bulunur.</li></ul>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="doc-sec" id="e1"><h2><span class="n">1</span>What is Oddiss?</h2>
+        <p>Oddiss is Parax's <b>frontend error handler</b>: the layer that tells you in human language when something goes wrong. Every error gets a <b>code</b> (like 77, 91, 111), and every code's meaning and fix lives in the <a href="errors.html">Oddiss catalog</a>.</p>
+        <p>Think of it this way: when something broke, screens used to show either nothing or a meaningless "Internal Server Error". Oddiss instead says "91 — Perax block, do this". It translates between the error and you.</p>
+        <div class="tip">Oddiss is not an antivirus, VPN, or booster. It doesn't change, speed up, or slow down your internet; it only makes errors understandable.</div>
+      </div>
+      <div class="doc-sec" id="e2"><h2><span class="n">2</span>Oddiss vs para.js</h2>
+        <p>Parax has two separate error systems with opposite roles:</p>
+        <table class="mini-table"><thead><tr><th></th><th>Oddiss</th><th>para.js</th></tr></thead><tbody>
+          <tr><td class="code">Role</td><td>Frontend: shows to you</td><td>Background: logs for the team</td></tr>
+          <tr><td class="code">Visibility</td><td>Visible: codes, cards, catalog</td><td>Invisible: runs silently</td></tr>
+          <tr><td class="code">Helps</td><td>You: you know what to do</td><td>The team: they find and fix the bug</td></tr>
+          <tr><td class="code">Example</td><td>"91 — Perax block, tick the box"</td><td>Error record lands in the Firestore <code>errors</code> collection</td></tr>
+        </tbody></table>
+        <p>They work together: para.js logs the error in the background (the team sees it) while Oddiss shows the same error to you understandably (you solve it). Neither replaces the other.</p>
+      </div>
+      <div class="doc-sec" id="e3"><h2><span class="n">3</span>Why was it built?</h2>
+        <ul><li><b>Cryptic errors:</b> Users were left staring at "something happened" screens; support received the same problem described ten different ways.</li><li><b>The same three questions:</b> 77 (can't connect), 91 (blocked), 111 (clicked too fast?) kept coming up. Code + catalog compresses all three answers into one link.</li><li><b>Transparency:</b> An app that gives error codes owns its errors. Oddiss is a contract saying "we have the log, you have the code" — you and support speak the same language.</li><li><b>Speed:</b> A user who knows their code finds the fix alone; no waiting on support.</li></ul>
+      </div>
+      <div class="doc-sec" id="e4"><h2><span class="n">4</span>How does it work?</h2>
+        <div class="flow"><ol>
+          <li><b>Something happens:</b> The server rejects a request, a rate limit trips, or the connection drops.</li>
+          <li><b>A code is produced:</b> The server adds a <code>code</code> field to its response (e.g. <code>{"error": "...", "code": 91}</code>), or the client detects the condition itself (like 77, 244).</li>
+          <li><b>You see it:</b> The app shows the code with a short explanation.</li>
+          <li><b>The catalog explains:</b> You look the code up in the <a href="errors.html">Oddiss catalog</a> and follow the step-by-step fix.</li>
+        </ol></div>
+        <p>Codes aren't random; ranges carry meaning (see section 6). Codes the server cannot return (like 77) are documented client-side — the catalog covers both worlds.</p>
+      </div>
+      <div class="doc-sec" id="e5"><h2><span class="n">5</span>Does it touch my internet or data?</h2>
+        <p>Short answer: <b>no.</b> Long answer, point by point:</p>
+        <ul><li><b>Doesn't change your internet:</b> Oddiss is not a network tool. It doesn't speed up, slow down, reroute, or VPN your connection. It makes no extra network requests beyond loading the catalog page.</li><li><b>Doesn't read browser data:</b> No access to your cookies, history, tabs, or saved passwords — and it contains no such code.</li><li><b>Installs nothing:</b> Oddiss downloads no files to you, runs no background programs, changes no settings.</li><li><b>The only thing it stores:</b> Your language choice on doc pages (Türkçe/English), kept only on your own device in the browser's local storage. You can erase it by clearing site data; it is never sent anywhere.</li></ul>
+        <div class="warn">Don't confuse: the <b>Perax</b> shield keeps a 3-hour token in your browser for verification — that is Perax's job, not Oddiss's, and it's covered in the <a href="doc2.html">Perax doc</a>. Oddiss itself leaves no trace.</div>
+      </div>
+      <div class="doc-sec" id="e6"><h2><span class="n">6</span>What do the code ranges mean?</h2>
+        <table class="mini-table"><thead><tr><th>Range</th><th>Owner</th><th>Example</th></tr></thead><tbody>
+          <tr><td class="code">1–140</td><td>Perax shield: verification, tokens, rate limits, blocks</td><td>2 (token invalid), 91 (blocked), 111 (slow down)</td></tr>
+          <tr><td class="code">141–240</td><td>App server: login, voice, bots, logs</td><td>141 (login invalid), 191 (no voice token), 212 (no bot)</td></tr>
+          <tr><td class="code">241–280</td><td>Network: between your device and the server</td><td>244 (you're offline), 77 (connection refused)</td></tr>
+        </tbody></table>
+        <p>Can't find your code? Apply the range's general fix; if it persists, share the code, the time, and what you were doing with support.</p>
+      </div>
+      <div class="doc-sec" id="e7"><h2><span class="n">7</span>What should I do when I get an error?</h2>
+        <ol><li><b>Note the code:</b> Screenshot it or write the number down (e.g. 91).</li><li><b>Look it up:</b> Find it in the <a href="errors.html">Oddiss catalog</a> and follow the steps in order.</li><li><b>Retry once:</b> Most errors (111, 244) clear after waiting and refreshing.</li><li><b>Report:</b> If it persists, share the code + time + what you were doing with support. Thanks to the para.js log, the team can already see the record.</li></ol>
+      </div>
+      <div class="doc-sec" id="e8"><h2><span class="n">8</span>FAQ</h2>
+        <ul><li><b>Is Oddiss a virus?</b> No. It asks for no installation, runs nothing in the background, collects no data. It's a documentation and code system.</li><li><b>Can anyone see my code?</b> Only you see it; nobody knows unless you share it.</li><li><b>Do codes change?</b> Defined codes are stable; reserved codes like 112–114 may be defined later and the catalog updated.</li><li><b>Can I turn para.js off?</b> The background log is part of the app and collects no personal data; there is no off switch.</li><li><b>Why does support ask for the code?</b> Because the code is the exact address of the problem: it matches the team's log one-to-one and the fix is found in minutes.</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang") !== lang;
+        });
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+    })();
+  </script>
+</body>
+</html>

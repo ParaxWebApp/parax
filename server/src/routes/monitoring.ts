@@ -9,7 +9,7 @@ const ADMIN_EMAIL = "Parax@parax.com";
 
 const isAdmin = (req: AuthenticatedRequest, res: Response, next: any) => {
   if (req.user?.email !== ADMIN_EMAIL) {
-    return res.status(403).json({ error: "Forbidden: Admins only" });
+    return res.status(403).json({ error: "Forbidden: Admins only", code: 142 });
   }
   next();
 };
@@ -29,7 +29,7 @@ router.get("/system", verifyToken, isAdmin, async (req, res) => {
         errorRate: "0.00% (Last 24h)" // Placeholder based on logs
     });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch system metrics" });
+    res.status(500).json({ error: "Failed to fetch system metrics", code: 227 });
   }
 });
 
@@ -46,7 +46,7 @@ router.get("/users", verifyToken, isAdmin, async (req, res) => {
             authMethods: [totalUsers, 0, 0] // Need to store auth provider to fix
         });
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch user metrics" });
+        res.status(500).json({ error: "Failed to fetch user metrics", code: 227 });
     }
 });
 
@@ -62,7 +62,7 @@ router.get("/logs", verifyToken, isAdmin, async (req, res) => {
             trace: log.stack || "No trace"
         })));
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch logs" });
+        res.status(500).json({ error: "Failed to fetch logs", code: 227 });
     }
 });
 

@@ -145,6 +145,7 @@
           '<details style="margin-top:16px;text-align:left;">' +
             '<summary style="font-size:12.5px;color:' + mutedCol + ';cursor:pointer;">' + STR.whyTitle + '</summary>' +
             '<p style="font-size:12.5px;line-height:1.6;color:' + mutedCol + ';margin:8px 0 0;">' + STR.whyText + '</p>' +
+            '<p style="font-size:12.5px;margin:8px 0 0;"><a href="/errors.html" style="color:' + accentSoft + ';text-decoration:none;">Tüm hata kodları (Oddiss)</a></p>' +
           '</details>' +
           '<p style="margin:16px 0 0;font-size:11px;letter-spacing:0.02em;color:' + mutedCol + ';">' + STR.footer + '</p>' +
         '</div>' +

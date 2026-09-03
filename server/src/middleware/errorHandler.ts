@@ -18,6 +18,7 @@ export const errorHandler = async (err: any, req: Request, res: Response, next: 
   
   res.status(500).json({ 
     error: "Internal Server Error",
+    code: 228,
     message: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 };

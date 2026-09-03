@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perax Translator Nedir? — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .doc-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 90px; }
+    .doc-hero { text-align: center; margin-bottom: 12px; }
+    .doc-hero .back { display: inline-block; margin-bottom: 18px; color: var(--brand); text-decoration: none; font-size: 0.88rem; }
+    .doc-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 10px; }
+    .doc-hero p { color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 24px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .toc { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 20px 24px; margin: 24px 0 12px; }
+    .toc h3 { margin: 0 0 10px; font-size: 1rem; }
+    .toc ol { margin: 0; padding-left: 22px; color: var(--text-secondary); font-size: 0.9rem; }
+    .toc a { color: var(--brand); text-decoration: none; }
+    .doc-sec { margin: 34px 0; }
+    .doc-sec h2 { font-size: 1.45rem; margin-bottom: 10px; }
+    .doc-sec h2 .n { color: var(--brand); margin-right: 8px; }
+    .doc-sec p, .doc-sec li { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+    .doc-sec ol, .doc-sec ul { padding-left: 24px; }
+    .doc-sec li { margin-bottom: 8px; }
+    .flow { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 18px 22px; margin-top: 12px; }
+    .flow ol { margin: 0; padding-left: 22px; }
+    .flow li { margin-bottom: 10px; }
+    .flow code, p code, li code { background: var(--bg-tertiary); border-radius: 6px; padding: 1px 7px; font-size: 0.85em; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 12px; }
+    .mini-table th, .mini-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .mini-table th { color: var(--text-muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .tip { border-left: 3px solid #22c55e; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    .warn { border-left: 3px solid #f0b232; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    [data-lang][hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="documentation.html">Belgeler</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <div class="doc-wrap">
+    <div class="doc-hero">
+      <a class="back" href="documentation.html">← <span data-lang="tr">Tüm belgeler</span><span data-lang="en" hidden>All docs</span></a>
+      <h1 data-lang="tr">Perax Translator Nedir?</h1>
+      <h1 data-lang="en" hidden>What Is Perax Translator?</h1>
+      <p data-lang="tr">Sohbette tek tıkla çeviri yapan mikroservis: nedir, neden yapıldı, nasıl kullanılır, gizlilik ve sınırlar.</p>
+      <p data-lang="en" hidden>The one-click in-chat translation microservice: what it is, why it exists, how to use it, privacy, and limits.</p>
+    </div>
+
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
+    </div>
+
+    <div class="toc" data-lang="tr">
+      <h3>İçindekiler</h3>
+      <ol>
+        <li><a href="#t1">Perax Translator nedir?</a></li>
+        <li><a href="#t2">Neden yapıldı?</a></li>
+        <li><a href="#t3">Nasıl çalışır?</a></li>
+        <li><a href="#t4">Nasıl kullanılır?</a></li>
+        <li><a href="#t5">Gizlilik: mesajlarım nereye gidiyor?</a></li>
+        <li><a href="#t6">Sınırlar ve yedek mod</a></li>
+        <li><a href="#t7">Sık sorulan sorular</a></li>
+      </ol>
+    </div>
+    <div class="toc" data-lang="en" hidden>
+      <h3>Contents</h3>
+      <ol>
+        <li><a href="#e1">What is Perax Translator?</a></li>
+        <li><a href="#e2">Why was it built?</a></li>
+        <li><a href="#e3">How does it work?</a></li>
+        <li><a href="#e4">How to use it?</a></li>
+        <li><a href="#e5">Privacy: where do my messages go?</a></li>
+        <li><a href="#e6">Limits and fallback mode</a></li>
+        <li><a href="#e7">FAQ</a></li>
+      </ol>
+    </div>
+
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="doc-sec" id="t1"><h2><span class="n">1</span>Perax Translator nedir?</h2>
+        <p>Perax Translator, Parax sohbetinin içine gömülü <b>tek tıkla çeviri servisidir</b>. Her mesajın yanında duran <b>Translate</b> düğmesine basarsın, mesaj senin diline çevrilir ve yanında küçük bir <b>(translated)</b> rozeti belirir. Orijinal mesaj kaybolmaz; çeviri onun yerinde, geçici olarak gösterilir.</p>
+        <p>Teknik olarak bağımsız bir mikroservistir: çeviri motoru olarak açık kaynak <b>LibreTranslate</b> kullanır, Parax ana uygulamasından ayrı çalışır. Yani çeviri servisi bakımda olsa bile sohbetin aksamaz.</p>
+        <div class="tip">Şu an varsayılan hedef dil Türkçedir; dil tercihi kullanıcı bazında ayarlanabilir, İngilizce topluluklar İngilizce kullanır.</div>
+      </div>
+      <div class="doc-sec" id="t2"><h2><span class="n">2</span>Neden yapıldı?</h2>
+        <ul><li><b>İki dilli topluluk:</b> Parax'ta Türkçe ve İngilizce konuşanlar aynı sunucularda. Herkesin birbirini anlaması için çevirinin sohbetin içinde olması gerekiyordu; sekmeler arası kopyala-yapıştır kimseye uymaz.</li><li><b>Hız:</b> Mesajı seç, düğmeye bas, oku. Üç saniyelik iş.</li><li><b>Bağımsızlık:</b> Büyük çeviri API'lerine doğrudan bağımlı olmak yerine arada kendi servisimiz var; motor değişse bile düğme aynı kalır.</li></ul>
+      </div>
+      <div class="doc-sec" id="t3"><h2><span class="n">3</span>Nasıl çalışır?</h2>
+        <div class="flow"><ol>
+          <li><b>Düğmeye basarsın:</b> Mesajdaki Translate'e tıkladığında düğme önce "Translating..." olur.</li>
+          <li><b>İstek gider:</b> Uygulama, mesaj metnini ve hedef dilini çeviri servisine (<code>/api/translate</code>) gönderir.</li>
+          <li><b>Motor çevirir:</b> Servis metni LibreTranslate motoruna verir; kaynak dil otomatik algılanır, hedef dile çevrilir.</li>
+          <li><b>Sonuç gelir:</b> Çevrilen metin mesajın yerinde, yanında <code>(translated)</code> rozetiyle gösterilir.</li>
+        </ol></div>
+        <p>Kaynak dili seçmene gerek yoktur; motor "bu mesaj hangi dilde?" sorusunu kendisi cevaplar. Çeviri yalnızca sana gösterilir; başkaları mesajı kendi dilinde görmeye devam eder.</p>
+      </div>
+      <div class="doc-sec" id="t4"><h2><span class="n">4</span>Nasıl kullanılır?</h2>
+        <ol><li><b>Dilini ayarla:</b> Çevirilerin hangi dile yapılacağını profil/uygulama dil tercihinden seç (varsayılan: Türkçe).</li><li><b>Düğmeye bas:</b> Anlamadığın mesajın yanındaki <b>Translate</b>'e tıkla.</li><li><b>Oku:</b> Çeviri mesajın yerinde belirir. Orijinali görmek istersen sayfayı yenilemen yeterli; kayıtlı mesaj değişmez.</li></ol>
+        <div class="tip">Uzun mesajlarda çeviri birkaç saniye sürebilir; düğme "Translating..." yazarken bekle, tekrar tekrar basma.</div>
+      </div>
+      <div class="doc-sec" id="t5"><h2><span class="n">5</span>Gizlilik: mesajlarım nereye gidiyor?</h2>
+        <p>Dürüst cevap:</p>
+        <ul><li><b>Çevirdiğin metin</b> çeviri servisine ve oradan çeviri motoruna (LibreTranslate) gider. Çeviri ancak metin motora ulaşırsa yapılabilir; bu, her çeviri servisinin doğasıdır.</li><li><b>Servis metin saklamaz:</b> Çeviri isteği yanıtlanaıp kapanır; mesajların çeviri için ayrı bir veritabanında tutulmaz. Zaten sohbette yazdığın mesaj sunucuda kayıtlıdır; çeviri buna yeni bir kopya eklemez.</li><li><b>Hassas bilgi çevirme:</b> Şifre, özel adres, banka bilgisi gibi şeyleri çeviriye gönderme. Bu kural her çeviri aracı için geçerlidir.</li></ul>
+        <div class="warn">Özel (DM) mesajların da çevirisi aynı yoldan geçer. Gerçekten gizli kalması gereken bir şeyi çevirme; orijinal dilde okumaya çalış.</div>
+      </div>
+      <div class="doc-sec" id="t6"><h2><span class="n">6</span>Sınırlar ve yedek mod</h2>
+        <table class="mini-table"><thead><tr><th>Durum</th><th>Ne görürsün</th><th>Ne yapmalı</th></tr></thead><tbody>
+          <tr><td class="code">Motor yoğun</td><td>Çeviri gecikir veya <code>[Translated (tr)]</code> önekli orijinal metin</td><td>Bu yedek moddur; birkaç dakika sonra tekrar dene.</td></tr>
+          <tr><td class="code">Saçma çeviri</td><td>Argo, oyun terimi, kısaltma yanlış çevrilmiş</td><td>Normaldir; makine çevirisi deyimlerde zayıftır. Orijinaline bak.</td></tr>
+          <tr><td class="code">Düğme yok</td><td>Mesajda Translate görünmüyor</td><td>Sayfayı yenile; sürerse <a href="errors.html">Oddiss'e</a> bak.</td></tr>
+        </tbody></table>
+        <p>Yedek mod bir hatayı gizlemez: motor cevap vermezse servis bunu açıkça söyler (<code>engine: fallback</code>) ve orijinal metni korur. Asla uydurma çeviri gösterilmez.</p>
+      </div>
+      <div class="doc-sec" id="t7"><h2><span class="n">7</span>Sık sorulan sorular</h2>
+        <ul><li><b>Çeviri kalıcı mı?</b> Hayır. Yalnızca senin ekranında, geçici olarak gösterilir. Kayıtlı mesaj değişmez.</li><li><b>Herkes aynı çeviriyi mi görür?</b> Hayır. Herkes kendi dil tercihine göre çevirir; kimse kimsenin çevirisini görmez.</li><li><b>Kaynak dili seçebilir miyim?</b> Gerek yok, otomatik algılanır.</li><li><b>Hangi diller var?</b> Motorun desteklediği tüm diller; hedef dil, dil tercihine göre ayarlanır.</li><li><b>Çeviri yanlış, düzeltebilir miyim?</b> Şu an elle düzeltme yok; orijinal metne bakman yeterli. Geri bildirimlerin motor seçimini iyileştirir.</li></ul>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="doc-sec" id="e1"><h2><span class="n">1</span>What is Perax Translator?</h2>
+        <p>Perax Translator is the <b>one-click translation service</b> built into Parax chat. You press the <b>Translate</b> button next to any message, it renders in your language with a small <b>(translated)</b> badge. The original message is never lost; the translation shows in its place, temporarily.</p>
+        <p>Technically it is an independent microservice: it uses the open-source <b>LibreTranslate</b> engine and runs separately from the main Parax app. So even if the translation service is down, your chat keeps working.</p>
+        <div class="tip">The default target language is currently Turkish; the preference is per-user, so English communities use English.</div>
+      </div>
+      <div class="doc-sec" id="e2"><h2><span class="n">2</span>Why was it built?</h2>
+        <ul><li><b>A bilingual community:</b> Turkish and English speakers share the same servers on Parax. Everyone needed to understand each other inside the chat; copy-pasting between tabs works for nobody.</li><li><b>Speed:</b> Select the message, press the button, read. A three-second job.</li><li><b>Independence:</b> Instead of depending directly on big translation APIs, our own service sits in between; the button stays the same even if the engine changes.</li></ul>
+      </div>
+      <div class="doc-sec" id="e3"><h2><span class="n">3</span>How does it work?</h2>
+        <div class="flow"><ol>
+          <li><b>You press:</b> Clicking Translate on a message first flips the button to "Translating...".</li>
+          <li><b>Request goes out:</b> The app sends the message text and target language to the translation service (<code>/api/translate</code>).</li>
+          <li><b>Engine translates:</b> The service hands the text to the LibreTranslate engine; source language is auto-detected and translated to the target.</li>
+          <li><b>Result returns:</b> The translated text appears in place of the message with a <code>(translated)</code> badge.</li>
+        </ol></div>
+        <p>You never pick a source language; the engine answers "what language is this message?" itself. The translation shows only to you; everyone else keeps seeing the message in their own language.</p>
+      </div>
+      <div class="doc-sec" id="e4"><h2><span class="n">4</span>How to use it?</h2>
+        <ol><li><b>Set your language:</b> Choose which language translations target in your profile/app language preference (default: Turkish).</li><li><b>Press the button:</b> Click <b>Translate</b> next to any message you don't understand.</li><li><b>Read:</b> The translation appears in place. To see the original again, just refresh; the stored message is untouched.</li></ol>
+        <div class="tip">Long messages can take a few seconds; while the button says "Translating...", wait instead of pressing repeatedly.</div>
+      </div>
+      <div class="doc-sec" id="e5"><h2><span class="n">5</span>Privacy: where do my messages go?</h2>
+        <p>The honest answer:</p>
+        <ul><li><b>Translated text</b> travels to the translation service and on to the translation engine (LibreTranslate). Translation is only possible if the text reaches the engine; that's the nature of every translation service.</li><li><b>The service stores no text:</b> A translation request is answered and closed; messages aren't kept in a separate database for translation. What you wrote in chat is already stored on the server; translation adds no new copy.</li><li><b>Don't translate secrets:</b> Never send passwords, private addresses, or banking details to translation. This rule holds for every translation tool.</li></ul>
+        <div class="warn">Private (DM) messages travel the same path when translated. If something must truly stay secret, don't translate it; read it in the original language.</div>
+      </div>
+      <div class="doc-sec" id="e6"><h2><span class="n">6</span>Limits and fallback mode</h2>
+        <table class="mini-table"><thead><tr><th>Condition</th><th>What you see</th><th>What to do</th></tr></thead><tbody>
+          <tr><td class="code">Engine busy</td><td>Translation lags, or original text with a <code>[Translated (tr)]</code> prefix</td><td>That's fallback mode; retry in a few minutes.</td></tr>
+          <tr><td class="code">Nonsense translation</td><td>Slang, game terms, abbreviations mistranslated</td><td>Normal; machine translation is weak on idioms. Check the original.</td></tr>
+          <tr><td class="code">No button</td><td>Translate missing on a message</td><td>Refresh; if it persists, check <a href="errors.html">Oddiss</a>.</td></tr>
+        </tbody></table>
+        <p>Fallback mode hides no failure: if the engine doesn't answer, the service says so openly (<code>engine: fallback</code>) and preserves the original text. A made-up translation is never shown.</p>
+      </div>
+      <div class="doc-sec" id="e7"><h2><span class="n">7</span>FAQ</h2>
+        <ul><li><b>Is translation permanent?</b> No. It shows only on your screen, temporarily. The stored message never changes.</li><li><b>Does everyone see the same translation?</b> No. Everyone translates to their own language preference; nobody sees anyone else's translation.</li><li><b>Can I pick the source language?</b> No need — it's auto-detected.</li><li><b>Which languages exist?</b> All languages the engine supports; the target follows your language preference.</li><li><b>A translation is wrong, can I fix it?</b> No manual correction yet; the original text is enough. Your feedback improves engine choice.</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang") !== lang;
+        });
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+    })();
+  </script>
+</body>
+</html>

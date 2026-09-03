@@ -2577,3 +2577,38 @@ body:has(#voice-bar:not(.hidden)) .app-layout {
   color: var(--text-primary);
   background: var(--bg-tertiary);
 }
+
+/* Presence: status dot on member avatars + typing line */
+.member-avatar {
+  position: relative;
+}
+.presence-dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+  background: #80848e;
+  pointer-events: none;
+}
+.presence-online {
+  background: #23a55a;
+}
+.presence-idle {
+  background: #f0b232;
+}
+.presence-offline {
+  background: #80848e;
+}
+.typing-indicator {
+  min-height: 22px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-muted);
+  padding: 2px 16px;
+}
+.typing-indicator.hidden {
+  visibility: hidden;
+}

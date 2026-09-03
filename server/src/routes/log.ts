@@ -7,7 +7,7 @@ const router = Router();
 const logLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 30,
-  message: { error: "Too many log requests. Try again later." },
+  message: { error: "Too many log requests. Try again later.", code: 111 },
   standardHeaders: true,
   legacyHeaders: false,
 });

@@ -21,7 +21,7 @@ const blockedIps = new Set();
 app.use((req, res, next) => {
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
   if (blockedIps.has(ip)) {
-    return res.status(403).json({ error: "Access blocked by Perax WAF (Suspicious activity detected)." });
+    return res.status(403).json({ error: "Access blocked by Perax WAF (Suspicious activity detected).", code: 91 });
   }
 
   // Simple rate limiter: max 100 req per minute per IP
@@ -34,7 +34,7 @@ app.use((req, res, next) => {
     if (record.count > 150) {
       blockedIps.add(ip);
       console.log(`[Perax WAF] Auto-blocked IP ${ip} due to rate limit violation.`);
-      return res.status(429).json({ error: "Rate limit exceeded. Blocked by Perax Shield." });
+      return res.status(429).json({ error: "Rate limit exceeded. Blocked by Perax Shield.", code: 111 });
     }
   }
   ipRequests.set(ip, record);
@@ -70,13 +70,13 @@ app.post("/api/perax/verify", (req, res) => {
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
 
   if (!challengeToken) {
-    return res.status(400).json({ error: "Challenge token is required." });
+    return res.status(400).json({ error: "Challenge token is required.", code: 31 });
   }
 
   try {
     const decoded = jwt.verify(challengeToken, JWT_SECRET);
     if (decoded.type !== "challenge") {
-      return res.status(400).json({ error: "Invalid challenge token type." });
+      return res.status(400).json({ error: "Invalid challenge token type.", code: 33 });
     }
 
     // Issue 3-hour human verification shield token
@@ -93,7 +93,7 @@ app.post("/api/perax/verify", (req, res) => {
       message: "Human verification passed successfully. 3-hour shield activated.",
     });
   } catch (err) {
-    res.status(401).json({ error: "Challenge expired or invalid.", details: err.message });
+    res.status(401).json({ error: "Challenge expired or invalid.", code: 32, details: err.message });
   }
 });
 
@@ -103,7 +103,7 @@ app.post("/api/perax/validate", (req, res) => {
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
 
   if (!shieldToken) {
-    return res.json({ verified: false, error: "No shield token provided." });
+    return res.json({ verified: false, code: 1, error: "No shield token provided." });
   }
 
   try {
@@ -111,9 +111,9 @@ app.post("/api/perax/validate", (req, res) => {
     if (decoded.verified === true) {
       return res.json({ verified: true, expiresAt: decoded.exp * 1000 });
     }
-    res.json({ verified: false, error: "Invalid verification state." });
+    res.json({ verified: false, code: 2, error: "Invalid verification state." });
   } catch (err) {
-    res.json({ verified: false, error: "Shield token expired or invalid." });
+    res.json({ verified: false, code: 2, error: "Shield token expired or invalid." });
   }
 });
 

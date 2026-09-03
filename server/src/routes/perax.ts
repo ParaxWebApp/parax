@@ -42,11 +42,11 @@ router.post("/verify", (req: Request, res: Response) => {
   cleanup(shields, now);
 
   if (!challengeToken) {
-    return res.status(400).json({ error: "Challenge token is required." });
+    return res.status(400).json({ error: "Challenge token is required.", code: 31 });
   }
   const exp = challenges.get(challengeToken);
   if (!exp || exp < now) {
-    return res.status(401).json({ error: "Challenge expired or invalid." });
+    return res.status(401).json({ error: "Challenge expired or invalid.", code: 32 });
   }
   challenges.delete(challengeToken);
 
@@ -64,7 +64,7 @@ router.post("/verify", (req: Request, res: Response) => {
 router.post("/validate", (req: Request, res: Response) => {
   const { shieldToken } = req.body ?? {};
   if (!shieldToken) {
-    return res.json({ verified: false, error: "No shield token provided." });
+    return res.json({ verified: false, code: 1, error: "No shield token provided." });
   }
   const exp = shields.get(shieldToken);
   if (exp && exp > Date.now()) {
@@ -75,7 +75,7 @@ router.post("/validate", (req: Request, res: Response) => {
   if (typeof shieldToken === "string" && (shieldToken.startsWith("verified_v1.2_") || shieldToken.startsWith("verified_v1.1_"))) {
     return res.json({ verified: true, expiresAt: Date.now() + SHIELD_DURATION_MS, fallback: true });
   }
-  res.json({ verified: false, error: "Shield token expired or invalid." });
+  res.json({ verified: false, code: 2, error: "Shield token expired or invalid." });
 });
 
 // ---- Local-admin endpoints (localhost tooling, NOT public API) ----
@@ -87,7 +87,7 @@ function peraxAdminGuard(req: Request, res: Response, next: () => void) {
     return;
   }
   if (req.headers["x-perax-admin-key"] !== process.env.PERAX_ADMIN_KEY) {
-    res.status(403).json({ error: "forbidden" });
+    res.status(403).json({ error: "forbidden", code: 142 });
     return;
   }
   next();
@@ -120,6 +120,17 @@ router.post("/admin/reset", peraxAdminGuard, (_req: Request, res: Response) => {
   shields.clear();
   console.warn(`[Perax Admin] Shield list reset. Cleared ${clearedShields} shields, ${clearedChallenges} challenges.`);
   res.json({ ok: true, clearedChallenges, clearedShields });
+});
+
+// Mint a shield token directly (testing / emergency access). Hours: 1-72, default 3.
+router.post("/admin/issue", peraxAdminGuard, (req: Request, res: Response) => {
+  const hours = Math.min(Math.max(Number(req.body?.hours || 3), 1), 72);
+  const now = Date.now();
+  const shieldToken = newToken("perax_sh");
+  const expiresAt = now + hours * 60 * 60 * 1000;
+  shields.set(shieldToken, expiresAt);
+  console.warn(`[Perax Admin] Shield token issued manually (${hours}h).`);
+  res.json({ ok: true, shieldToken, expiresAt });
 });
 
 export default router;

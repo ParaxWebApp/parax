@@ -5,7 +5,7 @@ import { db } from "../config/firebase";
 let blockedIPs = new Set<string>();
 
 // Refresh blacklist from Firestore periodically
-async function refreshBlacklist() {
+export async function refreshBlacklist() {
     try {
         const snapshot = await db.collection("firewall").get();
         const newBlockedIPs = new Set<string>();
@@ -27,7 +27,7 @@ export const ipBlocker = (req: Request, res: Response, next: NextFunction) => {
     const ip = req.ip || req.headers['x-forwarded-for'] as string || "unknown";
     
     if (blockedIPs.has(ip)) {
-        return res.status(403).json({ error: "Access denied" });
+        return res.status(403).json({ error: "Access denied", code: 73 });
     }
     next();
 };

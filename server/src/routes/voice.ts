@@ -9,14 +9,14 @@ const router = Router();
 const voiceLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 30,
-  message: { error: "Too many voice token requests. Try again later." },
+  message: { error: "Too many voice token requests. Try again later.", code: 111 },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 router.post("/token", voiceLimiter, verifyToken, async (req: AuthenticatedRequest, res: Response) => {
   if (!req.user) {
-    res.status(401).json({ error: "Unauthorized" });
+    res.status(401).json({ error: "Unauthorized", code: 141 });
     return;
   }
 
@@ -50,7 +50,7 @@ router.post("/token", voiceLimiter, verifyToken, async (req: AuthenticatedReques
     });
   } catch (error: any) {
     console.error("[LiveKit Token Error]:", error);
-    res.status(500).json({ error: "Failed to generate LiveKit token" });
+    res.status(500).json({ error: "Failed to generate LiveKit token", code: 191 });
   }
 });
 
