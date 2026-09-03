@@ -78,4 +78,48 @@ router.post("/validate", (req: Request, res: Response) => {
   res.json({ verified: false, error: "Shield token expired or invalid." });
 });
 
+// ---- Local-admin endpoints (localhost tooling, NOT public API) ----
+// Guarded by shared secret: set PERAX_ADMIN_KEY in server/.env (gitignored).
+// Without the key configured, these return 503.
+function peraxAdminGuard(req: Request, res: Response, next: () => void) {
+  if (!process.env.PERAX_ADMIN_KEY) {
+    res.status(503).json({ error: "Perax admin key not configured." });
+    return;
+  }
+  if (req.headers["x-perax-admin-key"] !== process.env.PERAX_ADMIN_KEY) {
+    res.status(403).json({ error: "forbidden" });
+    return;
+  }
+  next();
+}
+
+// Counts of live challenges + shields (the 3-hour list)
+router.get("/admin/stats", peraxAdminGuard, (_req: Request, res: Response) => {
+  const now = Date.now();
+  cleanup(challenges, now);
+  cleanup(shields, now);
+  res.json({ challenges: challenges.size, shields: shields.size });
+});
+
+// Inspect one shield token
+router.post("/admin/check", peraxAdminGuard, (req: Request, res: Response) => {
+  const { shieldToken } = req.body ?? {};
+  const exp = typeof shieldToken === "string" ? shields.get(shieldToken) : undefined;
+  if (exp && exp > Date.now()) {
+    res.json({ verified: true, expiresAt: exp });
+    return;
+  }
+  res.json({ verified: false });
+});
+
+// Reset the 3-hour shield list (+ pending challenges). Everyone re-verifies.
+router.post("/admin/reset", peraxAdminGuard, (_req: Request, res: Response) => {
+  const clearedChallenges = challenges.size;
+  const clearedShields = shields.size;
+  challenges.clear();
+  shields.clear();
+  console.warn(`[Perax Admin] Shield list reset. Cleared ${clearedShields} shields, ${clearedChallenges} challenges.`);
+  res.json({ ok: true, clearedChallenges, clearedShields });
+});
+
 export default router;

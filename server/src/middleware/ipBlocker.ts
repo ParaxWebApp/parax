@@ -46,3 +46,19 @@ export const blockIP = async (ip: string, reason: string) => {
         console.error(`[Security] Failed to block IP ${ip}:`, error);
     }
 };
+
+export const unblockIP = async (ip: string) => {
+    if (!ip || ip === "unknown") return;
+
+    try {
+        await db.collection("firewall").doc(ip).delete();
+        blockedIPs.delete(ip);
+        console.warn(`[Security] IP ${ip} unblocked.`);
+    } catch (error) {
+        console.error(`[Security] Failed to unblock IP ${ip}:`, error);
+    }
+};
+
+export const listBlockedIPs = (): string[] => {
+    return [...blockedIPs];
+};

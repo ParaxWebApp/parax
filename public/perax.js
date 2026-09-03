@@ -8,26 +8,28 @@
   var ANSWER = "human_confirmed_v1.2";
 
   var STR = {
-    greetingMorning: "Günaydın! ☀️",
-    greetingDay: "Merhaba! 👋",
-    greetingEvening: "İyi akşamlar! 🌙",
-    subtitle: "Parax'a girmeden önce insan olduğunu doğrulayalım.",
-    checking: "Tarayıcın kontrol ediliyor...",
+    greetingMorning: "Günaydın",
+    greetingDay: "Merhaba",
+    greetingEvening: "İyi akşamlar",
+    subtitle: "Parax'a devam etmeden önce kısa bir güvenlik kontrolü yapalım. Bir dakikadan az sürer.",
+    checking: "Bağlantın kontrol ediliyor...",
     checkingSteps: [
-      "Tarayıcın kontrol ediliyor...",
-      "Bağlantının güvenliğine bakıyoruz...",
-      "Otomatik trafik taraması yapılıyor...",
-      "Neredeyse hazır..."
+      "Bağlantın kontrol ediliyor...",
+      "Trafiğin gözden geçiriliyor...",
+      "Tarayıcın doğrulanıyor...",
+      "Son bir kontrol kaldı..."
     ],
-    ready: "Hazırsın! Devam etmek için kutuyu işaretle. ✅",
-    offlineReady: "Bağlantı kurulamadı ama devam edebilirsin. Kutuyu işaretle. ✅",
-    iAmHuman: "Ben insanım",
-    continueBtn: "Devam Et →",
-    verifying: "Doğrulanıyor, bir saniye... ⏳",
-    verified: "Doğrulandı! Harikasın 🎉",
+    ready: "Her şey yolunda görünüyor. Devam etmek için onayla.",
+    offlineReady: "Sunucuya ulaşılamadı ama seni bekletmeyelim. Onaylayıp devam edebilirsin.",
+    badge: "Güvenlik Kontrolü",
+    iAmHuman: "Ben bir insanım",
+    iAmHumanHint: "Otomatik sistemler bu adımı geçemez",
+    continueBtn: "Devam Et",
+    verifying: "Doğrulanıyor, lütfen bekle...",
+    verified: "Doğrulandı. İyi sohbetler.",
     whyTitle: "Neden bunu görüyorum?",
     whyText: "Parax'ı botlardan ve saldırılardan korumak için kısa bir insan kontrolü yapıyoruz. Doğrulama 3 saat geçerli, sonra tekrar sormayız.",
-    footer: "Perax Koruması v1.2 (3 Saatlik Kalkan) 🛡️",
+    footer: "Perax Koruması v1.2 · 3 saat geçerli",
     headlessWarn: "[Perax WAF] Headless tarayıcı algılandı. Sıkı güvenlik kontrolü uygulanıyor."
   };
 
@@ -116,31 +118,42 @@
       var mutedCol = theme === "light" ? "#64748b" : "#94a3b8";
       var borderCol = theme === "light" ? "#e2e8f0" : "#2a3752";
       var accent = "#5865f2";
+      var accentSoft = theme === "light" ? "#4f46e5" : "#a5b4fc";
 
       var overlay = document.createElement("div");
       overlay.id = "perax-shield-overlay";
       overlay.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:" + bgCol + ";z-index:999999;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',system-ui,sans-serif;color:" + textCol + ";padding:16px;box-sizing:border-box;";
 
       overlay.innerHTML =
-        '<div style="background:' + cardCol + ';padding:32px 28px;border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,0.45);width:100%;max-width:430px;text-align:center;border:1px solid ' + borderCol + ';">' +
-          '<div style="font-size:46px;margin-bottom:6px;">🛡️</div>' +
-          '<h2 id="perax-hello" style="margin:0 0 6px;font-size:23px;font-weight:800;color:' + textCol + ';">' + greeting() + '</h2>' +
-          '<p style="margin:0 0 4px;font-size:14px;font-weight:700;color:' + textCol + ';">' + brandName + '</p>' +
-          '<p style="margin:0 0 20px;font-size:13.5px;line-height:1.5;color:' + mutedCol + ';">' + STR.subtitle + '</p>' +
-          '<p id="perax-status" style="margin:0 0 14px;font-size:13px;min-height:20px;color:' + mutedCol + ';">' + STR.checking + '</p>' +
-          '<div id="perax-spinner" style="border:3px solid ' + borderCol + ';border-top:3px solid ' + accent + ';border-radius:50%;width:36px;height:36px;animation:perax-spin 1s linear infinite;margin:0 auto 18px;"></div>' +
-          '<label id="perax-human-row" style="display:none;align-items:center;gap:12px;background:rgba(88,101,242,0.08);border:1.5px solid ' + borderCol + ';border-radius:12px;padding:14px 16px;cursor:pointer;user-select:none;text-align:left;margin-bottom:14px;">' +
-            '<input type="checkbox" id="perax-human-check" style="width:22px;height:22px;accent-color:' + accent + ';cursor:pointer;flex-shrink:0;" />' +
-            '<span style="font-size:15px;font-weight:600;color:' + textCol + ';">' + STR.iAmHuman + '</span>' +
+        '<div id="perax-card" style="background:' + cardCol + ';padding:34px 30px 28px;border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,0.45);width:100%;max-width:430px;text-align:center;border:1px solid ' + borderCol + ';animation:perax-fade 0.35s ease;">' +
+          '<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(88,101,242,0.12);border:1px solid rgba(88,101,242,0.35);border-radius:999px;padding:5px 14px;font-size:11.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:' + accentSoft + ';margin-bottom:16px;">' +
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' +
+            STR.badge +
+          '</div>' +
+          '<h2 id="perax-hello" style="margin:0 0 4px;font-size:24px;font-weight:800;letter-spacing:-0.01em;color:' + textCol + ';">' + greeting() + '</h2>' +
+          '<p style="margin:0 0 6px;font-size:13.5px;font-weight:700;color:' + accentSoft + ';">' + brandName + '</p>' +
+          '<p style="margin:0 0 22px;font-size:13.5px;line-height:1.6;color:' + mutedCol + ';">' + STR.subtitle + '</p>' +
+          '<div id="perax-progress" style="height:4px;border-radius:999px;background:' + borderCol + ';overflow:hidden;margin-bottom:16px;"><div id="perax-bar" style="height:100%;width:30%;border-radius:999px;background:linear-gradient(90deg,' + accent + ',#22c55e);animation:perax-slide 1.4s ease-in-out infinite;"></div></div>' +
+          '<p id="perax-status" style="margin:0 0 16px;font-size:13px;min-height:20px;color:' + mutedCol + ';">' + STR.checking + '</p>' +
+          '<div id="perax-spinner" style="border:3px solid ' + borderCol + ';border-top:3px solid ' + accent + ';border-radius:50%;width:34px;height:34px;animation:perax-spin 1s linear infinite;margin:0 auto 18px;"></div>' +
+          '<label id="perax-human-row" style="display:none;align-items:flex-start;gap:12px;background:rgba(88,101,242,0.07);border:1.5px solid ' + borderCol + ';border-radius:12px;padding:14px 16px;cursor:pointer;user-select:none;text-align:left;margin-bottom:14px;transition:border-color 0.2s ease,background 0.2s ease;">' +
+            '<input type="checkbox" id="perax-human-check" style="width:21px;height:21px;accent-color:' + accent + ';cursor:pointer;flex-shrink:0;margin-top:1px;" />' +
+            '<span><span style="display:block;font-size:15px;font-weight:700;color:' + textCol + ';">' + STR.iAmHuman + '</span>' +
+            '<span style="display:block;font-size:12px;color:' + mutedCol + ';margin-top:2px;">' + STR.iAmHumanHint + '</span></span>' +
           '</label>' +
-          '<button id="perax-verify-btn" disabled style="display:none;width:100%;padding:14px;background:#22c55e;color:#fff;border:none;border-radius:10px;font-weight:800;cursor:not-allowed;font-size:15.5px;opacity:0.55;">' + STR.continueBtn + '</button>' +
+          '<button id="perax-verify-btn" disabled style="display:none;width:100%;padding:14px;background:#22c55e;color:#fff;border:none;border-radius:10px;font-weight:800;cursor:not-allowed;font-size:15.5px;opacity:0.55;transition:opacity 0.2s ease,transform 0.1s ease;">' + STR.continueBtn + '</button>' +
           '<details style="margin-top:16px;text-align:left;">' +
             '<summary style="font-size:12.5px;color:' + mutedCol + ';cursor:pointer;">' + STR.whyTitle + '</summary>' +
             '<p style="font-size:12.5px;line-height:1.6;color:' + mutedCol + ';margin:8px 0 0;">' + STR.whyText + '</p>' +
           '</details>' +
-          '<p style="margin:16px 0 0;font-size:11px;color:' + mutedCol + ';">' + STR.footer + '</p>' +
+          '<p style="margin:16px 0 0;font-size:11px;letter-spacing:0.02em;color:' + mutedCol + ';">' + STR.footer + '</p>' +
         '</div>' +
-        '<style>@keyframes perax-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>';
+        '<style>' +
+          '@keyframes perax-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }' +
+          '@keyframes perax-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }' +
+          '@keyframes perax-slide { 0% { margin-left: -30%; } 100% { margin-left: 100%; } }' +
+          '@media (prefers-reduced-motion: reduce) { #perax-card { animation: none; } #perax-bar { animation: none; width: 100%; } #perax-spinner { animation-duration: 2s; } }' +
+        '</style>';
 
       var mount = function () {
         if (document.body) {
@@ -157,6 +170,7 @@
       function wire() {
         var statusEl = document.getElementById("perax-status");
         var spinnerEl = document.getElementById("perax-spinner");
+        var progressEl = document.getElementById("perax-progress");
         var rowEl = document.getElementById("perax-human-row");
         var checkEl = document.getElementById("perax-human-check");
         var btnEl = document.getElementById("perax-verify-btn");
@@ -175,6 +189,7 @@
           if (stepTimer) { clearInterval(stepTimer); stepTimer = null; }
           statusEl.textContent = online ? STR.ready : STR.offlineReady;
           spinnerEl.style.display = "none";
+          if (progressEl) progressEl.style.display = "none";
           rowEl.style.display = "flex";
           btnEl.style.display = "block";
         }

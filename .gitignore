@@ -1,5 +1,9 @@
 serviceAccountKey.json
 webappparax-firebase-adminsdk-fbsvc-3cebc94660.json
+# Local-only admin console (never push to GitHub)
+admin/
+server/src/local-admin.local.ts
+start-local-admin.bat
 node_modules/
 dist/
 functions/lib/
