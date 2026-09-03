@@ -9,6 +9,7 @@ import voiceRoutes from "./routes/voice";
 import logRoutes from "./routes/log";
 import monitoringRoutes from "./routes/monitoring";
 import botsRoutes from "./routes/bots";
+import peraxRoutes from "./routes/perax";
 import { errorHandler } from "./middleware/errorHandler";
 import { trackLatency } from "./utils/metrics";
 import { ipBlocker } from "./middleware/ipBlocker";
@@ -50,7 +51,7 @@ app.use(helmet({
       "default-src": ["'self'"],
       "script-src": ["'self'", "https://www.gstatic.com", "https://unpkg.com", "https://apis.google.com", "'unsafe-inline'"],
       "style-src": ["'self'", "'unsafe-inline'"],
-       "connect-src": ["'self'", "https://parax-vqqb.onrender.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://firestore.googleapis.com", "https://webappparax.firebasestorage.app", "https://*.fly.dev", "wss://*.fly.dev", "https://*.gstatic.com"],
+       "connect-src": ["'self'", "https://parax-vqqb.onrender.com", "https://perax.onrender.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://firestore.googleapis.com", "https://webappparax.firebasestorage.app", "https://*.fly.dev", "wss://*.fly.dev", "https://*.gstatic.com"],
        "frame-src": ["'self'", "https://*.fly.dev", "https://*.firebaseapp.com"],
       "img-src": ["'self'", "https://webappparax.firebasestorage.app", "data:", "blob:"],
       "font-src": ["'self'", "data:"],
@@ -72,6 +73,7 @@ app.use("/api/voice", voiceRoutes);
 app.use("/api/log", logRoutes);
 app.use("/api/monitoring", monitoringRoutes);
 app.use("/api/bots", botsRoutes);
+app.use("/api/perax", peraxRoutes);
 
 // DevPortal static & routes
 app.use("/devportal", express.static(path.join(__dirname, "../../DevPortal")));
