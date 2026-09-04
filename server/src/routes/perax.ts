@@ -21,6 +21,14 @@ function cleanup(map: Map<string, number>, now: number) {
   }
 }
 
+// Live counts for the public status page (no tokens exposed)
+export function peraxCounts() {
+  const now = Date.now();
+  cleanup(challenges, now);
+  cleanup(shields, now);
+  return { challenges: challenges.size, shields: shields.size };
+}
+
 // 1. Request Challenge
 router.post("/challenge", (_req: Request, res: Response) => {
   const now = Date.now();

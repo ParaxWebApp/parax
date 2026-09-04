@@ -10,6 +10,7 @@ import logRoutes from "./routes/log";
 import monitoringRoutes from "./routes/monitoring";
 import botsRoutes from "./routes/bots";
 import peraxRoutes from "./routes/perax";
+import statusRoutes from "./routes/status";
 import { errorHandler } from "./middleware/errorHandler";
 import { methodGuard } from "./middleware/methodGuard";
 import { trackLatency } from "./utils/metrics";
@@ -76,6 +77,7 @@ app.use("/api/log", logRoutes);
 app.use("/api/monitoring", monitoringRoutes);
 app.use("/api/bots", botsRoutes);
 app.use("/api/perax", peraxRoutes);
+app.use("/api/status", statusRoutes);
 
 // DevPortal static & routes
 app.use("/devportal", express.static(path.join(__dirname, "../../DevPortal")));
@@ -101,6 +103,7 @@ const sayfalar = [
   "reset-password",
   "errors",
   "documentation",
+  "status",
   "doc1",
   "doc2",
   "doc3",

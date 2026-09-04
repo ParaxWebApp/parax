@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parax Durumu</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- No Perax shield on the status page: public info stays one click away. -->
+  <style>
+    body { background: #0b0e14; }
+    .st-top { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #1c2333; }
+    .st-top .navbar-brand { cursor: pointer; }
+    .st-top h1 { font-size: 1.05rem; margin: 0; }
+    .st-top .spacer { flex: 1; }
+    .st-top button { border: 1px solid #2a3752; background: #151b29; color: #d7e0f0; border-radius: 999px; padding: 6px 18px; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+    .st-top button.active { background: #5865f2; border-color: #5865f2; color: #fff; }
+    .st-grid { display: grid; grid-template-columns: 240px 1fr 260px; gap: 12px; padding: 12px; max-width: 1500px; margin: 0 auto; }
+    .st-card { background: #11161f; border: 1px solid #1c2333; border-radius: 12px; padding: 20px; text-align: center; }
+    .st-card .big { font-size: 3rem; font-weight: 800; line-height: 1.1; }
+    .st-card .lbl { color: #8b94a7; font-size: 1.15rem; }
+    .st-left { display: flex; flex-direction: column; gap: 12px; }
+    #map { width: 100%; height: 420px; display: block; border-radius: 12px; background: #0d1117; border: 1px solid #1c2333; cursor: grab; }
+    .st-cities { background: #11161f; border: 1px solid #1c2333; border-radius: 12px; padding: 16px 18px; height: 420px; overflow-y: auto; font-family: Consolas, monospace; }
+    .st-cities .row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 1.02rem; font-weight: 700; }
+    .st-cities .empty { color: #5b6478; font-weight: 400; font-size: 0.85rem; }
+    .st-bottom { display: grid; grid-template-columns: 1fr 260px; gap: 12px; padding: 0 12px 16px; max-width: 1500px; margin: 0 auto; }
+    #chart { width: 100%; height: 220px; display: block; border-radius: 12px; background: #0d1117; border: 1px solid #1c2333; }
+    .st-legend { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 12px 8px; max-width: 1500px; margin: 0 auto; font-size: 0.78rem; font-weight: 700; }
+    .pill { border-radius: 999px; padding: 3px 12px; color: #fff; }
+    .p-blue { background: #2f7bff; } .p-green { background: #22a55b; } .p-gray { background: #4b5563; }
+    .p-red { background: #e5484d; } .p-dim { background: #374151; }
+    #gauge { width: 100%; height: 220px; display: block; border-radius: 12px; background: #0d1117; border: 1px solid #1c2333; }
+    [data-lang][hidden] { display: none; }
+    @media (max-width: 1000px) { .st-grid { grid-template-columns: 1fr; } .st-bottom { grid-template-columns: 1fr; } #map { height: 300px; } .st-cities { height: auto; max-height: 260px; } }
+  </style>
+</head>
+<body>
+  <div class="st-top">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      <h1 data-lang="tr">Parax Durumu</h1>
+      <h1 data-lang="en" hidden>Parax Status</h1>
+    </div>
+    <div class="spacer"></div>
+    <button id="lang-tr" class="active">TR</button>
+    <button id="lang-en">EN</button>
+  </div>
+
+  <div class="st-grid">
+    <div class="st-left">
+      <div class="st-card"><div class="big" id="n-online">–</div><div class="lbl" data-lang="tr">çevrimiçi</div><div class="lbl" data-lang="en" hidden>online</div></div>
+      <div class="st-card"><div class="big" id="n-users">–</div><div class="lbl">user</div></div>
+      <div class="st-card"><div class="big" id="n-shields">–</div><div class="lbl" data-lang="tr">kalkan</div><div class="lbl" data-lang="en" hidden>shields</div></div>
+    </div>
+    <div><canvas id="map"></canvas></div>
+    <div class="st-cities" id="cities"></div>
+  </div>
+
+  <div class="st-legend">
+    <span class="pill p-green">Online: <span id="lg-online">0</span></span>
+    <span class="pill p-gray">Request: <span id="lg-req">0</span>/5s</span>
+    <span class="pill p-red">Blocked: <span id="lg-block">0</span></span>
+    <span class="pill p-dim" id="lg-time">–</span>
+  </div>
+  <div class="st-bottom">
+    <div><canvas id="chart"></canvas></div>
+    <div><canvas id="gauge"></canvas></div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+      var lang = "tr";
+      function setLang(l) {
+        lang = l;
+        document.querySelectorAll("[data-lang]").forEach(function (el) { el.hidden = el.getAttribute("data-lang") !== l; });
+        document.documentElement.lang = l;
+        document.getElementById("lang-tr").classList.toggle("active", l === "tr");
+        document.getElementById("lang-en").classList.toggle("active", l === "en");
+        drawCities(); drawChart(hoverIdx); drawGauge();
+      }
+      document.getElementById("lang-tr").addEventListener("click", function () { setLang("tr"); });
+      document.getElementById("lang-en").addEventListener("click", function () { setLang("en"); });
+      var T = {
+        tr: { cities: "Şehirler", waiting: "konum verisi bekleniyor — panele giren kullanıcılar nokta olarak belirir", empty: "henüz veri yok" },
+        en: { cities: "Cities", waiting: "waiting for location data — dashboard users appear as dots", empty: "no data yet" }
+      };
+
+      // ---- land mask ----
+      var LAND = { w: 0, h: 0, cells: [] };
+      fetch("status-land.json").then(function (r) { return r.json(); }).then(function (d) {
+        var raw = Uint8Array.from(atob(d.mask), function (c) { return c.charCodeAt(0); });
+        var bits = [];
+        for (var i = 0; i < d.w * d.h; i++) {
+          var byte = raw[Math.floor(i / 8)], bit = 7 - (i % 8);
+          bits.push((byte >> bit) & 1);
+        }
+        LAND = { w: d.w, h: d.h, cells: bits };
+        drawMap();
+      }).catch(function () {});
+
+      // ---- map view (pan/zoom everywhere) ----
+      var map = document.getElementById("map"), mctx = map.getContext("2d");
+      var view = { cx: 10, cy: 18, scale: 2 };
+      var baseScale = 2, dots = [];
+      function sizeCanvas(cv) {
+        var r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+        cv.width = Math.max(1, Math.round(r.width * dpr));
+        cv.height = Math.max(1, Math.round(r.height * dpr));
+        return dpr;
+      }
+      function fitWorld() {
+        var r = map.getBoundingClientRect();
+        baseScale = Math.min(r.width / 372, r.height / 196);
+        view = { cx: 8, cy: 16, scale: baseScale };
+      }
+      function proj(lon, lat) {
+        var r = map.getBoundingClientRect();
+        return [(lon - view.cx) * view.scale + r.width / 2, (view.cy - lat) * view.scale + r.height / 2];
+      }
+      function unproj(px, py) {
+        var r = map.getBoundingClientRect();
+        return [(px - r.width / 2) / view.scale + view.cx, view.cy - (py - r.height / 2) / view.scale];
+      }
+      function drawMap() {
+        var dpr = sizeCanvas(map), ctx = mctx;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var r = map.getBoundingClientRect();
+        ctx.clearRect(0, 0, r.width, r.height);
+        // land dots
+        if (LAND.cells.length) {
+          ctx.fillStyle = "#232b3a";
+          var step = view.scale > baseScale * 6 ? 1 : 2;
+          for (var y = 0; y < LAND.h; y += step) {
+            for (var x = 0; x < LAND.w; x += step) {
+              if (!LAND.cells[y * LAND.w + x]) continue;
+              var lon = (x + 0.5) / LAND.w * 360 - 180, lat = 90 - (y + 0.5) / LAND.h * 180;
+              var p = proj(lon, lat);
+              if (p[0] < -4 || p[1] < -4 || p[0] > r.width + 4 || p[1] > r.height + 4) continue;
+              ctx.fillRect(p[0], p[1], 1.6, 1.6);
+            }
+          }
+        }
+        // glow dots
+        ctx.save();
+        ctx.shadowColor = "#22e584"; ctx.shadowBlur = 10; ctx.fillStyle = "#2bff88";
+        dots.slice(0, 500).forEach(function (d) {
+          var p = proj(d.lon, d.lat);
+          if (p[0] < 0 || p[1] < 0 || p[0] > r.width || p[1] > r.height) return;
+          var rad = Math.min(7, 2.4 + Math.sqrt(d.n) * 1.6);
+          ctx.beginPath(); ctx.arc(p[0], p[1], rad, 0, 6.2832); ctx.fill();
+        });
+        ctx.restore();
+      }
+      var dragging = false, lx = 0, ly = 0;
+      map.addEventListener("pointerdown", function (e) { dragging = true; lx = e.clientX; ly = e.clientY; map.style.cursor = "grabbing"; map.setPointerCapture(e.pointerId); });
+      map.addEventListener("pointermove", function (e) {
+        if (!dragging) return;
+        view.cx -= (e.clientX - lx) / view.scale;
+        view.cy += (e.clientY - ly) / view.scale;
+        view.cy = Math.max(-84, Math.min(84, view.cy));
+        lx = e.clientX; ly = e.clientY; drawMap();
+      });
+      map.addEventListener("pointerup", function () { dragging = false; map.style.cursor = "grab"; });
+      map.addEventListener("wheel", function (e) {
+        e.preventDefault();
+        var box = map.getBoundingClientRect();
+        var mx = e.clientX - box.left, my = e.clientY - box.top;
+        var before = unproj(mx, my);
+        view.scale = Math.min(baseScale * 30, Math.max(baseScale * 0.9, view.scale * Math.pow(1.0015, -e.deltaY)));
+        var after = unproj(mx, my);
+        view.cx += before[0] - after[0]; view.cy += before[1] - after[1];
+        drawMap();
+      }, { passive: false });
+      map.addEventListener("dblclick", function () { fitWorld(); drawMap(); });
+      window.addEventListener("resize", function () { fitWorld(); drawMap(); drawChart(hoverIdx); drawGauge(); });
+
+      // ---- data ----
+      var cities = [], hist = [], hoverIdx = -1, lastTotal = null, lastMs = [];
+      function spreadDots() {
+        dots = [];
+        cities.forEach(function (c, ci) {
+          for (var i = 0; i < c.n; i++) {
+            var a = (i * 2.39996) + ci, rad = 0.7 + 0.5 * Math.sqrt(i);
+            dots.push({ lon: c.lon + Math.cos(a) * rad, lat: c.lat + Math.sin(a) * rad * 0.7, n: c.n });
+          }
+        });
+      }
+      function drawCities() {
+        var el = document.getElementById("cities");
+        if (!cities.length) {
+          el.innerHTML = '<div class="empty">' + T[lang].waiting + "</div>";
+          return;
+        }
+        el.innerHTML = cities.map(function (c) {
+          return '<div class="row"><span>' + c.name + '</span><span>' + c.n + "</span></div>";
+        }).join("");
+      }
+      async function poll() {
+        try {
+          var s = await fetch("/api/status/summary").then(function (r) { return r.json(); });
+          document.getElementById("n-online").textContent = s.online;
+          document.getElementById("n-users").textContent = s.users;
+          document.getElementById("n-shields").textContent = s.shields;
+          document.getElementById("lg-online").textContent = s.online;
+          document.getElementById("lg-block").textContent = s.blocked;
+          document.getElementById("lg-time").textContent = new Date().toISOString().slice(0, 16).replace("T", " ");
+          var rate = 0;
+          if (lastTotal !== null) rate = Math.max(0, Math.round((s.totalRequests - lastTotal) / 5));
+          lastTotal = s.totalRequests;
+          document.getElementById("lg-req").textContent = rate;
+          hist.push({ t: Date.now(), online: s.online, req: rate, blocked: s.blocked, ms: s.avgMs });
+          if (hist.length > 120) hist.shift();
+          lastMs.push(s.avgMs); if (lastMs.length > 24) lastMs.shift();
+          cities = s.cities || [];
+          spreadDots(); drawCities(); drawMap(); drawChart(hoverIdx); drawGauge();
+        } catch (e) { /* next poll */ }
+      }
+
+      // ---- chart with hover ----
+      var chart = document.getElementById("chart"), cctx = chart.getContext("2d");
+      chart.addEventListener("mousemove", function (e) {
+        if (!hist.length) return;
+        var box = chart.getBoundingClientRect();
+        var i = Math.round((e.clientX - box.left) / box.width * (hist.length - 1));
+        hoverIdx = Math.max(0, Math.min(hist.length - 1, i));
+        drawChart(hoverIdx);
+      });
+      chart.addEventListener("mouseleave", function () { hoverIdx = -1; drawChart(-1); });
+      function drawChart(hi) {
+        var dpr = sizeCanvas(chart), ctx = cctx;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var box = chart.getBoundingClientRect(), W = box.width, H = box.height;
+        ctx.clearRect(0, 0, W, H);
+        if (!hist.length) return;
+        var maxO = 1, maxR = 1;
+        hist.forEach(function (h) { maxO = Math.max(maxO, h.online); maxR = Math.max(maxR, h.req); });
+        var n = hist.length;
+        var X = function (i) { return n === 1 ? W / 2 : 8 + i / (n - 1) * (W - 16); };
+        // request bars
+        ctx.fillStyle = "#3f4756";
+        hist.forEach(function (h, i) {
+          var bh = h.req / maxR * (H - 40);
+          ctx.fillRect(X(i) - 1.5, H - 14 - bh, 3, bh);
+        });
+        // blocked ticks
+        ctx.fillStyle = "#e5484d";
+        hist.forEach(function (h, i) {
+          if (h.blocked > 0) ctx.fillRect(X(i) - 1.5, 6, 3, 10);
+        });
+        // online line
+        ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 2; ctx.beginPath();
+        hist.forEach(function (h, i) {
+          var y = H - 14 - (h.online / maxO) * (H - 44);
+          if (i === 0) ctx.moveTo(X(i), y); else ctx.lineTo(X(i), y);
+        });
+        ctx.stroke();
+        // hover crosshair
+        if (hi >= 0 && hi < n) {
+          var h = hist[hi], x = X(hi);
+          ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+          var y = H - 14 - (h.online / maxO) * (H - 44);
+          ctx.fillStyle = "#11161f"; ctx.strokeStyle = "#2a3752";
+          var label = h.online + " / " + h.req;
+          ctx.font = "bold 12px Consolas, monospace";
+          var tw = ctx.measureText(label).width + 16;
+          var bx = Math.min(Math.max(x - tw / 2, 4), W - tw - 4);
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(bx, Math.max(4, y - 32), tw, 22, 6); else ctx.rect(bx, Math.max(4, y - 32), tw, 22);
+          ctx.fill(); ctx.stroke();
+          ctx.fillStyle = "#22e584"; ctx.fillText(label, bx + 8, Math.max(4, y - 32) + 15);
+          ctx.fillStyle = "#8b94a7";
+          ctx.fillText(new Date(h.t).toISOString().slice(0, 16).replace("T", " "), 8, 14);
+        }
+      }
+
+      // ---- gauge ----
+      var gauge = document.getElementById("gauge"), gctx = gauge.getContext("2d");
+      function drawGauge() {
+        var dpr = sizeCanvas(gauge), ctx = gctx;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        var box = gauge.getBoundingClientRect(), W = box.width, H = box.height;
+        ctx.clearRect(0, 0, W, H);
+        if (!lastMs.length) return;
+        var max = Math.max.apply(null, lastMs.concat([50]));
+        var bw = (W - 16) / lastMs.length;
+        lastMs.forEach(function (v, i) {
+          var bh = Math.max(3, v / max * (H - 60));
+          var last = i === lastMs.length - 1;
+          ctx.fillStyle = last ? "#22e584" : "#3f4756";
+          ctx.fillRect(8 + i * bw + 1, H - 44 - bh, Math.max(2, bw - 2), bh);
+        });
+        var cur = lastMs[lastMs.length - 1];
+        ctx.fillStyle = "#fff"; ctx.font = "800 26px Consolas, monospace"; ctx.textAlign = "center";
+        ctx.fillText(cur + " ms", W / 2, H - 12);
+        ctx.textAlign = "left";
+      }
+
+      fitWorld(); drawCities(); poll(); setInterval(poll, 5000);
+    })();
+  </script>
+</body>
+</html>

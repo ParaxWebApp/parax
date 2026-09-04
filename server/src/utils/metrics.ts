@@ -23,3 +23,8 @@ export const getMetrics = () => {
         memory: `${usagePercent}% (${usedMB}MB / ${totalMB}MB)`
     };
 };
+
+export const getRequestStats = () => {
+    const avgMs = requestCount === 0 ? 0 : Math.round(totalLatency / requestCount);
+    return { avgMs, total: requestCount };
+};

@@ -1,0 +1,2 @@
+# Normalize line endings repo-wide so every client sees the same diffs.
+* text=auto

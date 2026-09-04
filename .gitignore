@@ -11,6 +11,8 @@ local-security.bat
 # Local-only Para dev log viewer (never push to GitHub)
 server/src/para-dev.local.ts
 para-dev.bat
+# status-service build output (synced from public/ at deploy time)
+status-service/public/
 node_modules/
 dist/
 functions/lib/

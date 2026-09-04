@@ -1636,12 +1636,19 @@ let presenceAboneCikislar = [];
 let presenceOnbellek = {};
 let presenceSonUyeler = [];
 let presenceHareketDinleyiciler = [];
+let presenceTZAdi = "";
 function presenceBaslat(uid) {
     if (presenceUid === uid && presenceNabizTimer)
         return;
     presenceDurdur();
     presenceUid = uid;
     presenceSonHareket = Date.now();
+    try {
+        presenceTZAdi = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    }
+    catch {
+        presenceTZAdi = "";
+    }
     const hareket = () => { presenceSonHareket = Date.now(); };
     presenceHareketDinleyiciler = [["pointerdown", hareket], ["keydown", hareket]];
     presenceHareketDinleyiciler.forEach(([ev, fn]) => window.addEventListener(ev, fn, { passive: true }));
@@ -1676,6 +1683,7 @@ function presenceNabizGonder() {
     db.collection("presence").doc(presenceUid).set({
         status: idle ? "idle" : "online",
         lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+        tz: presenceTZAdi,
     }, { merge: true }).catch(() => { });
 }
 function presenceYaziyorGonder() {

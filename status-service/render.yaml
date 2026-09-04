@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: parax-status
+    env: node
+    plan: free
+    rootDir: status-service
+    buildCommand: npm install && mkdir -p public && cp ../public/status.html ../public/status-land.json public/
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MAIN_URL
+        value: https://parax-vqqb.onrender.com
