@@ -4,6 +4,13 @@ webappparax-firebase-adminsdk-fbsvc-3cebc94660.json
 admin/
 server/src/local-admin.local.ts
 start-local-admin.bat
+# Local-only security console (internal team, never push to GitHub)
+security/
+server/src/local-security.local.ts
+local-security.bat
+# Local-only Para dev log viewer (never push to GitHub)
+server/src/para-dev.local.ts
+para-dev.bat
 node_modules/
 dist/
 functions/lib/

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sürüm Notları — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .doc-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 90px; }
+    .doc-hero { text-align: center; margin-bottom: 12px; }
+    .doc-hero .back { display: inline-block; margin-bottom: 18px; color: var(--brand); text-decoration: none; font-size: 0.88rem; }
+    .doc-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 10px; }
+    .doc-hero p { color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 24px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .release { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 24px 26px; margin: 22px 0; }
+    .release .ver { display: inline-block; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; background: var(--brand); color: #fff; border-radius: 999px; padding: 4px 14px; margin-bottom: 10px; }
+    .release .ver.soon { background: var(--bg-tertiary); color: var(--text-secondary); }
+    .release h2 { margin: 0 0 4px; font-size: 1.35rem; }
+    .release .date { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 12px; }
+    .release ul { margin: 0; padding-left: 22px; }
+    .release li { color: var(--text-secondary); font-size: 0.93rem; line-height: 1.7; margin-bottom: 7px; }
+    .release a { color: var(--brand); }
+    .release code { background: var(--bg-tertiary); border-radius: 6px; padding: 1px 7px; font-size: 0.85em; }
+    [data-lang][hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="documentation.html">Belgeler</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <div class="doc-wrap">
+    <div class="doc-hero">
+      <a class="back" href="documentation.html">← <span data-lang="tr">Tüm belgeler</span><span data-lang="en" hidden>All docs</span></a>
+      <h1 data-lang="tr">Sürüm Notları</h1>
+      <h1 data-lang="en" hidden>Release Notes</h1>
+      <p data-lang="tr">Parax'a neler geldi, neler düzeldi, sırada ne var? Tüm değişikliklerin raporu.</p>
+      <p data-lang="en" hidden>What landed in Parax, what got fixed, what's next? The full report of changes.</p>
+    </div>
+
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
+    </div>
+
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="release">
+        <span class="ver">Eylül 2026</span>
+        <h2>Çevrimiçi durumu ve yazıyor göstergesi</h2>
+        <div class="date">Üye listesi artık canlı</div>
+        <ul><li>Avatarlarda durum noktası: <b>yeşil</b> çevrimiçi, <b>sarı</b> boşta, <b>gri</b> çevrimdışı.</li><li>Boşta sayılmak için 3 dakika hareketsizlik gerekir; kapattığın sekme ~1,5 dakikada griye döner.</li><li>Biri yazarken kanalda <b>"… yazıyor"</b> görünür.</li><li>Ekstra bir şey açmana gerek yok; panele girince otomatik başlar.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">Eylül 2026</span>
+        <h2>Oddiss hata kodları her yerde</h2>
+        <div class="date">Hatalar artık numaralı konuşuyor</div>
+        <ul><li>Sunucu yanıtları <code>code</code> alanıyla geliyor (örn. 91, 111, 141, 191, 212).</li><li><a href="errors.html">Oddiss kataloğu</a> yayında: 77, 91, 111 kartları ve 1–280 aralık tabloları.</li><li>112–114 rezerve edildi, ileride tanımlanacak.</li><li>Kalkan ekranına katalog bağlantısı eklendi.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">Perax v1.2</span>
+        <h2>Türkçe, sade kalkan ekranı</h2>
+        <div class="date">Güvenlik kontrolü yenilendi</div>
+        <ul><li>Arayüz tamamen Türkçe, emojisiz, sakin tasarım.</li><li>Saatine göre selamlama (Günaydın / Merhaba / İyi akşamlar).</li><li>"Ben bir insanım" onayı + ilerleme göstergesi; 3 saatlik kalkan aynen sürüyor.</li><li>Kalkan artık tüm sayfalarda aktif ve aynı kaynaktan doğrulanıyor.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">Ağustos 2026</span>
+        <h2>Belgeleme merkezi açıldı</h2>
+        <div class="date"><a href="documentation.html">Oddiss Belgeleme</a> yayında</div>
+        <ul><li>Başlangıç kılavuzu (Türkçe + English), Perax rehberi, SSS, Oddiss ve Translator anlatımları, para.js rehberi.</li><li>Tüm kılavuzlarda dil seçici; tercihin hatırlanır.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">Ağustos 2026</span>
+        <h2>Sohbet içi çeviri</h2>
+        <div class="date">Tek tıkla Translate</div>
+        <ul><li>Mesajlardaki <b>Translate</b> düğmesi seçtiğin dile çevirir, <code>(translated)</code> rozetiyle gösterir.</li><li>Kaynak dil otomatik algılanır; çeviri yalnızca senin ekranında görünür.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">Temmuz–Ağustos 2026</span>
+        <h2>Temel düzeltmeler</h2>
+        <div class="date">Kararlılık turu</div>
+        <ul><li>Resmi sunucuya otomatik katılım düzeltildi.</li><li>Davet kodu ile katılım akışı onarıldı.</li><li>Hassas dosyaların depoya düşmesi engellendi, güvenlik taraması yapıldı.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver soon">YAKINDA</span>
+        <h2>Sırada ne var?</h2>
+        <div class="date">Üzerinde çalışılıyor</div>
+        <ul><li>Kalkan için kapatma/hatırlama seçenekleri.</li><li>Sunucu Yönetimi belgesi: roller, davetler, moderasyon.</li><li>Bot platformu (geliştirme sürüyor; duyuru burada olacak).</li></ul>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="release">
+        <span class="ver">September 2026</span>
+        <h2>Online status and typing indicator</h2>
+        <div class="date">The member list is now alive</div>
+        <ul><li>Status dots on avatars: <b>green</b> online, <b>yellow</b> idle, <b>gray</b> offline.</li><li>Idle needs 3 minutes of inactivity; a closed tab fades to gray in ~1.5 minutes.</li><li>While someone types, the channel shows <b>"… is typing"</b>.</li><li>Nothing to enable; it starts automatically on the dashboard.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">September 2026</span>
+        <h2>Oddiss error codes everywhere</h2>
+        <div class="date">Errors now speak in numbers</div>
+        <ul><li>Server responses carry a <code>code</code> field (e.g. 91, 111, 141, 191, 212).</li><li>The <a href="errors.html">Oddiss catalog</a> is live: cards for 77, 91, 111 plus 1–280 range tables.</li><li>112–114 reserved for future definitions.</li><li>Catalog link added to the shield screen.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">Perax v1.2</span>
+        <h2>Turkish, calm shield screen</h2>
+        <div class="date">Security check redesigned</div>
+        <ul><li>Fully Turkish interface, no emojis, calmer design.</li><li>Time-based greeting (morning / hello / evening).</li><li>"I am human" confirm + progress indicator; the 3-hour shield works as before.</li><li>The shield is now active on all pages and verifies same-origin.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">August 2026</span>
+        <h2>Docs hub opened</h2>
+        <div class="date"><a href="documentation.html">Oddiss Belgeleme</a> is live</div>
+        <ul><li>Getting-started guide (Türkçe + English), Perax guide, FAQ, Oddiss and Translator explainers, para.js guide.</li><li>Language picker on every guide; your choice is remembered.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">August 2026</span>
+        <h2>In-chat translation</h2>
+        <div class="date">One-click Translate</div>
+        <ul><li>The <b>Translate</b> button on messages renders in your language with a <code>(translated)</code> badge.</li><li>Source language auto-detected; translations show only on your screen.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver">July–August 2026</span>
+        <h2>Foundation fixes</h2>
+        <div class="date">Stability round</div>
+        <ul><li>Official-server auto-join fixed.</li><li>Invite-code joining flow repaired.</li><li>Sensitive files stopped from landing in the repo; security sweep done.</li></ul>
+      </div>
+      <div class="release">
+        <span class="ver soon">SOON</span>
+        <h2>What's next?</h2>
+        <div class="date">In progress</div>
+        <ul><li>Shield turn-off / remember-me options.</li><li>Server Management doc: roles, invites, moderation.</li><li>Bot platform (in development; announcement lands here).</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang") !== lang;
+        });
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+    })();
+  </script>
+</body>
+</html>

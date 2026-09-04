@@ -18,7 +18,7 @@ export const verifyToken = async (
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    res.status(401).json({ error: "Unauthorized: No token provided" });
+    res.status(401).json({ error: "Unauthorized: No token provided", code: 401 });
     return;
   }
 
@@ -34,6 +34,6 @@ export const verifyToken = async (
     };
     next();
   } catch (error) {
-    res.status(401).json({ error: "Unauthorized: Invalid token" });
+    res.status(401).json({ error: "Unauthorized: Invalid token", code: 141 });
   }
 };

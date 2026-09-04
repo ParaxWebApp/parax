@@ -16,6 +16,12 @@ export const errorHandler = async (err: any, req: Request, res: Response, next: 
     console.error(`[Para:${ts}] Stack:\n${err.stack.slice(0, 2000)}`);
   }
   
+  // Oversized JSON payloads (body-parser limit): Oddiss 413
+  if ((err as any)?.type === "entity.too.large") {
+    res.status(413).json({ error: "Payload Too Large", code: 413 });
+    return;
+  }
+
   res.status(500).json({ 
     error: "Internal Server Error",
     code: 228,

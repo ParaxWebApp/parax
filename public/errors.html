@@ -20,9 +20,12 @@
   <script src="para.js"></script>
   <style>
     .oddiss-wrap { max-width: 1020px; margin: 0 auto; padding: 40px 20px 80px; }
-    .oddiss-hero { text-align: center; margin-bottom: 32px; }
+    .oddiss-hero { text-align: center; margin-bottom: 12px; }
     .oddiss-hero h1 { font-size: 2.4rem; margin: 0 0 8px; }
     .oddiss-hero p { color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 20px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
     .range-legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 24px 0; }
     .range-pill { border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px; font-size: 0.85rem; background: var(--bg-secondary); }
     .range-pill b { color: var(--brand); }
@@ -42,8 +45,10 @@
     .err-table td.code { font-weight: 800; color: var(--brand); white-space: nowrap; }
     .err-table tr:hover td { background: var(--bg-hover); }
     .oddiss-note { border-left: 3px solid var(--brand); background: var(--bg-secondary); padding: 14px 18px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 8px; }
-    .anchor-links { display: flex; gap: 16px; justify-content: center; margin-bottom: 28px; font-size: 0.9rem; }
+    .oddiss-note a { color: var(--brand); }
+    .anchor-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; font-size: 0.9rem; }
     .anchor-links a { color: var(--brand); text-decoration: none; }
+    [data-lang][hidden] { display: none; }
   </style>
 </head>
 <body>
@@ -56,7 +61,7 @@
       Parax
     </div>
     <div class="navbar-links">
-      <a href="signup.html">Sign Up</a>
+      <a href="documentation.html">Belgeler</a>
       <a href="login.html">Log In</a>
     </div>
   </nav>
@@ -64,139 +69,328 @@
   <div class="oddiss-wrap">
     <div class="oddiss-hero">
       <h1>Oddiss</h1>
-      <p>Parax hata kodları kataloğu. Bir hata aldığında kodunu aşağıda bul, ne anlama geldiğini ve ne yapman gerektiğini öğren.</p>
+      <p data-lang="tr">Parax hata kodları kataloğu. Bir hata aldığında kodunu aşağıda bul, ne anlama geldiğini ve ne yapman gerektiğini öğren.</p>
+      <p data-lang="en" hidden>Parax error code catalog. Got an error? Find its code below to learn what it means and what to do.</p>
     </div>
 
-    <div class="range-legend">
-      <span class="range-pill"><b>1–140</b> · Perax Kalkanı</span>
-      <span class="range-pill"><b>141–240</b> · Uygulama (sunucu tarafı)</span>
-      <span class="range-pill"><b>241–280</b> · Ağ ve bağlantı</span>
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
     </div>
 
-    <div class="anchor-links">
-      <a href="documentation.html">Tüm belgeler</a>
-      <a href="#perax">Perax (1–140)</a>
-      <a href="#uygulama">Uygulama (141–240)</a>
-      <a href="#ag">Ağ (241–280)</a>
-    </div>
-
-    <div class="spot-grid">
-      <div class="spot-card" id="kod-77">
-        <div class="code">77</div>
-        <h3>Bağlantı reddedildi</h3>
-        <p>Sunucu bağlantıyı kabul etmedi. Genelde IP engeli, bakım veya kapalı port yüzündendir.</p>
-        <ol>
-          <li>İnternetini kontrol et, sayfayı yenile.</li>
-          <li>VPN/proxy kullanıyorsan kapatıp tekrar dene.</li>
-          <li>Sürüyorsa farklı bir ağdan dene ve destek ile kodunu paylaş.</li>
-        </ol>
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="range-legend">
+        <span class="range-pill"><b>1–140</b> · Perax Kalkanı</span>
+        <span class="range-pill"><b>141–240</b> · Uygulama (sunucu tarafı)</span>
+        <span class="range-pill"><b>241–280</b> · Ağ ve bağlantı</span>
+        <span class="range-pill"><b>401–460</b> · İstek ve Kaynak</span>
       </div>
-      <div class="spot-card" id="kod-91">
-        <div class="code">91</div>
-        <h3>Perax engeli</h3>
-        <p>Perax güvenlik kontrolünden geçemedin veya IP adresin kara listede. Bot koruması seni durdurdu.</p>
-        <ol>
-          <li>Güvenlik ekranında "Ben bir insanım" kutusunu işaretle.</li>
-          <li>Otomatik araç, bot veya headless tarayıcı kullanma.</li>
-          <li>Haksız olduğunu düşünüyorsan IP adresinle birlikte destekle iletişime geç.</li>
-        </ol>
+
+      <div class="anchor-links">
+        <a href="documentation.html">Tüm belgeler</a>
+        <a href="#perax">Perax (1–140)</a>
+        <a href="#uygulama">Uygulama (141–240)</a>
+        <a href="#ag">Ağ (241–280)</a>
+        <a href="#istek">İstek (401–460)</a>
       </div>
-      <div class="spot-card" id="kod-111">
-        <div class="code">111</div>
-        <h3>Çok fazla istek</h3>
-        <p>Kısa sürede çok fazla istek gönderdin, hız sınırı devreye girdi.</p>
-        <ol>
-          <li>1–2 dakika bekle, sonra yavaşça devam et.</li>
-          <li>Sayfayı art arda yenileme, otomatik yenileme eklentisi kullanma.</li>
-          <li>Bot yazıyorsan isteklerini aralıklı gönder.</li>
-        </ol>
+
+      <div class="spot-grid">
+        <div class="spot-card" id="kod-77">
+          <div class="code">77</div>
+          <h3>Bağlantı reddedildi</h3>
+          <p>Sunucu bağlantıyı kabul etmedi. Genelde IP engeli, bakım veya kapalı port yüzündendir.</p>
+          <ol>
+            <li>İnternetini kontrol et, sayfayı yenile.</li>
+            <li>VPN/proxy kullanıyorsan kapatıp tekrar dene.</li>
+            <li>Sürüyorsa farklı bir ağdan dene ve destek ile kodunu paylaş.</li>
+          </ol>
+        </div>
+        <div class="spot-card" id="kod-91">
+          <div class="code">91</div>
+          <h3>Perax engeli</h3>
+          <p>Perax güvenlik kontrolünden geçemedin veya IP adresin kara listede. Bot koruması seni durdurdu.</p>
+          <ol>
+            <li>Güvenlik ekranında "Ben bir insanım" kutusunu işaretle.</li>
+            <li>Otomatik araç, bot veya headless tarayıcı kullanma.</li>
+            <li>Haksız olduğunu düşünüyorsan IP adresinle birlikte destekle iletişime geç.</li>
+          </ol>
+        </div>
+        <div class="spot-card" id="kod-111">
+          <div class="code">111</div>
+          <h3>Çok fazla istek</h3>
+          <p>Kısa sürede çok fazla istek gönderdin, hız sınırı devreye girdi.</p>
+          <ol>
+            <li>1–2 dakika bekle, sonra yavaşça devam et.</li>
+            <li>Sayfayı art arda yenileme, otomatik yenileme eklentisi kullanma.</li>
+            <li>Bot yazıyorsan isteklerini aralıklı gönder.</li>
+          </ol>
+        </div>
       </div>
+
+      <input id="oddiss-search" class="oddiss-search" placeholder="Kod veya kelime ara... (ör. 91, jeton, ses)" autocomplete="off" />
+
+      <div class="oddiss-section" id="perax">
+        <h2>Perax Kalkanı (1–140)</h2>
+        <div class="sub">İnsan doğrulama, kalkan jetonları, hız sınırı ve WAF engelleri.</div>
+        <table class="err-table">
+          <thead><tr><th>Kod</th><th>Ad</th><th>Açıklama</th><th>Ne yapmalı</th></tr></thead>
+          <tbody>
+            <tr><td class="code">1</td><td>Jeton yok</td><td>Kalkan jetonu gönderilmedi.</td><td>Sayfayı yenile, doğrulamayı tamamla.</td></tr>
+            <tr><td class="code">2</td><td>Jeton geçersiz / süresi dolmuş</td><td>3 saatlik kalkan süresi bitti veya jeton bozuldu.</td><td>Tekrar "Ben bir insanım" adımını geç.</td></tr>
+            <tr><td class="code">3</td><td>İmza hatası</td><td>Jeton imzası sunucu anahtarıyla eşleşmedi.</td><td>Önbelleği temizle, yeniden doğrula.</td></tr>
+            <tr><td class="code">4</td><td>Liste sıfırlandı</td><td>Yönetici kalkan listesini temizledi (perax-reset).</td><td>Yeniden doğrulama yap, bu normaldir.</td></tr>
+            <tr><td class="code">5</td><td>Eski sürüm jeton</td><td>v1.1 kalıntısı, artık kabul edilmiyor.</td><td>Tarayıcı verilerini temizleyip tekrar dene.</td></tr>
+            <tr><td class="code">31</td><td>Meydan okuma gerekli</td><td>Doğrulama jetonu olmadan verify çağrıldı.</td><td>Önce challenge al, sonra onayla.</td></tr>
+            <tr><td class="code">32</td><td>Meydan okuma süresi doldu</td><td>5 dakikalık challenge jetonu bayatladı.</td><td>Sayfayı yenileyip yeni kod al.</td></tr>
+            <tr><td class="code">33</td><td>Hatalı jeton tipi</td><td>Challenge yerine başka jeton gönderildi.</td><td>Akışı baştan başlat.</td></tr>
+            <tr><td class="code">34</td><td>Cevap eksik</td><td>İnsan onayı gönderilmedi.</td><td>Kutuyu işaretleyip Devam Et'e bas.</td></tr>
+            <tr><td class="code">35</td><td>Onay kutusu boş</td><td>"Ben bir insanım" işaretlenmeden gönderildi.</td><td>Kutuyu işaretle.</td></tr>
+            <tr><td class="code">71</td><td>Hız sınırı aşıldı</td><td>Dakikada 150 istekten fazla gönderildi.</td><td>Bekle, istek hızını düşür.</td></tr>
+            <tr><td class="code">72</td><td>IP otomatik engellendi</td><td>Sınır ihlali sonrası IP geçici yasaklandı.</td><td>Dur, bir süre sonra dön. Tekrarlanırsa destek.</td></tr>
+            <tr><td class="code">73</td><td>Kara liste engeli</td><td>IP, güvenlik duvarı listesinde.</td><td>Destekle iletişime geç.</td></tr>
+            <tr><td class="code">74</td><td>Şüpheli aktivite</td><td>WAF isteği riskli buldu (403).</td><td>Normal tarayıcıyla, eklentisiz dene.</td></tr>
+            <tr><td class="code">75</td><td>Headless sıkı kontrol</td><td>Otomatik tarayıcı tespit edildi.</td><td>Gerçek tarayıcı kullan.</td></tr>
+            <tr id="kod-t77"><td class="code">77</td><td>Bağlantı reddedildi</td><td>Sunucu bağlantıyı kabul etmedi.</td><td>Yukarıdaki 77 kartındaki adımları izle.</td></tr>
+            <tr id="kod-t91"><td class="code">91</td><td>Perax engeli</td><td>Bot koruması isteği durdurdu.</td><td>Yukarıdaki 91 kartındaki adımları izle.</td></tr>
+            <tr id="kod-t111"><td class="code">111</td><td>Çok fazla istek</td><td>Hız sınırı devreye girdi.</td><td>Yukarıdaki 111 kartındaki adımları izle.</td></tr>
+            <tr id="kod-112"><td class="code">112</td><td>Rezerve</td><td>Bu kod henüz tanımlanmadı.</td><td>Aralığın genel Perax adımlarını uygula.</td></tr>
+            <tr id="kod-113"><td class="code">113</td><td>Rezerve</td><td>Bu kod henüz tanımlanmadı.</td><td>Aralığın genel Perax adımlarını uygula.</td></tr>
+            <tr id="kod-114"><td class="code">114</td><td>Rezerve</td><td>Bu kod henüz tanımlanmadı.</td><td>Aralığın genel Perax adımlarını uygula.</td></tr>
+          </tbody>
+        </table>
+        <div class="oddiss-note">Sunucu yanıtları <b>code</b> alanıyla gelir (örn. 2, 31, 32, 73, 91, 111, 142, 144, 191, 211–214, 227–228, 401, 405–406, 413); karta bağlanmak için <b>/errors.html#kod-91</b> gibi bağlantılar kullanılabilir. <b>77</b> ağ seviyesinde istemcide görülür, sunucu döndüremez. 1–140 arasında listede olmayan kodlar rezerve edilmiştir; genel anlamı "Perax güvenlik kontrolü" demektir. Aynı çözüm adımlarını uygula.</div>
+      </div>
+
+      <div class="oddiss-section" id="uygulama">
+        <h2>Uygulama (141–240)</h2>
+        <div class="sub">Sunucu tarafı uygulama hataları; istemci (tarayıcı) kaynaklı değildir.</div>
+        <table class="err-table">
+          <thead><tr><th>Kod</th><th>Ad</th><th>Açıklama</th><th>Ne yapmalı</th></tr></thead>
+          <tbody>
+            <tr><td class="code">141</td><td>Jeton geçersiz (401)</td><td>Giriş jetonun doğrulanamadı.</td><td>Çıkış yapıp tekrar giriş yap.</td></tr>
+            <tr><td class="code">142</td><td>Yetkisiz işlem (403)</td><td>Bu işlem için yetkin yok (örn. yönetici paneli).</td><td>Yetkili bir hesapla dene.</td></tr>
+            <tr><td class="code">143</td><td>Profil alınamadı</td><td>Kullanıcı kaydı okunamadı.</td><td>Tekrar dene, sürerse destek.</td></tr>
+            <tr><td class="code">144</td><td>Giriş hız sınırı</td><td>15 dakikada 20'den fazla giriş denemesi.</td><td>15 dakika bekle.</td></tr>
+            <tr><td class="code">145</td><td>Oturum süresi doldu</td><td>Jetonun ömrü bitti.</td><td>Tekrar giriş yap.</td></tr>
+            <tr><td class="code">171</td><td>Veritabanı izin reddi</td><td>Firestore kuralı yazmayı/okumayı engelledi.</td><td>Giriş yaptığından emin ol, sürerse bildir.</td></tr>
+            <tr><td class="code">172</td><td>Kayıt bulunamadı</td><td>Sunucu/kanal/mesaj artık yok.</td><td>Listeyi yenile.</td></tr>
+            <tr><td class="code">173</td><td>Veritabanı kotası</td><td>Okuma/yazma kotası aşıldı.</td><td>Bekle, sorun bizde; durum sayfasını izle.</td></tr>
+            <tr><td class="code">191</td><td>Ses jetonu üretilemedi</td><td>LiveKit jetonu oluşturulamadı.</td><td>Kanaldan çıkıp tekrar gir.</td></tr>
+            <tr><td class="code">192</td><td>Ses odası dolu</td><td>Oda kapasitesi aşıldı.</td><td>Başka kanal dene veya bekle.</td></tr>
+            <tr><td class="code">193</td><td>Mikrofon izni yok</td><td>Tarayıcı mikrofonu engelledi.</td><td>Adres çubuğundan izin ver.</td></tr>
+            <tr><td class="code">211</td><td>Bot adı gerekli</td><td>Bot kaydında ad boş bırakıldı.</td><td>Ad girip tekrar dene.</td></tr>
+            <tr><td class="code">212</td><td>Bot bulunamadı (404)</td><td>Bot silinmiş veya ID hatalı.</td><td>Listeyi yenile, ID'yi kontrol et.</td></tr>
+            <tr><td class="code">213</td><td>Bot sahibi değilsin (403)</td><td>Başkasının botuna işlem denendi.</td><td>Kendi botlarında işlem yap.</td></tr>
+            <tr><td class="code">214</td><td>Bot jetonu tek seferlikti</td><td>Jeton yalnızca oluşturulurken gösterilir.</td><td>Yeniden üret (regenerate).</td></tr>
+            <tr><td class="code">226</td><td>Hata kaydı sınırı</td><td>Log servisi hız sınırında.</td><td>Bekle, otomatik düzelir.</td></tr>
+            <tr><td class="code">227</td><td>Metrik alınamadı</td><td>İzleme servisi yanıt vermedi.</td><td>Bir süre sonra tekrar dene.</td></tr>
+            <tr><td class="code">228</td><td>İç sunucu hatası (500)</td><td>Beklenmeyen sunucu hatası, kaydedildi.</td><td>Tekrar dene; sürerse kodunla bildir.</td></tr>
+          </tbody>
+        </table>
+        <div class="oddiss-note">141–240 arasında listede olmayan kodlar rezerve edilmiştir; genel anlamı "uygulama sunucu hatası" demektir. Tekrar dene, düzelmezse destekle paylaş.</div>
+      </div>
+
+      <div class="oddiss-section" id="ag">
+        <h2>Ağ ve bağlantı (241–280)</h2>
+        <div class="sub">Cihazın, internetin veya servis yolu ile ilgili sorunlar.</div>
+        <table class="err-table">
+          <thead><tr><th>Kod</th><th>Ad</th><th>Açıklama</th><th>Ne yapmalı</th></tr></thead>
+          <tbody>
+            <tr><td class="code">241</td><td>Sunucu bulunamadı (DNS)</td><td>Adres çözülemedi.</td><td>İnterneti kontrol et, DNS değiştirip dene.</td></tr>
+            <tr><td class="code">242</td><td>Bağlantı zaman aşımı</td><td>Sunucu sürede yanıt vermedi.</td><td>Yenile; yoğunsa bekle.</td></tr>
+            <tr><td class="code">243</td><td>CORS engeli</td><td>Tarayıcı çapraz isteği blokladı.</td><td>Resmi site/uygulamadan gir, eklentileri kapat.</td></tr>
+            <tr><td class="code">244</td><td>Çevrimdışısın</td><td>Cihazda internet yok.</td><td>Bağlantını kontrol et.</td></tr>
+            <tr><td class="code">245</td><td>Güvenli bağlantı hatası (TLS)</td><td>Sertifika doğrulanamadı.</td><td>Tarih/saati düzelt, VPN'i kapatıp dene.</td></tr>
+            <tr><td class="code">246</td><td>Canlı bağlantı koptu (WebSocket)</td><td>Anlık kanal kapandı.</td><td>Sayfa kendini toparlar; olmazsa yenile.</td></tr>
+            <tr><td class="code">247</td><td>Ses bölgesine ulaşılamadı</td><td>Ses sunucusu yolu kapalı.</td><td>Metin sohbete devam et, sonra tekrar dene.</td></tr>
+            <tr><td class="code">248</td><td>Veritabanı erişilemiyor</td><td>Firestore hattı kopuk.</td><td>Bekle, genelde kısa sürer.</td></tr>
+            <tr><td class="code">249</td><td>Dosya yüklenemedi</td><td>Depolama hattı veya kota sorunu.</td><td>Dosyayı küçültüp tekrar dene.</td></tr>
+          </tbody>
+        </table>
+        <div class="oddiss-note">241–280 arasında listede olmayan kodlar rezerve edilmiştir; genel anlamı "ağ sorunu" demektir. İnternetini kontrol edip tekrar dene.</div>
+      </div>
+
+      <div class="oddiss-section" id="istek">
+        <h2>İstek ve Kaynak (401–460)</h2>
+        <div class="sub">Sayfa ve kaynak istekleri; tarayıcıda görülen istemci hataları.</div>
+        <table class="err-table">
+          <thead><tr><th>Kod</th><th>Ad</th><th>Açıklama</th><th>Ne yapmalı</th></tr></thead>
+          <tbody>
+            <tr id="kod-404"><td class="code">404</td><td>Sayfa bulunamadı</td><td>Aradığın sayfa yok ya da taşınmış.</td><td>Adresi kontrol et, ana sayfaya dön.</td></tr>
+            <tr><td class="code">401</td><td>Eksik veya Geçersiz Başlık</td><td>Authorization başlığı yok ya da Bearer biçiminde değil. Rol izni değil, HTTP protokol başlığı sorunudur.</td><td>Jetonu "Bearer ..." biçiminde gönder; çıkış yapıp giriş yaparak yeni jeton al.</td></tr>
+            <tr><td class="code">402</td><td>Ödeme / Abonelik Gerekli</td><td>Bu özellik aktif premium katman ister.</td><td>Premium henüz satışta değil; duyuruları izle.</td></tr>
+            <tr><td class="code">403</td><td>IP veya Etki Alanı Engeli</td><td>Köken izinsiz (CORS) ya da IP giriş öncesi güvenlik duvarında durduruldu.</td><td>Resmi siteden gir, VPN'i kapat; kara liste şüphesinde destekle iletişime geç.</td></tr>
+            <tr><td class="code">405</td><td>Desteklenmeyen HTTP Yöntemi</td><td>GET-only yola POST gibi yanlış yöntemle gidildi.</td><td>Belgede yazan yöntemi kullan; yanıtın Allow başlığına bak.</td></tr>
+            <tr><td class="code">406</td><td>Desteklenmeyen İçerik Türü</td><td>API yalnızca JSON döner; Accept başlığı başka format istedi.</td><td>Accept: application/json gönder.</td></tr>
+            <tr><td class="code">413</td><td>Aşırı Büyük Veri Paketi</td><td>JSON gövde veya yükleme boyut sınırını aştı.</td><td>Veriyi küçült veya parçalara bölüp gönder.</td></tr>
+            <tr><td class="code">455</td><td>İstek İlkesi İhlali</td><td>İstek parametreleri politika veya güvenlik kurallarını bozdu.</td><td>Parametreleri belgedeki kurallara uygun gönder; sürerse bildir.</td></tr>
+            <tr><td class="code">460</td><td>İstemci Bağlantı Zaman Aşımı</td><td>İstemci/proxy, gövde tamamlanmadan düştü ya da takıldı.</td><td>Bağlantını kontrol edip tekrar dene; büyük gönderimleri parçala.</td></tr>
+            <tr><td class="code">407–412, 414–454, 456–459</td><td>Rezerve</td><td>Bu kodlar henüz tanımlanmadı.</td><td>Adresi kontrol et, sayfayı yenile; sürerse destekle paylaş.</td></tr>
+          </tbody>
+        </table>
+        <div class="oddiss-note">401–460 arasında yukarıda olmayan kodlar rezerve edilmiştir; genel anlamı "istek/kaynak sorunu" demektir.</div>
+      </div>
+
+      <div class="oddiss-note">Hâlâ çözülmedi mi? Hata kodunu, ne yaparken aldığını ve saat bilgisini destekle paylaş. Para hata günlüğüne otomatik düştüyse ekip zaten görüyordur.</div>
     </div>
 
-    <input id="oddiss-search" class="oddiss-search" placeholder="Kod veya kelime ara... (ör. 91, jeton, ses)" autocomplete="off" />
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="range-legend">
+        <span class="range-pill"><b>1–140</b> · Perax Shield</span>
+        <span class="range-pill"><b>141–240</b> · Application (server-side)</span>
+        <span class="range-pill"><b>241–280</b> · Network &amp; connection</span>
+        <span class="range-pill"><b>401–460</b> · Request &amp; Resource</span>
+      </div>
 
-    <div class="oddiss-section" id="perax">
-      <h2>Perax Kalkanı (1–140)</h2>
-      <div class="sub">İnsan doğrulama, kalkan jetonları, hız sınırı ve WAF engelleri.</div>
-      <table class="err-table">
-        <thead><tr><th>Kod</th><th>Ad</th><th>Açıklama</th><th>Ne yapmalı</th></tr></thead>
-        <tbody>
-          <tr><td class="code">1</td><td>Jeton yok</td><td>Kalkan jetonu gönderilmedi.</td><td>Sayfayı yenile, doğrulamayı tamamla.</td></tr>
-          <tr><td class="code">2</td><td>Jeton geçersiz / süresi dolmuş</td><td>3 saatlik kalkan süresi bitti veya jeton bozuldu.</td><td>Tekrar "Ben bir insanım" adımını geç.</td></tr>
-          <tr><td class="code">3</td><td>İmza hatası</td><td>Jeton imzası sunucu anahtarıyla eşleşmedi.</td><td>Önbelleği temizle, yeniden doğrula.</td></tr>
-          <tr><td class="code">4</td><td>Liste sıfırlandı</td><td>Yönetici kalkan listesini temizledi (perax-reset).</td><td>Yeniden doğrulama yap, bu normaldir.</td></tr>
-          <tr><td class="code">5</td><td>Eski sürüm jeton</td><td>v1.1 kalıntısı, artık kabul edilmiyor.</td><td>Tarayıcı verilerini temizleyip tekrar dene.</td></tr>
-          <tr><td class="code">31</td><td>Meydan okuma gerekli</td><td>Doğrulama jetonu olmadan verify çağrıldı.</td><td>Önce challenge al, sonra onayla.</td></tr>
-          <tr><td class="code">32</td><td>Meydan okuma süresi doldu</td><td>5 dakikalık challenge jetonu bayatladı.</td><td>Sayfayı yenileyip yeni kod al.</td></tr>
-          <tr><td class="code">33</td><td>Hatalı jeton tipi</td><td>Challenge yerine başka jeton gönderildi.</td><td>Akışı baştan başlat.</td></tr>
-          <tr><td class="code">34</td><td>Cevap eksik</td><td>İnsan onayı gönderilmedi.</td><td>Kutuyu işaretleyip Devam Et'e bas.</td></tr>
-          <tr><td class="code">35</td><td>Onay kutusu boş</td><td>"Ben bir insanım" işaretlenmeden gönderildi.</td><td>Kutuyu işaretle.</td></tr>
-          <tr><td class="code">71</td><td>Hız sınırı aşıldı</td><td>Dakikada 150 istekten fazla gönderildi.</td><td>Bekle, istek hızını düşür.</td></tr>
-          <tr><td class="code">72</td><td>IP otomatik engellendi</td><td>Sınır ihlali sonrası IP geçici yasaklandı.</td><td>Dur, bir süre sonra dön. Tekrarlanırsa destek.</td></tr>
-          <tr><td class="code">73</td><td>Kara liste engeli</td><td>IP, güvenlik duvarı listesinde.</td><td>Destekle iletişime geç.</td></tr>
-          <tr><td class="code">74</td><td>Şüpheli aktivite</td><td>WAF isteği riskli buldu (403).</td><td>Normal tarayıcıyla, eklentisiz dene.</td></tr>
-          <tr><td class="code">75</td><td>Headless sıkı kontrol</td><td>Otomatik tarayıcı tespit edildi.</td><td>Gerçek tarayıcı kullan.</td></tr>
-          <tr id="kod-t77"><td class="code">77</td><td>Bağlantı reddedildi</td><td>Sunucu bağlantıyı kabul etmedi.</td><td>Yukarıdaki 77 kartındaki adımları izle.</td></tr>
-          <tr id="kod-t91"><td class="code">91</td><td>Perax engeli</td><td>Bot koruması isteği durdurdu.</td><td>Yukarıdaki 91 kartındaki adımları izle.</td></tr>
-          <tr id="kod-t111"><td class="code">111</td><td>Çok fazla istek</td><td>Hız sınırı devreye girdi.</td><td>Yukarıdaki 111 kartındaki adımları izle.</td></tr>
-          <tr id="kod-112"><td class="code">112</td><td>Rezerve</td><td>Bu kod henüz tanımlanmadı.</td><td>Aralığın genel Perax adımlarını uygula.</td></tr>
-          <tr id="kod-113"><td class="code">113</td><td>Rezerve</td><td>Bu kod henüz tanımlanmadı.</td><td>Aralığın genel Perax adımlarını uygula.</td></tr>
-          <tr id="kod-114"><td class="code">114</td><td>Rezerve</td><td>Bu kod henüz tanımlanmadı.</td><td>Aralığın genel Perax adımlarını uygula.</td></tr>
-        </tbody>
-      </table>
-      <div class="oddiss-note">Sunucu yanıtları <b>code</b> alanıyla gelir (örn. 2, 31, 32, 73, 91, 111, 142, 144, 191, 211–214, 227–228); karta bağlanmak için <b>/errors.html#kod-91</b> gibi bağlantılar kullanılabilir. <b>77</b> ağ seviyesinde istemcide görülür, sunucu döndüremez. 1–140 arasında listede olmayan kodlar rezerve edilmiştir; genel anlamı "Perax güvenlik kontrolü" demektir. Aynı çözüm adımlarını uygula.</div>
+      <div class="anchor-links">
+        <a href="documentation.html">All docs</a>
+        <a href="#perax-en">Perax (1–140)</a>
+        <a href="#uygulama-en">Application (141–240)</a>
+        <a href="#ag-en">Network (241–280)</a>
+        <a href="#istek-en">Request (401–460)</a>
+      </div>
+
+      <div class="spot-grid">
+        <div class="spot-card">
+          <div class="code">77</div>
+          <h3>Connection refused</h3>
+          <p>The server refused the connection. Usually an IP block, maintenance, or a closed port.</p>
+          <ol>
+            <li>Check your internet, refresh the page.</li>
+            <li>If you use VPN/proxy, turn it off and retry.</li>
+            <li>If it persists, try another network and share your code with support.</li>
+          </ol>
+        </div>
+        <div class="spot-card">
+          <div class="code">91</div>
+          <h3>Perax block</h3>
+          <p>You failed the Perax security check or your IP is blocklisted. Bot protection stopped you.</p>
+          <ol>
+            <li>Tick "I am human" on the security screen.</li>
+            <li>Don't use automation, bots, or headless browsers.</li>
+            <li>If you think it's unfair, contact support with your IP.</li>
+          </ol>
+        </div>
+        <div class="spot-card">
+          <div class="code">111</div>
+          <h3>Too many requests</h3>
+          <p>You sent too many requests in a short time; the rate limit kicked in.</p>
+          <ol>
+            <li>Wait 1–2 minutes, then continue slowly.</li>
+            <li>Don't refresh repeatedly or use auto-refresh extensions.</li>
+            <li>If you're writing a bot, space out your requests.</li>
+          </ol>
+        </div>
+      </div>
+
+      <input id="oddiss-search-en" class="oddiss-search" placeholder="Search code or word... (e.g. 91, token, voice)" autocomplete="off" />
+
+      <div class="oddiss-section" id="perax-en">
+        <h2>Perax Shield (1–140)</h2>
+        <div class="sub">Human verification, shield tokens, rate limits, and WAF blocks.</div>
+        <table class="err-table">
+          <thead><tr><th>Code</th><th>Name</th><th>Description</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td class="code">1</td><td>Token missing</td><td>No shield token was sent.</td><td>Refresh, complete verification.</td></tr>
+            <tr><td class="code">2</td><td>Token invalid / expired</td><td>3-hour shield expired or token corrupt.</td><td>Pass the "I am human" step again.</td></tr>
+            <tr><td class="code">3</td><td>Signature error</td><td>Token signature doesn't match the server key.</td><td>Clear cache, re-verify.</td></tr>
+            <tr><td class="code">4</td><td>List reset</td><td>An admin cleared the shield list (perax-reset).</td><td>Re-verify, this is normal.</td></tr>
+            <tr><td class="code">5</td><td>Legacy token</td><td>v1.1 leftover, no longer accepted.</td><td>Clear browser data, retry.</td></tr>
+            <tr><td class="code">31</td><td>Challenge required</td><td>verify called without a challenge token.</td><td>Get a challenge first, then confirm.</td></tr>
+            <tr><td class="code">32</td><td>Challenge expired</td><td>5-minute challenge token went stale.</td><td>Refresh for a new code.</td></tr>
+            <tr><td class="code">33</td><td>Wrong token type</td><td>A different token was sent instead of a challenge.</td><td>Restart the flow.</td></tr>
+            <tr><td class="code">34</td><td>Answer missing</td><td>Human confirmation not sent.</td><td>Tick the box, press Continue.</td></tr>
+            <tr><td class="code">35</td><td>Checkbox empty</td><td>Sent without ticking "I am human".</td><td>Tick the box.</td></tr>
+            <tr><td class="code">71</td><td>Rate limit exceeded</td><td>Over 150 requests per minute.</td><td>Wait, slow down.</td></tr>
+            <tr><td class="code">72</td><td>IP auto-blocked</td><td>Temporary ban after a limit violation.</td><td>Stop, return later. Contact support if repeated.</td></tr>
+            <tr><td class="code">73</td><td>Blocklist hit</td><td>IP is on the firewall list.</td><td>Contact support.</td></tr>
+            <tr><td class="code">74</td><td>Suspicious activity</td><td>WAF found the request risky (403).</td><td>Use a normal extension-free browser.</td></tr>
+            <tr><td class="code">75</td><td>Headless strict check</td><td>Automated browser detected.</td><td>Use a real browser.</td></tr>
+            <tr><td class="code">77</td><td>Connection refused</td><td>Server refused the connection.</td><td>Follow the 77 card steps above.</td></tr>
+            <tr><td class="code">91</td><td>Perax block</td><td>Bot protection stopped the request.</td><td>Follow the 91 card steps above.</td></tr>
+            <tr><td class="code">111</td><td>Too many requests</td><td>Rate limit engaged.</td><td>Follow the 111 card steps above.</td></tr>
+            <tr><td class="code">112</td><td>Reserved</td><td>Not defined yet.</td><td>Apply the range's general Perax steps.</td></tr>
+            <tr><td class="code">113</td><td>Reserved</td><td>Not defined yet.</td><td>Apply the range's general Perax steps.</td></tr>
+            <tr><td class="code">114</td><td>Reserved</td><td>Not defined yet.</td><td>Apply the range's general Perax steps.</td></tr>
+          </tbody>
+        </table>
+        <div class="oddiss-note">Server responses carry a <b>code</b> field (e.g. 2, 31, 32, 73, 91, 111, 142, 144, 191, 211–214, 227–228, 401, 405–406, 413); link cards via <b>/errors.html#kod-91</b>. <b>77</b> is seen client-side at network level; the server cannot return it. Unlisted codes in 1–140 are reserved; general meaning is "Perax security check". Apply the same steps.</div>
+      </div>
+
+      <div class="oddiss-section" id="uygulama-en">
+        <h2>Application (141–240)</h2>
+        <div class="sub">Server-side application errors; not caused by the client (browser).</div>
+        <table class="err-table">
+          <thead><tr><th>Code</th><th>Name</th><th>Description</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td class="code">141</td><td>Token invalid (401)</td><td>Your login token couldn't be verified.</td><td>Log out and back in.</td></tr>
+            <tr><td class="code">142</td><td>Forbidden (403)</td><td>No permission for this action (e.g. admin panel).</td><td>Try an authorized account.</td></tr>
+            <tr><td class="code">143</td><td>Profile fetch failed</td><td>User record couldn't be read.</td><td>Retry, contact support if it persists.</td></tr>
+            <tr><td class="code">144</td><td>Login rate limit</td><td>Over 20 login attempts in 15 minutes.</td><td>Wait 15 minutes.</td></tr>
+            <tr><td class="code">145</td><td>Session expired</td><td>Your token's lifetime ended.</td><td>Log in again.</td></tr>
+            <tr><td class="code">171</td><td>Database permission denied</td><td>Firestore rule blocked the read/write.</td><td>Make sure you're logged in; report if it persists.</td></tr>
+            <tr><td class="code">172</td><td>Record not found</td><td>Server/channel/message no longer exists.</td><td>Refresh the list.</td></tr>
+            <tr><td class="code">173</td><td>Database quota</td><td>Read/write quota exceeded.</td><td>Wait; it's on us — watch the status page.</td></tr>
+            <tr><td class="code">191</td><td>Voice token failed</td><td>LiveKit token couldn't be created.</td><td>Leave and rejoin the channel.</td></tr>
+            <tr><td class="code">192</td><td>Voice room full</td><td>Room capacity exceeded.</td><td>Try another channel or wait.</td></tr>
+            <tr><td class="code">193</td><td>No microphone permission</td><td>Browser blocked the microphone.</td><td>Allow it from the address bar.</td></tr>
+            <tr><td class="code">211</td><td>Bot name required</td><td>Name left empty on bot registration.</td><td>Enter a name, retry.</td></tr>
+            <tr><td class="code">212</td><td>Bot not found (404)</td><td>Bot deleted or wrong ID.</td><td>Refresh the list, check the ID.</td></tr>
+            <tr><td class="code">213</td><td>Not the bot owner (403)</td><td>Tried acting on someone else's bot.</td><td>Act on your own bots.</td></tr>
+            <tr><td class="code">214</td><td>Bot token was one-time</td><td>Token is shown only at creation.</td><td>Regenerate.</td></tr>
+            <tr><td class="code">226</td><td>Log rate limit</td><td>Log service is rate-limited.</td><td>Wait, it recovers automatically.</td></tr>
+            <tr><td class="code">227</td><td>Metrics unavailable</td><td>Monitoring service didn't respond.</td><td>Retry after a while.</td></tr>
+            <tr><td class="code">228</td><td>Internal server error (500)</td><td>Unexpected server error, logged.</td><td>Retry; report with your code if it persists.</td></tr>
+          </tbody>
+        </table>
+        <div class="oddiss-note">Unlisted codes in 141–240 are reserved; general meaning is "application server error". Retry, share with support if unresolved.</div>
+      </div>
+
+      <div class="oddiss-section" id="ag-en">
+        <h2>Network &amp; connection (241–280)</h2>
+        <div class="sub">Issues with your device, internet, or service path.</div>
+        <table class="err-table">
+          <thead><tr><th>Code</th><th>Name</th><th>Description</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td class="code">241</td><td>Server not found (DNS)</td><td>Address couldn't be resolved.</td><td>Check internet, try another DNS.</td></tr>
+            <tr><td class="code">242</td><td>Connection timeout</td><td>Server didn't respond in time.</td><td>Refresh; wait if busy.</td></tr>
+            <tr><td class="code">243</td><td>CORS block</td><td>Browser blocked the cross-site request.</td><td>Use the official site/app, disable extensions.</td></tr>
+            <tr><td class="code">244</td><td>You're offline</td><td>Device has no internet.</td><td>Check your connection.</td></tr>
+            <tr><td class="code">245</td><td>Secure connection error (TLS)</td><td>Certificate couldn't be verified.</td><td>Fix date/time, try with VPN off.</td></tr>
+            <tr><td class="code">246</td><td>Live connection dropped (WebSocket)</td><td>Realtime channel closed.</td><td>Page recovers itself; refresh if not.</td></tr>
+            <tr><td class="code">247</td><td>Voice region unreachable</td><td>Voice server path closed.</td><td>Keep texting, retry later.</td></tr>
+            <tr><td class="code">248</td><td>Database unreachable</td><td>Firestore line down.</td><td>Wait, usually brief.</td></tr>
+            <tr><td class="code">249</td><td>Upload failed</td><td>Storage line or quota issue.</td><td>Shrink the file, retry.</td></tr>
+          </tbody>
+        </table>
+        <div class="oddiss-note">Unlisted codes in 241–280 are reserved; general meaning is "network issue". Check your internet and retry.</div>
+      </div>
+
+      <div class="oddiss-section" id="istek-en">
+        <h2>Request &amp; Resource (401–460)</h2>
+        <div class="sub">Page and resource requests; client-side errors seen in the browser.</div>
+        <table class="err-table">
+          <thead><tr><th>Code</th><th>Name</th><th>Description</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td class="code">404</td><td>Page not found</td><td>The page doesn't exist or moved.</td><td>Check the URL, go home.</td></tr>
+            <tr><td class="code">401</td><td>Missing / Malformed Auth Header</td><td>Authorization header missing or not in Bearer form. An HTTP protocol header issue, not a role permission.</td><td>Send the token as "Bearer ..."; log out and back in for a fresh token.</td></tr>
+            <tr><td class="code">402</td><td>Payment Required</td><td>This feature needs an active premium tier.</td><td>Premium isn't on sale yet; watch announcements.</td></tr>
+            <tr><td class="code">403</td><td>IP / Domain Forbidden</td><td>Origin not allowed (CORS) or IP stopped by the firewall before login.</td><td>Use the official site, turn VPN off; contact support if blocklisted.</td></tr>
+            <tr><td class="code">405</td><td>Method Not Allowed</td><td>Wrong method for the route, e.g. POST to a GET-only path.</td><td>Use the documented method; check the response Allow header.</td></tr>
+            <tr><td class="code">406</td><td>Not Acceptable</td><td>The API only returns JSON; the Accept header asked for another format.</td><td>Send Accept: application/json.</td></tr>
+            <tr><td class="code">413</td><td>Payload Too Large</td><td>JSON body or upload exceeded size limits.</td><td>Shrink the payload or split it up.</td></tr>
+            <tr><td class="code">455</td><td>Request Policy Violation</td><td>Request parameters broke policy or security rules.</td><td>Send parameters per the documented rules; report if it persists.</td></tr>
+            <tr><td class="code">460</td><td>Client Request Timeout</td><td>Client/proxy dropped or hung before completing the payload.</td><td>Check your connection and retry; split large sends.</td></tr>
+            <tr><td class="code">407–412, 414–454, 456–459</td><td>Reserved</td><td>Not defined yet.</td><td>Check the URL, refresh; share with support if it persists.</td></tr>
+          </tbody>
+        </table>
+        <div class="oddiss-note">Unlisted codes in 401–460 besides the above are reserved; general meaning is "request/resource issue".</div>
+      </div>
+
+      <div class="oddiss-note">Still stuck? Share the error code, what you were doing, and the time with support. If it hit the Para error log, the team already sees it.</div>
     </div>
-
-    <div class="oddiss-section" id="uygulama">
-      <h2>Uygulama (141–240)</h2>
-      <div class="sub">Sunucu tarafı uygulama hataları; istemci (tarayıcı) kaynaklı değildir.</div>
-      <table class="err-table">
-        <thead><tr><th>Kod</th><th>Ad</th><th>Açıklama</th><th>Ne yapmalı</th></tr></thead>
-        <tbody>
-          <tr><td class="code">141</td><td>Jeton geçersiz (401)</td><td>Giriş jetonun doğrulanamadı.</td><td>Çıkış yapıp tekrar giriş yap.</td></tr>
-          <tr><td class="code">142</td><td>Yetkisiz işlem (403)</td><td>Bu işlem için yetkin yok (örn. yönetici paneli).</td><td>Yetkili bir hesapla dene.</td></tr>
-          <tr><td class="code">143</td><td>Profil alınamadı</td><td>Kullanıcı kaydı okunamadı.</td><td>Tekrar dene, sürerse destek.</td></tr>
-          <tr><td class="code">144</td><td>Giriş hız sınırı</td><td>15 dakikada 20'den fazla giriş denemesi.</td><td>15 dakika bekle.</td></tr>
-          <tr><td class="code">145</td><td>Oturum süresi doldu</td><td>Jetonun ömrü bitti.</td><td>Tekrar giriş yap.</td></tr>
-          <tr><td class="code">171</td><td>Veritabanı izin reddi</td><td>Firestore kuralı yazmayı/okumayı engelledi.</td><td>Giriş yaptığından emin ol, sürerse bildir.</td></tr>
-          <tr><td class="code">172</td><td>Kayıt bulunamadı</td><td>Sunucu/kanal/mesaj artık yok.</td><td>Listeyi yenile.</td></tr>
-          <tr><td class="code">173</td><td>Veritabanı kotası</td><td>Okuma/yazma kotası aşıldı.</td><td>Bekle, sorun bizde; durum sayfasını izle.</td></tr>
-          <tr><td class="code">191</td><td>Ses jetonu üretilemedi</td><td>LiveKit jetonu oluşturulamadı.</td><td>Kanaldan çıkıp tekrar gir.</td></tr>
-          <tr><td class="code">192</td><td>Ses odası dolu</td><td>Oda kapasitesi aşıldı.</td><td>Başka kanal dene veya bekle.</td></tr>
-          <tr><td class="code">193</td><td>Mikrofon izni yok</td><td>Tarayıcı mikrofonu engelledi.</td><td>Adres çubuğundan izin ver.</td></tr>
-          <tr><td class="code">211</td><td>Bot adı gerekli</td><td>Bot kaydında ad boş bırakıldı.</td><td>Ad girip tekrar dene.</td></tr>
-          <tr><td class="code">212</td><td>Bot bulunamadı (404)</td><td>Bot silinmiş veya ID hatalı.</td><td>Listeyi yenile, ID'yi kontrol et.</td></tr>
-          <tr><td class="code">213</td><td>Bot sahibi değilsin (403)</td><td>Başkasının botuna işlem denendi.</td><td>Kendi botlarında işlem yap.</td></tr>
-          <tr><td class="code">214</td><td>Bot jetonu tek seferlikti</td><td>Jeton yalnızca oluşturulurken gösterilir.</td><td>Yeniden üret (regenerate).</td></tr>
-          <tr><td class="code">226</td><td>Hata kaydı sınırı</td><td>Log servisi hız sınırında.</td><td>Bekle, otomatik düzelir.</td></tr>
-          <tr><td class="code">227</td><td>Metrik alınamadı</td><td>İzleme servisi yanıt vermedi.</td><td>Bir süre sonra tekrar dene.</td></tr>
-          <tr><td class="code">228</td><td>İç sunucu hatası (500)</td><td>Beklenmeyen sunucu hatası, kaydedildi.</td><td>Tekrar dene; sürerse kodunla bildir.</td></tr>
-        </tbody>
-      </table>
-      <div class="oddiss-note">141–240 arasında listede olmayan kodlar rezerve edilmiştir; genel anlamı "uygulama sunucu hatası" demektir. Tekrar dene, düzelmezse destekle paylaş.</div>
-    </div>
-
-    <div class="oddiss-section" id="ag">
-      <h2>Ağ ve bağlantı (241–280)</h2>
-      <div class="sub">Cihazın, internetin veya servis yolu ile ilgili sorunlar.</div>
-      <table class="err-table">
-        <thead><tr><th>Kod</th><th>Ad</th><th>Açıklama</th><th>Ne yapmalı</th></tr></thead>
-        <tbody>
-          <tr><td class="code">241</td><td>Sunucu bulunamadı (DNS)</td><td>Adres çözülemedi.</td><td>İnterneti kontrol et, DNS değiştirip dene.</td></tr>
-          <tr><td class="code">242</td><td>Bağlantı zaman aşımı</td><td>Sunucu sürede yanıt vermedi.</td><td>Yenile; yoğunsa bekle.</td></tr>
-          <tr><td class="code">243</td><td>CORS engeli</td><td>Tarayıcı çapraz isteği blokladı.</td><td>Resmi site/uygulamadan gir, eklentileri kapat.</td></tr>
-          <tr><td class="code">244</td><td>Çevrimdışısın</td><td>Cihazda internet yok.</td><td>Bağlantını kontrol et.</td></tr>
-          <tr><td class="code">245</td><td>Güvenli bağlantı hatası (TLS)</td><td>Sertifika doğrulanamadı.</td><td>Tarih/saati düzelt, VPN'i kapatıp dene.</td></tr>
-          <tr><td class="code">246</td><td>Canlı bağlantı koptu (WebSocket)</td><td>Anlık kanal kapandı.</td><td>Sayfa kendini toparlar; olmazsa yenile.</td></tr>
-          <tr><td class="code">247</td><td>Ses bölgesine ulaşılamadı</td><td>Ses sunucusu yolu kapalı.</td><td>Metin sohbete devam et, sonra tekrar dene.</td></tr>
-          <tr><td class="code">248</td><td>Veritabanı erişilemiyor</td><td>Firestore hattı kopuk.</td><td>Bekle, genelde kısa sürer.</td></tr>
-          <tr><td class="code">249</td><td>Dosya yüklenemedi</td><td>Depolama hattı veya kota sorunu.</td><td>Dosyayı küçültüp tekrar dene.</td></tr>
-        </tbody>
-      </table>
-      <div class="oddiss-note">241–280 arasında listede olmayan kodlar rezerve edilmiştir; genel anlamı "ağ sorunu" demektir. İnternetini kontrol edip tekrar dene.</div>
-    </div>
-
-    <div class="oddiss-note">Hâlâ çözülmedi mi? Hata kodunu, ne yaparken aldığını ve saat bilgisini destekle paylaş. Para hata günlüğüne otomatik düştüyse ekip zaten görüyordur.</div>
   </div>
 
   <footer class="footer">
@@ -212,17 +406,46 @@
   <script src="app.js"></script>
   <script>
     (function () {
-      var input = document.getElementById("oddiss-search");
-      if (!input) return;
-      input.addEventListener("input", function () {
-        var q = input.value.toLocaleLowerCase("tr");
-        document.querySelectorAll(".err-table tbody tr").forEach(function (row) {
-          row.style.display = row.textContent.toLocaleLowerCase("tr").indexOf(q) !== -1 ? "" : "none";
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang") !== lang;
         });
-        document.querySelectorAll(".spot-card").forEach(function (card) {
-          card.style.display = !q || card.textContent.toLocaleLowerCase("tr").indexOf(q) !== -1 ? "" : "none";
+        document.querySelectorAll(".err-table tbody tr").forEach(function (row) { row.style.display = ""; });
+        document.querySelectorAll(".spot-card").forEach(function (card) { card.style.display = ""; });
+        var trInput = document.getElementById("oddiss-search");
+        var enInput = document.getElementById("oddiss-search-en");
+        if (trInput) trInput.value = "";
+        if (enInput) enInput.value = "";
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+      function bindSearch(id, lang) {
+        var input = document.getElementById(id);
+        if (!input) return;
+        var container = document.querySelector('.oddiss-wrap > div[data-lang="' + lang + '"]');
+        if (!container) return;
+        input.addEventListener("input", function () {
+          var q = input.value.toLocaleLowerCase(lang);
+          container.querySelectorAll(".err-table tbody tr").forEach(function (row) {
+            row.style.display = row.textContent.toLocaleLowerCase(lang).indexOf(q) !== -1 ? "" : "none";
+          });
+          container.querySelectorAll(".spot-card").forEach(function (card) {
+            card.style.display = !q || card.textContent.toLocaleLowerCase(lang).indexOf(q) !== -1 ? "" : "none";
+          });
         });
-      });
+      }
+      bindSearch("oddiss-search", "tr");
+      bindSearch("oddiss-search-en", "en");
     })();
   </script>
 </body>

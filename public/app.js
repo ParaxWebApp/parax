@@ -2687,7 +2687,8 @@ document.addEventListener('contextmenu', (e) => {
 });
 
 document.addEventListener('click', () => {
-    document.getElementById('server-context-menu').style.display = 'none';
+    const menu = document.getElementById('server-context-menu');
+    if (menu) menu.style.display = 'none';
 });
 
 document.getElementById('ctx-leave')?.addEventListener('click', async () => {

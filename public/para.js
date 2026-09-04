@@ -8,13 +8,36 @@
     _ready: false,
     _queue: [],
     _initialized: false,
+    _seen: {},
+
+    // Dev mode: localStorage para_dev=1 (or window.ParaDevUrl) routes logs to
+    // the local para-dev terminal instead of prod, with zero console output.
+    _devMode: function () {
+      if (typeof window !== "undefined" && window.ParaDevUrl) return true;
+      try {
+        return typeof localStorage !== "undefined" && localStorage.getItem("para_dev") === "1";
+      } catch (_) {
+        return false;
+      }
+    },
+
+    _devUrl: function () {
+      if (typeof window !== "undefined" && window.ParaDevUrl) {
+        return String(window.ParaDevUrl).replace(/\/$/, "");
+      }
+      return "http://127.0.0.1:3776";
+    },
+
+    _mute: function () {
+      return this._devMode();
+    },
 
     init: function () {
       if (this._initialized) return;
       this._initialized = true;
 
       if (typeof firebase === "undefined" || !firebase.firestore) {
-        console.warn("[Para] Firebase not ready, will retry in 1s");
+        if (!this._mute()) console.warn("[Para] Firebase not ready, will retry in 1s");
         setTimeout(function () { Para.init(); }, 1000);
         return;
       }
@@ -23,7 +46,7 @@
         this._db = firebase.firestore();
         this._ready = true;
       } catch (e) {
-        console.warn("[Para] Could not get Firestore, will retry in 1s:", e);
+        if (!this._mute()) console.warn("[Para] Could not get Firestore, will retry in 1s:", e);
         setTimeout(function () { Para.init(); }, 1000);
         return;
       }
@@ -80,8 +103,13 @@
 
     capture: function (err, metadata) {
       var data = this._buildErrorData(err, metadata || {});
+      // Dedupe: same fingerprint within 60s is one error, not a storm.
+      var now = Date.now();
+      if (this._seen[data.fingerprint] && now - this._seen[data.fingerprint] < 60000) return;
+      this._seen[data.fingerprint] = now;
+      if (Object.keys(this._seen).length > 200) this._seen = {};
       if (!this._ready) {
-        this._queue.push(data);
+        if (this._queue.length < 50) this._queue.push(data);
         return;
       }
       this._write(data);
@@ -117,11 +145,25 @@
     },
 
     _write: function (data) {
-      if (!this._db) return;
-      try {
-        this._db.collection("errors").add(data);
-      } catch (e) {
-        console.warn("[Para] Failed to store error:", e);
+      // Dev mode: quiet, straight to the local terminal. Nothing to prod, nothing in console.
+      if (this._devMode()) {
+        try {
+          var devPayload = { message: data.message, stack: data.stack, type: data.type, url: data.url, fingerprint: data.fingerprint, at: new Date().toISOString() };
+          fetch(this._devUrl() + "/api/para-dev/log", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(devPayload),
+          }).catch(function () {});
+        } catch (_) {}
+        return;
+      }
+      // Logged-out clients must NOT write Firestore directly: the rules deny it,
+      // the rejection re-enters capture, and that is the infinite loop. /api/log
+      // (server-side write) still carries logged-out errors to the team.
+      if (this._userId && this._db) {
+        try {
+          this._db.collection("errors").add(data).catch(function () {});
+        } catch (_) {}
       }
       try {
         var payload = { message: data.message, stack: data.stack, type: data.type, url: data.url };

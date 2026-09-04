@@ -11,6 +11,7 @@ import monitoringRoutes from "./routes/monitoring";
 import botsRoutes from "./routes/bots";
 import peraxRoutes from "./routes/perax";
 import { errorHandler } from "./middleware/errorHandler";
+import { methodGuard } from "./middleware/methodGuard";
 import { trackLatency } from "./utils/metrics";
 import { ipBlocker } from "./middleware/ipBlocker";
 
@@ -68,6 +69,7 @@ app.use(helmet({
 app.use(express.static(path.join(__dirname, "../../public")));
 
 // api route'ları
+app.use(methodGuard);
 app.use("/api/auth", authRoutes);
 app.use("/api/voice", voiceRoutes);
 app.use("/api/log", logRoutes);
@@ -87,7 +89,32 @@ app.get("/devportal/details", (_req, res) => {
   res.sendFile(path.join(__dirname, "../../DevPortal/bot-details.html"));
 });
 
-// sayfa route'ları
+// sayfa route'ları (uzantısız URL'ler: /dashboard -> dashboard.html)
+const sayfalar = [
+  "index",
+  "dashboard",
+  "settings",
+  "friends",
+  "dm-list",
+  "dm-chat",
+  "forgot-password",
+  "reset-password",
+  "errors",
+  "documentation",
+  "doc1",
+  "doc2",
+  "doc3",
+  "doc4",
+  "doc5",
+  "doc6",
+  "doc7",
+];
+for (const sayfa of sayfalar) {
+  app.get(`/${sayfa}`, (_req, res) => {
+    res.sendFile(path.join(__dirname, `../../public/${sayfa}.html`));
+  });
+}
+
 app.get("/", (_req, res) => {
   res.sendFile(path.join(__dirname, "../../public/index.html"));
 });
