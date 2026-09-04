@@ -202,6 +202,7 @@
       async function poll() {
         try {
           var s = await fetch("/api/status/summary").then(function (r) { return r.json(); });
+          if (!s || s.error) return; // upstream not yet deployed or down: keep old values
           document.getElementById("n-online").textContent = s.online;
           document.getElementById("n-users").textContent = s.users;
           document.getElementById("n-shields").textContent = s.shields;

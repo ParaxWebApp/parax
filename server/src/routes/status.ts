@@ -57,11 +57,20 @@ const TZ: Record<string, { city: string; lat: number; lon: number }> = {
 // Public status snapshot for the live status page. Aggregates only —
 // no user ids, no tokens, no IPs leave this endpoint.
 router.get("/summary", async (_req: Request, res: Response) => {
+  async function safe<T>(label: string, fn: () => Promise<T>, fallback: T): Promise<T> {
+    try {
+      return await fn();
+    } catch (e: any) {
+      console.error(`[status] ${label} failed:`, e?.message || e);
+      return fallback;
+    }
+  }
+
   try {
     const [onSnap, idleSnap, usersCount] = await Promise.all([
-      db.collection("presence").where("status", "==", "online").limit(1000).get(),
-      db.collection("presence").where("status", "==", "idle").limit(1000).get(),
-      db.collection("users").count().get(),
+      safe("presence-online", () => db.collection("presence").where("status", "==", "online").limit(1000).get(), { docs: [] as any[], size: 0 } as any),
+      safe("presence-idle", () => db.collection("presence").where("status", "==", "idle").limit(1000).get(), { docs: [] as any[], size: 0 } as any),
+      safe("users-count", () => db.collection("users").count().get(), { data: () => ({ count: -1 }) } as any),
     ]);
 
     const byCity: Record<string, number> = {};
