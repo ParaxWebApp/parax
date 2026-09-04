@@ -2,10 +2,32 @@
 ;(function () {
   "use strict";
 
-  var VERSION = "1.2.0";
+  var VERSION = "1.3.0";
   var TOKEN_KEY = "perax_shield_token_v1.2";
+  var DEVICE_KEY = "perax_device_v1.3";
   var FALLBACK_PREFIX = "verified_v1.2_";
-  var ANSWER = "human_confirmed_v1.2";
+  var ANSWER = "human_confirmed_v1.3";
+
+  // Perax Device Token (PDT): this device's fingerprint. Coarse signals only —
+  // enough to recognize a returning device, nothing that identifies a person.
+  function deviceFingerprint() {
+    try {
+      var s = (navigator.userAgent || "") + "|" +
+        (screen.width || 0) + "x" + (screen.height || 0) + "|" +
+        (Intl.DateTimeFormat().resolvedOptions().timeZone || "") + "|" +
+        (navigator.language || "") + "|" +
+        (navigator.hardwareConcurrency || 0) + "|" +
+        (navigator.platform || "");
+      var h = 0;
+      for (var i = 0; i < s.length; i++) {
+        h = ((h << 5) - h) + s.charCodeAt(i);
+        h |= 0;
+      }
+      return Math.abs(h).toString(16) + "." + s.length;
+    } catch (e) {
+      return "";
+    }
+  }
 
   var STR = {
     greetingMorning: "Günaydın",
@@ -29,7 +51,7 @@
     verified: "Doğrulandı. İyi sohbetler.",
     whyTitle: "Neden bunu görüyorum?",
     whyText: "Parax'ı botlardan ve saldırılardan korumak için kısa bir insan kontrolü yapıyoruz. Doğrulama 3 saat geçerli, sonra tekrar sormayız.",
-    footer: "Perax Koruması v1.2 · 3 saat geçerli",
+    footer: "Perax Koruması v1.3 · Cihaz geçişi açık",
     headlessWarn: "[Perax WAF] Headless tarayıcı algılandı. Sıkı güvenlik kontrolü uygulanıyor."
   };
 
@@ -44,6 +66,7 @@
     version: VERSION,
     _verified: false,
     _tokenKey: TOKEN_KEY,
+    _deviceKey: DEVICE_KEY,
     _serviceUrl: "https://perax.onrender.com",
 
     init: function (options) {
@@ -66,6 +89,37 @@
         console.warn(STR.headlessWarn);
       }
 
+      var storedToken = null;
+      try {
+        storedToken = localStorage.getItem(this._tokenKey);
+      } catch (e) {
+        storedToken = null;
+      }
+      var storedDevice = null;
+      try {
+        storedDevice = localStorage.getItem(this._deviceKey);
+      } catch (e) {
+        storedDevice = null;
+      }
+      // v1.3: a trusted Perax Device Token skips the challenge even when the
+      // IP changed (mobile networks, CGNAT). Unknown/review tiers fall through.
+      if (storedDevice) {
+        this._validateDevice(storedDevice, function (tier) {
+          if (tier === "trusted") {
+            Perax._verified = true;
+          } else {
+            if (tier === "unknown") {
+              try { localStorage.removeItem(Perax._deviceKey); } catch (e) {}
+            }
+            Perax._shieldOrChallenge(options);
+          }
+        });
+      } else {
+        this._shieldOrChallenge(options);
+      }
+    },
+
+    _shieldOrChallenge: function (options) {
       var storedToken = null;
       try {
         storedToken = localStorage.getItem(this._tokenKey);
@@ -104,6 +158,21 @@
       })
       .catch(function () {
         callback(true);
+      });
+    },
+
+    _validateDevice: function (token, callback) {
+      fetch(this._serviceUrl + "/api/perax/device/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deviceToken: token, fingerprint: deviceFingerprint() })
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        callback(data.verified === true ? "trusted" : (data.tier || "unknown"));
+      })
+      .catch(function () {
+        callback("unknown");
       });
     },
 
@@ -236,7 +305,8 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               challengeToken: window._peraxChallengeToken || "",
-              answer: ANSWER
+              answer: ANSWER,
+              fingerprint: deviceFingerprint()
             })
           })
           .then(function (res) { return res.json(); })
@@ -246,6 +316,9 @@
                 localStorage.setItem(_this._tokenKey, data.shieldToken);
               } else {
                 localStorage.setItem(_this._tokenKey, FALLBACK_PREFIX + Date.now());
+              }
+              if (data.success && data.deviceToken) {
+                try { localStorage.setItem(_this._deviceKey, data.deviceToken); } catch (e) {}
               }
             } catch (e) {}
             finish();

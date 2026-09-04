@@ -141,6 +141,8 @@
             <tr><td class="code">3</td><td>İmza hatası</td><td>Jeton imzası sunucu anahtarıyla eşleşmedi.</td><td>Önbelleği temizle, yeniden doğrula.</td></tr>
             <tr><td class="code">4</td><td>Liste sıfırlandı</td><td>Yönetici kalkan listesini temizledi (perax-reset).</td><td>Yeniden doğrulama yap, bu normaldir.</td></tr>
             <tr><td class="code">5</td><td>Eski sürüm jeton</td><td>v1.1 kalıntısı, artık kabul edilmiyor.</td><td>Tarayıcı verilerini temizleyip tekrar dene.</td></tr>
+            <tr><td class="code">6</td><td>Cihaz jetonu geçersiz</td><td>Perax Device Token tanınmadı veya süresi doldu.</td><td>Güvenlik ekranından yeniden doğrula, yeni cihaz jetonu al.</td></tr>
+            <tr><td class="code">7</td><td>Cihaz parmak izi uyuşmadı</td><td>Jeton başka bir cihazda kullanılmaya çalışıldı.</td><td>Kendi cihazından yeniden doğrula; jetonunu kimseyle paylaşma.</td></tr>
             <tr><td class="code">31</td><td>Meydan okuma gerekli</td><td>Doğrulama jetonu olmadan verify çağrıldı.</td><td>Önce challenge al, sonra onayla.</td></tr>
             <tr><td class="code">32</td><td>Meydan okuma süresi doldu</td><td>5 dakikalık challenge jetonu bayatladı.</td><td>Sayfayı yenileyip yeni kod al.</td></tr>
             <tr><td class="code">33</td><td>Hatalı jeton tipi</td><td>Challenge yerine başka jeton gönderildi.</td><td>Akışı baştan başlat.</td></tr>
@@ -298,6 +300,8 @@
             <tr><td class="code">3</td><td>Signature error</td><td>Token signature doesn't match the server key.</td><td>Clear cache, re-verify.</td></tr>
             <tr><td class="code">4</td><td>List reset</td><td>An admin cleared the shield list (perax-reset).</td><td>Re-verify, this is normal.</td></tr>
             <tr><td class="code">5</td><td>Legacy token</td><td>v1.1 leftover, no longer accepted.</td><td>Clear browser data, retry.</td></tr>
+            <tr><td class="code">6</td><td>Device token invalid</td><td>Perax Device Token not recognized or expired.</td><td>Re-verify on the security screen for a new device token.</td></tr>
+            <tr><td class="code">7</td><td>Device fingerprint mismatch</td><td>Token used from a different device.</td><td>Re-verify on your own device; never share your token.</td></tr>
             <tr><td class="code">31</td><td>Challenge required</td><td>verify called without a challenge token.</td><td>Get a challenge first, then confirm.</td></tr>
             <tr><td class="code">32</td><td>Challenge expired</td><td>5-minute challenge token went stale.</td><td>Refresh for a new code.</td></tr>
             <tr><td class="code">33</td><td>Wrong token type</td><td>A different token was sent instead of a challenge.</td><td>Restart the flow.</td></tr>

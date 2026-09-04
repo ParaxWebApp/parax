@@ -1,10 +1,26 @@
 import { Router, Request, Response } from "express";
-import { randomBytes } from "crypto";
+import { randomBytes, createHash } from "crypto";
+import rateLimit from "express-rate-limit";
+import { db } from "../config/firebase";
 
 const router = Router();
 
 const SHIELD_DURATION_MS = 3 * 60 * 60 * 1000; // 3 hours
 const CHALLENGE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+// Perax Device Token (PDT) v1.3: device-bound passes. Hashes only —
+// raw tokens never touch the database. 30-day sliding expiry.
+const DEVICE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const DEVICE_COLLECTION = "perax_devices";
+
+// Reads are cheap but unauthenticated: cap device-endpoint abuse per IP.
+const deviceLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: { error: "Too many device requests. Try again later.", code: 111 },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // In-memory stores (per process). Mirrors services/perax-shield/server.js behavior
 // without requiring jsonwebtoken dependency.
@@ -14,6 +30,17 @@ const shields = new Map<string, number>(); // shieldToken -> expiresAt
 function newToken(prefix: string): string {
   return `${prefix}_${randomBytes(16).toString("hex")}_${Date.now()}`;
 }
+
+function sha(s: string): string {
+  return createHash("sha256").update(s).digest("hex");
+}
+
+function newDeviceToken(): string {
+  return `pdt_${randomBytes(32).toString("hex")}`;
+}
+
+// Tiers: trusted (skip challenge), review (challenge again), unknown (challenge).
+// Fingerprint binding defeats stolen-token replay on a different device.
 
 function cleanup(map: Map<string, number>, now: number) {
   for (const [k, exp] of map) {
@@ -42,8 +69,8 @@ router.post("/challenge", (_req: Request, res: Response) => {
   });
 });
 
-// 2. Verify Challenge & Issue 3-Hour Shield Token
-router.post("/verify", (req: Request, res: Response) => {
+// 2. Verify Challenge & Issue 3-Hour Shield Token (+ PDT v1.3)
+router.post("/verify", async (req: Request, res: Response) => {
   const { challengeToken } = req.body ?? {};
   const now = Date.now();
   cleanup(challenges, now);
@@ -60,12 +87,31 @@ router.post("/verify", (req: Request, res: Response) => {
 
   const shieldToken = newToken("perax_sh");
   shields.set(shieldToken, now + SHIELD_DURATION_MS);
-  res.json({
+  const out: any = {
     success: true,
     shieldToken,
     expiresIn: SHIELD_DURATION_MS,
     message: "Human verification passed successfully. 3-hour shield activated.",
-  });
+  };
+
+  // v1.3: passing a fingerprint also mints a Perax Device Token (shown once).
+  const fingerprint = typeof req.body?.fingerprint === "string" ? req.body.fingerprint.slice(0, 500) : "";
+  if (fingerprint) {
+    try {
+      const deviceToken = newDeviceToken();
+      await db.collection(DEVICE_COLLECTION).doc(sha(deviceToken)).set({
+        fpHash: sha(fingerprint),
+        firstSeen: new Date().toISOString(),
+        lastSeen: new Date().toISOString(),
+        expiresAt: now + DEVICE_TTL_MS,
+      });
+      out.deviceToken = deviceToken;
+      out.deviceExpiresIn = DEVICE_TTL_MS;
+    } catch (e) {
+      console.error("[Perax Admin] PDT issue failed:", (e as any)?.message || e);
+    }
+  }
+  res.json(out);
 });
 
 // 3. Validate Shield Token
@@ -84,6 +130,36 @@ router.post("/validate", (req: Request, res: Response) => {
     return res.json({ verified: true, expiresAt: Date.now() + SHIELD_DURATION_MS, fallback: true });
   }
   res.json({ verified: false, code: 2, error: "Shield token expired or invalid." });
+});
+
+// 4. Validate Perax Device Token (v1.3) — device passes survive IP changes.
+// Body: { deviceToken, fingerprint }. Tiers: trusted | review | unknown.
+router.post("/device/validate", deviceLimiter, async (req: Request, res: Response) => {
+  const { deviceToken, fingerprint } = req.body ?? {};
+  if (typeof deviceToken !== "string" || !deviceToken.startsWith("pdt_")) {
+    return res.json({ verified: false, tier: "unknown", code: 6, error: "Device token invalid." });
+  }
+  try {
+    const doc = await db.collection(DEVICE_COLLECTION).doc(sha(deviceToken)).get();
+    if (!doc.exists) {
+      return res.json({ verified: false, tier: "unknown", code: 6, error: "Device token invalid." });
+    }
+    const data = doc.data() as any;
+    if (!data.expiresAt || data.expiresAt < Date.now()) {
+      await doc.ref.delete().catch(() => {});
+      return res.json({ verified: false, tier: "unknown", code: 6, error: "Device token expired." });
+    }
+    const fp = typeof fingerprint === "string" ? fingerprint.slice(0, 500) : "";
+    if (!fp || sha(fp) !== data.fpHash) {
+      // Right token, wrong device: stolen, shared, or reset browser. Challenge again.
+      return res.json({ verified: false, tier: "review", code: 7, error: "Device fingerprint mismatch." });
+    }
+    // Sliding 30-day expiry for active devices.
+    await doc.ref.update({ lastSeen: new Date().toISOString(), expiresAt: Date.now() + DEVICE_TTL_MS }).catch(() => {});
+    return res.json({ verified: true, tier: "trusted", expiresAt: data.expiresAt });
+  } catch (e) {
+    return res.json({ verified: false, tier: "unknown", code: 6, error: "Device check unavailable." });
+  }
 });
 
 // ---- Local-admin endpoints (localhost tooling, NOT public API) ----
