@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import http from "http";
 import path from "path";
 import dotenv from "dotenv";
 // routelar
@@ -11,10 +12,12 @@ import monitoringRoutes from "./routes/monitoring";
 import botsRoutes from "./routes/bots";
 import peraxRoutes from "./routes/perax";
 import statusRoutes from "./routes/status";
+import { messagesRouter, serversRouter } from "./routes/runtime";
 import { errorHandler } from "./middleware/errorHandler";
 import { methodGuard } from "./middleware/methodGuard";
 import { trackLatency } from "./utils/metrics";
 import { ipBlocker } from "./middleware/ipBlocker";
+import { attachGateway } from "./gateway";
 
 dotenv.config();
 
@@ -78,6 +81,8 @@ app.use("/api/monitoring", monitoringRoutes);
 app.use("/api/bots", botsRoutes);
 app.use("/api/perax", peraxRoutes);
 app.use("/api/status", statusRoutes);
+app.use("/api/messages", messagesRouter);
+app.use("/api/servers", serversRouter);
 
 // DevPortal static & routes
 app.use("/devportal", express.static(path.join(__dirname, "../../DevPortal")));
@@ -111,6 +116,7 @@ const sayfalar = [
   "doc5",
   "doc6",
   "doc7",
+  "doc8",
 ];
 for (const sayfa of sayfalar) {
   app.get(`/${sayfa}`, (_req, res) => {
@@ -132,6 +138,9 @@ app.get("/signup", (_req, res) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+const httpServer = http.createServer(app);
+attachGateway(httpServer);
+
+httpServer.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

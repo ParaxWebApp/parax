@@ -5,20 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bot Dashboard — Parax</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
   <style>
     .bots-container { padding: 24px; max-width: 1400px; margin: 0 auto; }
     .bot-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px; }
     .stat-card { background: var(--bg-secondary); padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border); }
     .stat-label { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
     .stat-value { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
-    
+
     .bot-table { width: 100%; border-collapse: collapse; background: var(--bg-secondary); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
     .bot-table th, .bot-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
     .bot-table th { background: var(--bg-tertiary); color: var(--text-muted); }
-    
+
     .status-online { color: var(--success); font-weight: 600; }
     .status-offline { color: var(--error); font-weight: 600; }
     .btn-action { padding: 6px 10px; font-size: 0.75rem; margin-right: 4px; }
+    #err { display: none; background: rgba(229,72,77,0.12); border: 1px solid var(--error); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; font-size: 0.88rem; }
+    #token-banner { display: none; background: #0f172a; border: 1px solid var(--error); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; font-size: 0.88rem; }
+    #token-banner code { color: var(--error); font-family: monospace; overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -32,14 +37,21 @@
         <button class="btn btn-primary" onclick="window.location.href='bot-create.html'">+ New Bot / Yeni Bot Oluştur</button>
     </div>
 
+    <div id="err"></div>
+    <div id="token-banner">
+        <b>Yeni jeton (bir kez gösterilir — hemen kopyala):</b><br />
+        <code id="token-value"></code><br /><br />
+        <button class="btn btn-secondary btn-action" id="token-copy">Copy / Kopyala</button>
+    </div>
+
     <div class="bot-stats">
         <div class="stat-card">
             <div class="stat-label">Total Bots / Toplam Bot</div>
-            <div class="stat-value">12</div>
+            <div class="stat-value" id="stat-total">–</div>
         </div>
         <div class="stat-card">
             <div class="stat-label">Active Bots / Aktif Bot</div>
-            <div class="stat-value">8</div>
+            <div class="stat-value" id="stat-active">–</div>
         </div>
     </div>
 
@@ -52,29 +64,108 @@
                 <th>Actions / Eylemler</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>ModeratorBot</td>
-                <td><span class="status-online">● Online</span></td>
-                <td><code>98273465192837465</code></td>
-                <td>
-                    <a href="bot-details.html" class="btn btn-secondary btn-action">Edit / Düzenle</a>
-                    <button class="btn btn-secondary btn-action" style="color:var(--error)">Delete / Sil</button>
-                    <button class="btn btn-secondary btn-action" style="color:var(--accent)">Regenerate / Yenile</button>
-                </td>
-            </tr>
-            <tr>
-                <td>MusicPlayer</td>
-                <td><span class="status-offline">● Offline</span></td>
-                <td><code>12345678901234567</code></td>
-                <td>
-                    <a href="bot-details.html" class="btn btn-secondary btn-action">Edit / Düzenle</a>
-                    <button class="btn btn-secondary btn-action" style="color:var(--error)">Delete / Sil</button>
-                    <button class="btn btn-secondary btn-action" style="color:var(--accent)">Regenerate / Yenile</button>
-                </td>
-            </tr>
+        <tbody id="bot-rows">
+            <tr><td colspan="4">Yükleniyor…</td></tr>
         </tbody>
     </table>
   </div>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyBi6UCjNt6RxB-RrKmDSHuC3Ax9khqzcbg",
+      authDomain: "webappparax.firebaseapp.com",
+      projectId: "webappparax"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+
+    // Standalone mode: set window.DEVPORTAL = { api: "https://main-host", login: "https://main-host/login.html" }
+    var PORTAL = window.DEVPORTAL || {};
+    var API_BASE = PORTAL.api || "";
+    var LOGIN_URL = PORTAL.login || "/login.html";
+
+    function showErr(msg) {
+      var el = document.getElementById("err");
+      el.textContent = msg;
+      el.style.display = "block";
+    }
+    function esc(s) {
+      var d = document.createElement("div");
+      d.textContent = s == null ? "" : String(s);
+      return d.innerHTML;
+    }
+    function apiErr(data, status) {
+      return (data && data.error ? data.error : "HTTP " + status) +
+        (data && data.code !== undefined ? " (Oddiss " + data.code + ")" : "");
+    }
+    async function api(path, method, body) {
+      var user = auth.currentUser;
+      if (!user) { window.location.href = LOGIN_URL; throw new Error("auth"); }
+      var token = await user.getIdToken();
+      var res = await fetch(API_BASE + path, {
+        method: method || "GET",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: body ? JSON.stringify(body) : undefined
+      });
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok) throw new Error(apiErr(data, res.status));
+      return data;
+    }
+
+    async function boot() {
+      try {
+        var data = await api("/api/bots/");
+        var bots = data.bots || [];
+        document.getElementById("stat-total").textContent = bots.length;
+        document.getElementById("stat-active").textContent = bots.filter(function (b) { return b.status === "active"; }).length;
+        var tb = document.getElementById("bot-rows");
+        if (!bots.length) {
+          tb.innerHTML = '<tr><td colspan="4">Henüz bot yok — ilk botunu oluştur! / No bots yet.</td></tr>';
+          return;
+        }
+        tb.innerHTML = bots.map(function (b) {
+          var online = b.status === "active";
+          return '<tr>' +
+            '<td>' + esc(b.name) + '</td>' +
+            '<td><span class="' + (online ? "status-online" : "status-offline") + '">● ' + (online ? "Online" : "Offline") + '</span></td>' +
+            '<td><code>' + esc(b.clientId) + '</code></td>' +
+            '<td>' +
+              '<a href="bot-details.html?id=' + encodeURIComponent(b.id) + '" class="btn btn-secondary btn-action">Edit / Düzenle</a>' +
+              '<button class="btn btn-secondary btn-action" style="color:var(--error)" data-del="' + esc(b.id) + '">Delete / Sil</button>' +
+              '<button class="btn btn-secondary btn-action" style="color:var(--accent)" data-regen="' + esc(b.id) + '">Regenerate / Yenile</button>' +
+            '</td></tr>';
+        }).join("");
+        tb.querySelectorAll("[data-del]").forEach(function (btn) {
+          btn.addEventListener("click", async function () {
+            if (!confirm("Bot silinsin mi? / Delete this bot?")) return;
+            try { await api("/api/bots/" + encodeURIComponent(btn.dataset.del), "DELETE"); boot(); }
+            catch (e) { showErr(e.message); }
+          });
+        });
+        tb.querySelectorAll("[data-regen]").forEach(function (btn) {
+          btn.addEventListener("click", async function () {
+            try {
+              var r = await api("/api/bots/" + encodeURIComponent(btn.dataset.regen) + "/regenerate", "POST");
+              document.getElementById("token-value").textContent = r.botToken;
+              document.getElementById("token-banner").style.display = "block";
+              window.scrollTo(0, 0);
+            } catch (e) { showErr(e.message); }
+          });
+        });
+      } catch (e) {
+        if (e.message !== "auth") showErr(e.message);
+      }
+    }
+
+    document.getElementById("token-copy").addEventListener("click", function () {
+      navigator.clipboard.writeText(document.getElementById("token-value").textContent);
+      alert("Copied! / Kopyalandı!");
+    });
+
+    auth.onAuthStateChanged(function (u) {
+      if (!u) window.location.href = LOGIN_URL;
+      else boot();
+    });
+  </script>
 </body>
 </html>

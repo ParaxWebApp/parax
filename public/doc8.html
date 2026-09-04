@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mkke Bot Servisi — Parax Belgeleri</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.PeraxConfig = {
+      serviceUrl: window.location.origin,
+      brandName: "Parax Güvenlik",
+      theme: "dark",
+      bypassPaths: ["/api/"]
+    };
+  </script>
+  <script src="perax.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
+  <script src="para.js"></script>
+  <style>
+    .doc-wrap { max-width: 860px; margin: 0 auto; padding: 40px 20px 90px; }
+    .doc-hero { text-align: center; margin-bottom: 12px; }
+    .doc-hero .back { display: inline-block; margin-bottom: 18px; color: var(--brand); text-decoration: none; font-size: 0.88rem; }
+    .doc-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 10px; }
+    .doc-hero p { color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+    .langbar { position: sticky; top: 0; z-index: 50; display: flex; gap: 8px; justify-content: center; padding: 12px; background: var(--bg-primary); border-bottom: 1px solid var(--border); margin: 24px 0 8px; }
+    .langbar button { border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary); border-radius: 999px; padding: 8px 26px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    .langbar button.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .toc { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 20px 24px; margin: 24px 0 12px; }
+    .toc h3 { margin: 0 0 10px; font-size: 1rem; }
+    .toc ol { margin: 0; padding-left: 22px; color: var(--text-secondary); font-size: 0.9rem; }
+    .toc a { color: var(--brand); text-decoration: none; }
+    .doc-sec { margin: 34px 0; }
+    .doc-sec h2 { font-size: 1.45rem; margin-bottom: 10px; }
+    .doc-sec h2 .n { color: var(--brand); margin-right: 8px; }
+    .doc-sec p, .doc-sec li { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+    .doc-sec ol, .doc-sec ul { padding-left: 24px; }
+    .doc-sec li { margin-bottom: 8px; }
+    .flow { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); padding: 18px 22px; margin-top: 12px; }
+    .flow ol { margin: 0; padding-left: 22px; }
+    .flow li { margin-bottom: 10px; }
+    .flow code, p code, li code, pre code { background: var(--bg-tertiary); border-radius: 6px; padding: 1px 7px; font-size: 0.85em; }
+    pre.codeblock { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; overflow-x: auto; font-size: 0.85rem; margin-top: 12px; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 12px; }
+    .mini-table th, .mini-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .mini-table th { color: var(--text-muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .mini-table td.code { font-weight: 800; color: var(--brand); white-space: nowrap; }
+    .tip { border-left: 3px solid #22c55e; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    .warn { border-left: 3px solid #f0b232; background: var(--bg-secondary); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.88rem; color: var(--text-secondary); margin-top: 12px; }
+    [data-lang][hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='/'">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="6" fill="#5865f2" />
+        <path d="M7 8.5C7 7.67 7.67 7 8.5 7H11V12H7V8.5ZM13 7H15.5C16.33 7 17 7.67 17 8.5V12H13V7ZM7 12H11V16.5C7.67 16.5 7 15.83 7 15V12ZM13 12H17V15C17 15.83 16.33 16.5 15.5 16.5H13V12Z" fill="white" />
+      </svg>
+      Parax
+    </div>
+    <div class="navbar-links">
+      <a href="documentation.html">Belgeler</a>
+      <a href="login.html">Log In</a>
+    </div>
+  </nav>
+
+  <div class="doc-wrap">
+    <div class="doc-hero">
+      <a class="back" href="documentation.html">← <span data-lang="tr">Tüm belgeler</span><span data-lang="en" hidden>All docs</span></a>
+      <h1 data-lang="tr">Mkke Bot Servisi</h1>
+      <h1 data-lang="en" hidden>Mkke Bot Service</h1>
+      <p data-lang="tr">Parax'ta bot yapmanın yolu: Mkke nedir, jeton nasıl alınır, botun nasıl konuşur ve dinler.</p>
+      <p data-lang="en" hidden>The way to build bots on Parax: what Mkke is, how to get a token, how your bot talks and listens.</p>
+    </div>
+
+    <div class="langbar">
+      <button id="lang-tr" class="active">Türkçe</button>
+      <button id="lang-en">English</button>
+    </div>
+
+    <div class="toc" data-lang="tr">
+      <h3>İçindekiler</h3>
+      <ol>
+        <li><a href="#t1">Mkke nedir?</a></li>
+        <li><a href="#t2">Hangi diller destekleniyor?</a></li>
+        <li><a href="#t3">Jeton alma (DevPortal)</a></li>
+        <li><a href="#t4">Botun konuşması: REST</a></li>
+        <li><a href="#t5">Botun dinlemesi: ağ geçidi</a></li>
+        <li><a href="#t6">Kapsamlar (scopes)</a></li>
+        <li><a href="#t7">Hızlı başlangıç kodu</a></li>
+        <li><a href="#t8">Şablonlar ve sırada ne var?</a></li>
+      </ol>
+    </div>
+    <div class="toc" data-lang="en" hidden>
+      <h3>Contents</h3>
+      <ol>
+        <li><a href="#e1">What is Mkke?</a></li>
+        <li><a href="#e2">Which languages are supported?</a></li>
+        <li><a href="#e3">Getting a token (DevPortal)</a></li>
+        <li><a href="#e4">Bot talks: REST</a></li>
+        <li><a href="#e5">Bot listens: gateway</a></li>
+        <li><a href="#e6">Scopes</a></li>
+        <li><a href="#e7">Quickstart code</a></li>
+        <li><a href="#e8">Templates and what's next?</a></li>
+      </ol>
+    </div>
+
+    <!-- TR -->
+    <div data-lang="tr">
+      <div class="doc-sec" id="t1"><h2><span class="n">1</span>Mkke nedir?</h2>
+        <p><b>Mkke, Parax'ın bot servisidir:</b> bot kaydı, jeton dağıtımı ve botların sohbetle konuşmasını sağlayan uçların tamamı. Geliştirici tarafında <a href="https://github.com/ParaxWebApp/Mkke-SDK">Mkke-SDK</a> deposu, kullanıcı tarafında DevPortal (bot paneli) bu servisin yüzleridir.</p>
+        <p>Bot, Parax'ta özel bir hesap gibidir: bir <b>Client ID</b>'si ve gizli bir <b>jetonu</b> vardır. Jetonla giriş yapan program mesaj okur, mesaj yazar, kanal listeler ve canlı olayları dinler.</p>
+      </div>
+      <div class="doc-sec" id="t2"><h2><span class="n">2</span>Hangi diller destekleniyor?</h2>
+        <p>Şu an <b>yalnızca JavaScript + TypeScript</b> ile bot yazılabilir (Mkke-SDK). Python ve Java iskeletleri hazır ama çalışmıyor; bu dillerin desteği platformla birlikte gelecek.</p>
+        <div class="tip">JavaScript bilmiyorsan üzülme: Parax ekibi kopyala-çalıştır şablonları yayınlayacak (8. bölüm).</div>
+      </div>
+      <div class="doc-sec" id="t3"><h2><span class="n">3</span>Jeton alma (DevPortal)</h2>
+        <div class="flow"><ol>
+          <li><b>Giriş yap</b> ve bot panelini aç.</li>
+          <li><b>Yeni Bot Oluştur:</b> ad, açıklama ve kapsamları seç.</li>
+          <li><b>Jetonu kopyala:</b> <code>parax_bot_...</code> ile başlayan jeton <b>bir kez</b> gösterilir.</li>
+          <li>Jetonu kodunun içine, tercihen ortam değişkenine koy.</li>
+        </ol></div>
+        <div class="warn">Jetonu kimseyle paylaşma, herkese açık depoya koyma. Sızdıysa panelden <b>Yenile</b>'ye bas; eskisi anında ölür.</div>
+      </div>
+      <div class="doc-sec" id="t4"><h2><span class="n">4</span>Botun konuşması: REST</h2>
+        <table class="mini-table"><thead><tr><th>Uç</th><th>İş</th></tr></thead><tbody>
+          <tr><td class="code">POST /api/messages</td><td>Mesaj gönder (<code>send</code> kapsamı)</td></tr>
+          <tr><td class="code">GET /api/servers/:code/channels</td><td>Kanal listele (<code>read</code> kapsamı)</td></tr>
+          <tr><td class="code">POST /api/auth/login</td><td>E-posta+şifreyle kullanıcı girişi</td></tr>
+        </tbody></table>
+        <p>Tüm isteklerde başlık aynıdır: <code>Authorization: Bearer parax_bot_...</code> Hatalar Oddiss koduyla döner (örn. 141 jeton geçersiz, 142 kapsam eksik).</p>
+      </div>
+      <div class="doc-sec" id="t5"><h2><span class="n">5</span>Botun dinlemesi: ağ geçidi</h2>
+        <p>Botun, yeni mesajlardan anında haberdar olur: <code>wss://...?token=parax_bot_...</code> adresine bağlanır, <code>ready</code> alır, sonra her mesajda <code>messageCreate</code> olayı gelir. Bağlantı koparsa SDK 5 saniyede bir yeniden dener.</p>      </div>
+      <div class="doc-sec" id="t6"><h2><span class="n">6</span>Kapsamlar (scopes)</h2>
+        <p>Jeton, seçtiğin kapsamlar kadar yetkilidir: <code>read</code> (oku), <code>send</code> (yaz), <code>kick</code>, <code>ban</code>, <code>connect</code>, <code>speak</code>, <code>manage_roles</code>, <code>manage_channels</code>. Kapsam dışı istek 142 koduyla reddedilir.</p>
+        <div class="tip">En az yetki ilkesi: botuna işini görecek en dar kapsamları ver.</div>
+      </div>
+      <div class="doc-sec" id="t7"><h2><span class="n">7</span>Hızlı başlangıç kodu</h2>
+        <pre class="codeblock"><code>const { Bot } = require("parax-bot-sdk");
+const bot = new Bot(process.env.PARAX_BOT_TOKEN, {
+  wsUrl: "wss://parax-vqqb.onrender.com"
+});
+
+bot.on("ready", () => console.log("Mkke çevrimiçi!"));
+bot.on("messageCreate", async (msg) => {
+  if (msg.content === "!ping") await msg.reply("pong!");
+});
+
+bot.connectGateway();</code></pre>
+      </div>
+      <div class="doc-sec" id="t8"><h2><span class="n">8</span>Şablonlar ve sırada ne var?</h2>
+        <p>Parax ekibi yeni başlayanlar için hazır şablonlar yayınlayacak: karşılama botu, moderasyon botu, müzik botu iskeleti ve tek-tık dağıtım örnekleri. Ayrıca Python/Java SDK'ları ve bot marketi (bot dizini) yolda. Duyurular <a href="doc7.html">Sürüm Notları</a>'nda olacak.</p>
+      </div>
+    </div>
+
+    <!-- EN -->
+    <div data-lang="en" hidden>
+      <div class="doc-sec" id="e1"><h2><span class="n">1</span>What is Mkke?</h2>
+        <p><b>Mkke is Parax's bot service:</b> bot registration, token issuance, and every endpoint bots use to talk to chat. Developers meet it as the <a href="https://github.com/ParaxWebApp/Mkke-SDK">Mkke-SDK</a> repo; users meet it as the DevPortal (bot panel).</p>
+        <p>A bot is like a special Parax account: it has a <b>Client ID</b> and a secret <b>token</b>. A program logging in with the token reads messages, writes messages, lists channels, and listens to live events.</p>
+      </div>
+      <div class="doc-sec" id="e2"><h2><span class="n">2</span>Which languages are supported?</h2>
+        <p>Right now bots can <b>only</b> be written in <b>JavaScript + TypeScript</b> (Mkke-SDK). Python and Java skeletons exist but don't run; their support lands with the platform.</p>
+        <div class="tip">Don't know JavaScript? Don't worry: the Parax team will publish copy-paste templates (section 8).</div>
+      </div>
+      <div class="doc-sec" id="e3"><h2><span class="n">3</span>Getting a token (DevPortal)</h2>
+        <div class="flow"><ol>
+          <li><b>Log in</b> and open the bot panel.</li>
+          <li><b>Create a bot:</b> name, description, scopes.</li>
+          <li><b>Copy the token:</b> the <code>parax_bot_...</code> token is shown <b>once</b>.</li>
+          <li>Put it in your code, preferably an environment variable.</li>
+        </ol></div>
+        <div class="warn">Never share the token or commit it to a public repo. If it leaks, press <b>Regenerate</b> in the panel; the old one dies instantly.</div>
+      </div>
+      <div class="doc-sec" id="e4"><h2><span class="n">4</span>Bot talks: REST</h2>
+        <table class="mini-table"><thead><tr><th>Endpoint</th><th>Job</th></tr></thead><tbody>
+          <tr><td class="code">POST /api/messages</td><td>Send a message (<code>send</code> scope)</td></tr>
+          <tr><td class="code">GET /api/servers/:code/channels</td><td>List channels (<code>read</code> scope)</td></tr>
+          <tr><td class="code">POST /api/auth/login</td><td>Email+password user login</td></tr>
+        </tbody></table>
+        <p>Every request carries the same header: <code>Authorization: Bearer parax_bot_...</code> Errors come back with Oddiss codes (e.g. 141 invalid token, 142 missing scope).</p>
+      </div>
+      <div class="doc-sec" id="e5"><h2><span class="n">5</span>Bot listens: gateway</h2>
+        <p>The bot learns about new messages instantly: connect to <code>wss://...?token=parax_bot_...</code>, receive <code>ready</code>, then a <code>messageCreate</code> event per message. If the connection drops, the SDK retries every 5 seconds.</p>
+      </div>
+      <div class="doc-sec" id="e6"><h2><span class="n">6</span>Scopes</h2>
+        <p>The token is only as powerful as the scopes you picked: <code>read</code>, <code>send</code>, <code>kick</code>, <code>ban</code>, <code>connect</code>, <code>speak</code>, <code>manage_roles</code>, <code>manage_channels</code>. Out-of-scope requests are refused with code 142.</p>
+        <div class="tip">Least privilege: give your bot the narrowest scopes that do its job.</div>
+      </div>
+      <div class="doc-sec" id="e7"><h2><span class="n">7</span>Quickstart code</h2>
+        <pre class="codeblock"><code>const { Bot } = require("parax-bot-sdk");
+const bot = new Bot(process.env.PARAX_BOT_TOKEN, {
+  wsUrl: "wss://parax-vqqb.onrender.com"
+});
+
+bot.on("ready", () => console.log("Mkke online!"));
+bot.on("messageCreate", async (msg) => {
+  if (msg.content === "!ping") await msg.reply("pong!");
+});
+
+bot.connectGateway();</code></pre>
+      </div>
+      <div class="doc-sec" id="e8"><h2><span class="n">8</span>Templates and what's next?</h2>
+        <p>The Parax team will publish starter templates: welcome bot, moderation bot, music bot skeleton, and one-click deploy samples. Python/Java SDKs and a bot directory are also on the way. Announcements land in <a href="doc7.html">Release Notes</a>.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="social-links">
+        <a href="https://x.com/paraxwebapp" target="_blank">X</a>
+        <a href="https://github.com/ParaxWebApp" target="_blank">GitHub</a>
+        <a href="https://www.youtube.com/@paraxwebapp" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/paraxwebapp/" target="_blank">Instagram</a>
+    </div>
+    &copy; 2026 Parax. All rights reserved.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      var trBtn = document.getElementById("lang-tr");
+      var enBtn = document.getElementById("lang-en");
+      function setLang(lang) {
+        document.querySelectorAll('[data-lang]').forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang") !== lang;
+        });
+        document.documentElement.lang = lang === "tr" ? "tr" : "en";
+        trBtn.classList.toggle("active", lang === "tr");
+        enBtn.classList.toggle("active", lang === "en");
+        try { localStorage.setItem("parax-doc-lang", lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      }
+      trBtn.addEventListener("click", function () { setLang("tr"); });
+      enBtn.addEventListener("click", function () { setLang("en"); });
+      var saved = null;
+      try { saved = localStorage.getItem("parax-doc-lang"); } catch (e) {}
+      if (saved === "en") setLang("en");
+    })();
+  </script>
+</body>
+</html>

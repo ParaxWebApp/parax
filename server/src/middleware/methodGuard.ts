@@ -6,8 +6,11 @@ import { Request, Response, NextFunction } from "express";
 const ROUTES: [RegExp, string[]][] = [
   [/^\/api\/auth\/verify-token$/, ["POST"]],
   [/^\/api\/auth\/profile$/, ["GET"]],
+  [/^\/api\/auth\/login$/, ["POST"]],
   [/^\/api\/voice\/token$/, ["POST"]],
   [/^\/api\/log$/, ["POST"]],
+  [/^\/api\/messages$/, ["POST"]],
+  [/^\/api\/servers\/[^/]+\/channels$/, ["GET"]],
   [/^\/api\/monitoring\/(system|users|logs)$/, ["GET"]],
   [/^\/api\/bots$/, ["GET"]],
   [/^\/api\/bots\/register$/, ["POST"]],
